@@ -6,6 +6,16 @@ import { Resend } from "resend";
 import { Emails } from "@/emails/default";
 import { db } from "./database";
 
+const isDev = () => ["development", "test"].includes(process.env.NODE_ENV);
+
+function logIfExample(email: string) {
+	if (email.split("@")[1] === "example.com") {
+		console.log("Email not sent! @example.com");
+		return true;
+	}
+	return false;
+}
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
@@ -37,12 +47,8 @@ export const auth = betterAuth({
 		enabled: true,
 		requireEmailVerification: true,
 		sendResetPassword: async (data) => {
-			console.log(data.user.id);
-			console.log(`Reset password link: ${data.url}`);
-			if (data.user.email.split("@")[1] === "example.com") {
-				console.log("Email not sent! @example.com");
-				return;
-			}
+			if (isDev()) console.log(`Reset password link: ${data.url}`);
+			if (logIfExample(data.user.email)) return;
 
 			void resend.emails.send({
 				from: process.env.EMAIL_FROM as string,
@@ -52,11 +58,8 @@ export const auth = betterAuth({
 			});
 		},
 		onPasswordReset: async (data) => {
-			console.log(`${data.user.name}: Password changed.`);
-			if (data.user.email.split("@")[1] === "example.com") {
-				console.log("Email not sent! @example.com");
-				return;
-			}
+			if (isDev()) console.log(`${data.user.name}: Password changed.`);
+			if (logIfExample(data.user.email)) return;
 
 			void resend.emails.send({
 				from: process.env.EMAIL_FROM as string,
@@ -80,11 +83,8 @@ export const auth = betterAuth({
 	},
 	emailVerification: {
 		sendVerificationEmail: async (data) => {
-			console.log(`Verification email: ${data.url}`);
-			if (data.user.email.split("@")[1] === "example.com") {
-				console.log("Email not sent! @example.com");
-				return;
-			}
+			if (isDev()) console.log(`Verification email: ${data.url}`);
+			if (logIfExample(data.user.email)) return;
 
 			void resend.emails.send({
 				from: process.env.EMAIL_FROM as string,
@@ -94,13 +94,8 @@ export const auth = betterAuth({
 			});
 		},
 		afterEmailVerification: async (user, _request) => {
-			console.log(user);
-			if (user.email.split("@")[1] === "example.com") {
-				console.log(
-					"Email not sent after verification completed! @example.com",
-				);
-				return;
-			}
+			if (isDev()) console.log(`${user.name}: Email verified.`);
+			if (logIfExample(user.email)) return;
 
 			void resend.emails.send({
 				from: process.env.EMAIL_FROM as string,
