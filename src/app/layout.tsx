@@ -1,0 +1,66 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import "./globals.css";
+
+const poppins = Poppins({
+	subsets: ["latin"],
+	weight: ["300", "400", "500", "600", "700", "800"],
+	style: ["normal", "italic"],
+	variable: "--font-sans",
+});
+
+const geistSans = Geist({
+	variable: "--font-geist-sans",
+	subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+	variable: "--font-geist-mono",
+	subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+	title: "Chess Now!",
+	description: "Open-source chess API",
+};
+
+export default function RootLayout({
+	children,
+}: Readonly<{
+	children: React.ReactNode;
+}>) {
+	return (
+		<html
+			lang="en"
+			suppressHydrationWarning
+			className={cn(
+				"h-full",
+				"antialiased",
+				geistSans.variable,
+				geistMono.variable,
+				"font-sans",
+				poppins.variable,
+			)}
+		>
+			<head>
+				<link rel="icon" type="image/svg+xml" href="/icon.svg" />
+			</head>
+			<body className="min-h-full flex flex-col">
+				{" "}
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<TooltipProvider>{children}</TooltipProvider>
+					<Toaster />
+				</ThemeProvider>
+			</body>
+		</html>
+	);
+}

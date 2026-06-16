@@ -1,0 +1,53 @@
+{
+	"disable_ai": true,
+	"lsp": {
+		"tailwindcss-language-server": {
+			"settings": {
+				"lint": {
+					"suggestCanonicalClasses": "ignore"
+				}
+			}
+		}
+	},
+	"languages": {
+		"JavaScript": {
+			"language_servers": ["biome", "!eslint", "..."],
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
+		},
+		"TypeScript": {
+			"language_servers": ["biome", "!eslint", "..."],
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
+		},
+		"TSX": {
+			"language_servers": ["biome", "!eslint", "..."],
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
+		},
+		"JSON": {
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
+		},
+		"JSONC": {
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
+		}
+	},
+	"format_on_save": "on"
+}
