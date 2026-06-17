@@ -20,6 +20,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
 	baseURL: "http://localhost:8080",
+	trustedOrigins: ["http://localhost:3000"],
 	basePath: process.env.BETTER_AUTH_PATH,
 	plugins: [
 		bearer(),
