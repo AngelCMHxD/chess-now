@@ -41,13 +41,6 @@ export function NavUser({
 		redirect("/account/login");
 	};
 
-	const _handleDeletion = async () => {
-		authClient.deleteUser();
-		toast.success("Account deleted successfully");
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-		redirect("/account/login");
-	};
-
 	if (loading || !user)
 		return (
 			<SidebarMenu>
