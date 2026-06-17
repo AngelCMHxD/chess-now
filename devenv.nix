@@ -8,7 +8,7 @@
   dotenv.disableHint = true; # next.js supports .env files OOTB
   languages.javascript = {
     enable = true;
-    pnpm = {
+    bun = {
       enable = true;
       install.enable = true;
     };
