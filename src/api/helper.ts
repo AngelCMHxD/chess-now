@@ -129,3 +129,12 @@ export async function acceptChallenge(challengeId: number) {
 		challenge,
 	};
 }
+
+export async function getMatchInfo(matchId: number) {
+	return (
+		await db
+			.select()
+			.from(schemas.matches)
+			.where(eq(schemas.matches.id, matchId))
+	)[0];
+}
