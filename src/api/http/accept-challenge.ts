@@ -47,6 +47,7 @@ export async function run(bearer: string, challengeId: string) {
 
 	app.server.ws.publish(`challenge:${challenge.from}`, {
 		type: "challenge:accept",
+		userId: challenge.from,
 		content: match,
 	});
 

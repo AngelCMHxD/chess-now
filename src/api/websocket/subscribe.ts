@@ -52,11 +52,11 @@ export async function run(
 
 	return {
 		type: "success",
+		userId: session.user.id,
 		content: {
 			type: "subscribe",
 			events: message.content.events,
 			from: "subscribe",
-			userId: session.user.id,
 		},
 	};
 }
