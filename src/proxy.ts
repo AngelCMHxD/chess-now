@@ -17,6 +17,16 @@ export async function proxy(request: NextRequest) {
 		return NextResponse.redirect(new URL("/account/login", request.url));
 	}
 
+	if (!session && request.nextUrl.pathname.startsWith("/device")) {
+		const code = request.nextUrl.searchParams.get("user_code") || undefined;
+		return NextResponse.redirect(
+			new URL(
+				`/account/login?redirectTo=%2Fdevice${code ? `%3Fuser_code%3D${code}` : ""}`,
+				request.url,
+			),
+		);
+	}
+
 	if (
 		session &&
 		["/account/login", "/account/signup"].includes(request.nextUrl.pathname)
@@ -30,5 +40,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: "/account/:path*",
+	matcher: ["/account/:path*", "/device"],
 };
