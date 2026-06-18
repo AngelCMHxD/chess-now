@@ -36,7 +36,11 @@ export async function run(
 		};
 	}
 
-	const challenge = createChallenge(session.user.id, oponentId, options);
+	const challenge = await createChallenge(
+		session.user.id,
+		oponentId,
+		options,
+	);
 
 	app.server.ws.publish(`challenge:${oponentId}`, {
 		type: "challenge:request",
