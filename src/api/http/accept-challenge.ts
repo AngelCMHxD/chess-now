@@ -1,7 +1,7 @@
 import z from "zod";
 import { auth } from "@/lib/auth";
 import { app } from "..";
-import { acceptChallenge, challengeConfig } from "../helper";
+import { acceptChallenge, challengeConfig, getChallengeInfo } from "../helper";
 
 export const headersType = z.object({
 	authorization: z
@@ -43,7 +43,18 @@ export async function run(bearer: string, challengeId: string) {
 			},
 		};
 
-	const { match, challenge } = await acceptChallenge(cId);
+	const challengeInfo = await getChallengeInfo(cId);
+
+	if (!challengeInfo)
+		return {
+			type: "error",
+			content: {
+				code: 404,
+				error: "Challenge Not Found",
+			},
+		};
+
+	const { match, challenge } = await acceptChallenge(challengeInfo);
 
 	app.server.ws.publish(`challenge:${challenge.from}`, {
 		type: "challenge:accept",

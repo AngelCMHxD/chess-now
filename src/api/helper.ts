@@ -81,9 +81,9 @@ export async function getChallengeInfo(challengeId: number) {
 	)[0];
 }
 
-export async function acceptChallenge(challengeId: number) {
-	let challenge = await getChallengeInfo(challengeId);
-
+export async function acceptChallenge(
+	challenge: typeof schemas.challenges.$inferSelect,
+) {
 	let whiteId: string;
 	let blackId: string;
 
@@ -120,7 +120,7 @@ export async function acceptChallenge(challengeId: number) {
 				matchId: match.id,
 				status: "ongoing",
 			})
-			.where(eq(schemas.challenges.id, challengeId))
+			.where(eq(schemas.challenges.id, challenge.id))
 			.returning()
 	)[0];
 
@@ -136,5 +136,11 @@ export async function getMatchInfo(matchId: number) {
 			.select()
 			.from(schemas.matches)
 			.where(eq(schemas.matches.id, matchId))
+	)[0];
+}
+
+export async function getUserInfo(userId: string) {
+	return (
+		await db.select().from(schemas.user).where(eq(schemas.user.id, userId))
 	)[0];
 }

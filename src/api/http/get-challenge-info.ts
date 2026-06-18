@@ -40,11 +40,20 @@ export async function run(bearer: string, challengeId: string) {
 			},
 		};
 
-	const challenges = await getChallengeInfo(cId);
+	const challenge = await getChallengeInfo(cId);
+
+	if (!challenge)
+		return {
+			type: "error",
+			content: {
+				code: 404,
+				error: "Challenge Not Found",
+			},
+		};
 
 	return {
 		type: "success",
-		content: challenges,
+		content: challenge,
 	};
 }
 

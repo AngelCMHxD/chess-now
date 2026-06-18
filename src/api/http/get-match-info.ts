@@ -42,6 +42,15 @@ export async function run(bearer: string, matchId: string) {
 
 	const match = await getMatchInfo(mId);
 
+	if (!match)
+		return {
+			type: "error",
+			content: {
+				code: 404,
+				error: "Match Not Found",
+			},
+		};
+
 	return {
 		type: "success",
 		content: match,

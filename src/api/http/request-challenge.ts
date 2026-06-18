@@ -1,7 +1,7 @@
 import z from "zod";
 import { auth } from "@/lib/auth";
 import { app } from "..";
-import { challengeConfig, createChallenge } from "../helper";
+import { challengeConfig, createChallenge, getUserInfo } from "../helper";
 
 export const headersType = z.object({
 	authorization: z
@@ -35,6 +35,17 @@ export async function run(
 			},
 		};
 	}
+
+	const oponent = await getUserInfo(oponentId);
+
+	if (!oponent)
+		return {
+			type: "error",
+			content: {
+				code: 404,
+				error: "User Not Found",
+			},
+		};
 
 	const challenge = await createChallenge(
 		session.user.id,
