@@ -44,9 +44,6 @@ export const challenges = pgTable("challenge", {
 	challengerColor: startingColor("challenger_color")
 		.default("random")
 		.notNull(),
-	fen: varchar("fen")
-		.default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-		.notNull(),
 	timeLimit: integer("time_limit").default(1440).notNull(),
 	status: challengeStatus("status").default("pending").notNull(),
 	matchId: integer("matchId").references(() => matches.id),

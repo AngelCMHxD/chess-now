@@ -14,11 +14,6 @@ export const challengeConfig = z.object(
 				},
 			),
 		),
-		fen: z.optional(
-			z.string({
-				error: "'fen' needs to be a string containing valid FEN notation",
-			}),
-		),
 		rules: z.optional(
 			z.array(
 				z.enum(challengeRules, {
@@ -60,7 +55,6 @@ export async function createChallenge(
 				to: challengedId,
 				rules: config?.rules,
 				challengerColor: config?.color,
-				fen: config?.fen,
 			})
 			.returning()
 	)[0];
@@ -115,7 +109,6 @@ export async function acceptChallenge(challengeId: number) {
 			.values({
 				whiteId: whiteId,
 				blackId: blackId,
-				fen: challenge.fen,
 			})
 			.returning()
 	)[0];
