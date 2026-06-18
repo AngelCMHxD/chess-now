@@ -2,7 +2,7 @@ import type { ServerWebSocket } from "elysia/ws/bun";
 import z from "zod";
 import { auth } from "@/lib/auth";
 
-export const validEvents = ["challenge"] as const;
+export const validEvents = ["challenge", "board"] as const;
 
 export const bodyType = z.object({
 	type: z.literal("subscribe"),

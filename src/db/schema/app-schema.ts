@@ -62,7 +62,7 @@ export const matches = pgTable("match", {
 	fen: varchar("fen")
 		.default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 		.notNull(),
-	pgn: varchar("pgn"),
+	pgn: varchar("pgn").default("").notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	finishedAt: timestamp("finished_at"),
 });

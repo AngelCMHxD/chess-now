@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import httpGetChallengeInfo from "./http/get-challenge-info";
 import httpGetChallenges from "./http/get-challenges";
 import httpGetMatchInfo from "./http/get-match-info";
+import httpMove from "./http/move";
 import httpRequestChallenge from "./http/request-challenge";
 
 import wsSubscribe from "./websocket/subscribe";
@@ -92,6 +93,15 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			httpGetMatchInfo.run(headers.authorization, params.match_id),
 		{
 			headers: httpGetMatchInfo.headersType,
+		},
+	)
+	.post(
+		"/match/:match_id/move",
+		({ params, body, headers }) =>
+			httpMove.run(headers.authorization, params.match_id, body),
+		{
+			body: httpMove.bodyType,
+			headers: httpMove.headersType,
 		},
 	)
 	.listen(8080);

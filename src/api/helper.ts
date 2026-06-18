@@ -1,3 +1,4 @@
+import type { Chess } from "chess.js";
 import { eq, or } from "drizzle-orm";
 import z from "zod";
 import { db, schemas } from "@/lib/database";
@@ -143,4 +144,14 @@ export async function getUserInfo(userId: string) {
 	return (
 		await db.select().from(schemas.user).where(eq(schemas.user.id, userId))
 	)[0];
+}
+
+export async function updateBoard(matchId: number, chess: Chess) {
+	await db
+		.update(schemas.matches)
+		.set({
+			fen: chess.fen(),
+			pgn: chess.pgn(),
+		})
+		.where(eq(schemas.matches.id, matchId));
 }
