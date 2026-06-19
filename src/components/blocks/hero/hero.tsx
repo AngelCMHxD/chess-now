@@ -24,9 +24,7 @@ const HeroSection = () => {
 				</Link>
 
 				<h1 className="text-[30px] leading-[1.29167] font-bold text-balance sm:text-[35px] lg:text-[40px]">
-					What if we could control chess through an API?
-					<br />
-					Now let's make it{" "}
+					Let's make chess{" "}
 					<span className="relative">
 						open-source
 						<svg
@@ -67,10 +65,10 @@ const HeroSection = () => {
 
 				<p className="text-muted-foreground">
 					This proyect is an open-source API that allows you to
-					control chess games programmatically.
+					control chess games through it.
 					<br />
-					Integrations could be anything! And you would have crossplay
-					between any client.
+					You can make any integration you can think of, without
+					worrying about game state storage or auth.
 				</p>
 
 				<Button size="lg" asChild>
