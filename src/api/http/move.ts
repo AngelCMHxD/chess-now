@@ -41,6 +41,15 @@ export async function run(
 		};
 	}
 
+	if (session.session.scopes && !session.session.scopes.includes("matches"))
+		return {
+			type: "error",
+			content: {
+				code: 403,
+				error: "Forbidden",
+			},
+		};
+
 	const mId = parseInt(matchId, 10);
 
 	if (Number.isNaN(mId))

@@ -32,6 +32,18 @@ export async function run(bearer: string, challengeId: string) {
 		};
 	}
 
+	if (
+		session.session.scopes &&
+		!session.session.scopes.includes("challenges")
+	)
+		return {
+			type: "error",
+			content: {
+				code: 403,
+				error: "Forbidden",
+			},
+		};
+
 	const cId = parseInt(challengeId, 10);
 
 	if (Number.isNaN(cId))
