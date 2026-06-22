@@ -111,11 +111,7 @@ export const auth = betterAuth({
 	},
 	advanced: {
 		database: {
-			generateId: (options) => {
-				if (options.model === "user") return crypto.randomUUID();
-
-				return false;
-			},
+			generateId: () => crypto.randomUUID(),
 		},
 	},
 });
