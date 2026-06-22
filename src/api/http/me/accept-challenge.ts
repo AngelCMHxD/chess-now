@@ -1,10 +1,6 @@
 import z from "zod";
 import { app } from "@/api";
-import {
-	acceptChallenge,
-	challengeConfig,
-	getChallengeInfo,
-} from "@/api/helper";
+import { acceptChallenge, getChallengeInfo } from "@/api/helper";
 import { auth } from "@/lib/auth";
 
 export const headersType = z.object({
@@ -16,8 +12,6 @@ export const headersType = z.object({
 			error: "'authorization' header must start with 'Bearer '",
 		}),
 });
-
-export const bodyType = z.optional(challengeConfig);
 
 export async function run(bearer: string, challengeId: string) {
 	const session = await auth.api.getSession({
@@ -70,6 +64,15 @@ export async function run(bearer: string, challengeId: string) {
 			},
 		};
 
+	if (challengeInfo.to !== session.user.id)
+		return {
+			type: "error",
+			content: {
+				code: 403,
+				error: "Forbidden",
+			},
+		};
+
 	const { match, challenge } = await acceptChallenge(challengeInfo);
 
 	app.server.publish(
@@ -89,4 +92,4 @@ export async function run(bearer: string, challengeId: string) {
 	};
 }
 
-export default { bodyType, headersType, run };
+export default { headersType, run };
