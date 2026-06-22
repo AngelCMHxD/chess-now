@@ -126,7 +126,7 @@ export async function run(
 	const turnAfter = chess.turn();
 
 	const content = {
-		boardId: mId,
+		matchId: mId,
 		players: {
 			whiteId: match.whiteId,
 			blackId: match.blackId,
@@ -150,9 +150,9 @@ export async function run(
 
 	players.forEach((playerId) => {
 		app.server.publish(
-			`board:${playerId}`,
+			`match:${playerId}`,
 			JSON.stringify({
-				type: "board:move",
+				type: "match:board:move",
 				content: {
 					...content,
 					websocketUserId: playerId,
