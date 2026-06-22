@@ -7,6 +7,7 @@ import httpDeviceApprove from "./http/device/device-approve";
 import httpDeviceDeny from "./http/device/device-deny";
 import httpDeviceInit from "./http/device/device-init";
 import httpDeviceToken from "./http/device/device-token";
+import httpGetAccountInfo from "./http/get-account-info";
 import httpGetChallengeInfo from "./http/get-challenge-info";
 import httpGetChallenges from "./http/get-challenges";
 import httpGetMatchInfo from "./http/get-match-info";
@@ -89,6 +90,13 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		({ headers }) => httpGetMatches.run(headers.authorization),
 		{
 			headers: httpGetMatches.headersType,
+		},
+	)
+	.get(
+		"/me",
+		({ headers }) => httpGetAccountInfo.run(headers.authorization),
+		{
+			headers: httpGetAccountInfo.headersType,
 		},
 	)
 	.get(
