@@ -36,6 +36,7 @@ export const session = pgTable(
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
+		scopes: text("scopes").array(),
 	},
 	(table) => [index("session_userId_idx").on(table.userId)],
 );

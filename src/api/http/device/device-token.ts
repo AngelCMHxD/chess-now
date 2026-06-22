@@ -1,0 +1,56 @@
+import z from "zod";
+import { auth } from "@/lib/auth";
+
+export const bodyType = z.object({
+	deviceCode: z.string(),
+});
+
+export async function run(body: z.infer<typeof bodyType>) {
+	const headers = new Headers();
+	headers.set("x-internal-call", process.env.INTERNAL_API_SECRET as string);
+
+	const deviceToken = await auth.api.deviceToken({
+		body: {
+			grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+			device_code: body.deviceCode,
+			client_id: "public",
+		},
+		headers,
+	});
+
+	if (!deviceToken)
+		return {
+			ype: "error",
+			content: {
+				code: 403,
+				error: "Forbidden",
+			},
+		};
+
+	if (deviceToken.scope) {
+		const scopes = deviceToken.scope.split(" ").filter(Boolean);
+
+		headers.set("Authorization", `Bearer ${deviceToken.access_token}`);
+		headers.set(
+			"x-internal-call",
+			process.env.INTERNAL_API_SECRET as string,
+		);
+
+		await auth.api.updateSession({
+			body: {
+				scopes,
+			},
+			headers,
+		});
+	}
+
+	return {
+		type: "success",
+		content: {
+			...deviceToken,
+			scope: deviceToken.scope.split(" "),
+		},
+	};
+}
+
+export default { bodyType, run };

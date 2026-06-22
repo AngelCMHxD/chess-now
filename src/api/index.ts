@@ -3,6 +3,10 @@ import { Elysia } from "elysia";
 import z from "zod";
 import { auth } from "@/lib/auth";
 
+import httpDeviceApprove from "./http/device/device-approve";
+import httpDeviceDeny from "./http/device/device-deny";
+import httpDeviceInit from "./http/device/device-init";
+import httpDeviceToken from "./http/device/device-token";
 import httpGetChallengeInfo from "./http/get-challenge-info";
 import httpGetChallenges from "./http/get-challenges";
 import httpGetMatchInfo from "./http/get-match-info";
@@ -10,6 +14,7 @@ import httpMove from "./http/move";
 import httpRequestChallenge from "./http/request-challenge";
 
 import wsSubscribe from "./websocket/subscribe";
+import watchDeviceAuth from "./websocket/watch-device-auth";
 
 export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.use(cors())
@@ -37,28 +42,19 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		return error;
 	})
 	.ws("/websocket", {
-		body: z.discriminatedUnion("type", [wsSubscribe.bodyType], {
-			error: "Invalid message type",
-		}),
+		body: z.discriminatedUnion(
+			"type",
+			[wsSubscribe.bodyType, watchDeviceAuth.bodyType],
+			{
+				error: "Invalid message type",
+			},
+		),
 		async message(ws, message) {
 			const response = await (
 				await import(`./websocket/${message.type}`)
 			).run(ws, message);
 			ws.send(JSON.stringify(response));
 		},
-	})
-	.get("/account", async ({ headers, status }) => {
-		const session = await auth.api.getSession({
-			headers: {
-				Authorization: headers.authorization as string,
-			},
-		});
-
-		if (!session) {
-			return status(401, { error: "Unauthorized" });
-		}
-
-		return session.user;
 	})
 	.post(
 		"/challenge/request/:uid",
@@ -104,6 +100,26 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: httpMove.headersType,
 		},
 	)
+	.post("/device/init", ({ body }) => httpDeviceInit.run(body), {
+		body: httpDeviceInit.bodyType,
+	})
+	.post(
+		"/device/approve",
+		({ request, body }) => httpDeviceApprove.run(request.headers, body),
+		{
+			body: httpDeviceApprove.bodyType,
+		},
+	)
+	.post(
+		"/device/deny",
+		({ request, body }) => httpDeviceDeny.run(request.headers, body),
+		{
+			body: httpDeviceDeny.bodyType,
+		},
+	)
+	.post("/device/token", ({ body }) => httpDeviceToken.run(body), {
+		body: httpDeviceToken.bodyType,
+	})
 	.listen(8080);
 
 console.log(

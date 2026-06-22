@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
-import { authClient } from "@/lib/auth-client";
 
 export default function InputOTPForm() {
 	const code = useSearchParams().get("code") || "";
@@ -22,12 +21,24 @@ export default function InputOTPForm() {
 
 	const handleApprove = async () => {
 		setSubmittingApprove(true);
-		const response = await authClient.device.approve({
-			userCode: code,
-		});
+		const response = (await fetch(
+			"http://localhost:8080/api/device/approve",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					userCode: code,
+				}),
+				credentials: "include",
+			},
+		).then((res) => res.json())) as {
+			success: boolean;
+		};
 
-		if (response.error) {
-			toast.error(response.error.error_description, {
+		if (!response.success) {
+			toast.error("Couldn't process request", {
 				position: "bottom-center",
 			});
 			setSubmittingApprove(false);
@@ -42,12 +53,21 @@ export default function InputOTPForm() {
 
 	const handleDeny = async () => {
 		setSubmittingDeny(true);
-		const response = await authClient.device.deny({
-			userCode: code,
-		});
+		const response = (await fetch("http://localhost:8080/api/device/deny", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				userCode: code,
+			}),
+			credentials: "include",
+		}).then((res) => res.json())) as {
+			success: boolean;
+		};
 
-		if (response.error) {
-			toast.error(response.error.error_description, {
+		if (!response.success) {
+			toast.error("Couldn't process request", {
 				position: "bottom-center",
 			});
 			setSubmittingDeny(false);

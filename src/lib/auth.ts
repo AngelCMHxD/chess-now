@@ -1,5 +1,6 @@
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { bearer, captcha, deviceAuthorization } from "better-auth/plugins";
 import { Resend } from "resend";
@@ -17,6 +18,14 @@ function logIfExample(email: string) {
 }
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+const privateEndpoints = [
+	"/device/code",
+	"/device/approve",
+	"/device/deny",
+	"/device/token",
+	"/update-session",
+];
 
 export const auth = betterAuth({
 	baseURL: "http://localhost:8080",
@@ -36,6 +45,33 @@ export const auth = betterAuth({
 		}),
 		nextCookies(),
 	],
+	session: {
+		additionalFields: {
+			scopes: {
+				type: "string[]",
+				required: false,
+			},
+		},
+	},
+	hooks: {
+		before: createAuthMiddleware(async (ctx) => {
+			if (privateEndpoints.includes(ctx.path)) {
+				const isInternalCall =
+					ctx.headers?.get("x-internal-call") ===
+					process.env.INTERNAL_API_SECRET;
+
+				if (!isInternalCall) {
+					throw new APIError("FORBIDDEN", {
+						code: "PRIVATE_ENDPOINT",
+						message:
+							"This is a private endpoint. There might be a public equivalent available, look at the docs ;P",
+					});
+				}
+			}
+
+			return { context: ctx };
+		}),
+	},
 	database: drizzleAdapter(db, {
 		provider: "pg",
 	}),
