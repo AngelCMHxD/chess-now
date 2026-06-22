@@ -1,8 +1,8 @@
 import { Chess, type Move } from "chess.js";
 import z from "zod";
 import { auth } from "@/lib/auth";
-import { app } from "..";
-import { getMatchInfo, updateBoard } from "../helper";
+import { app } from "../..";
+import { getMatchInfo, updateBoard } from "../../helper";
 
 export const headersType = z.object({
 	authorization: z

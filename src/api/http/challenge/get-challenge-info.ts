@@ -1,7 +1,6 @@
 import z from "zod";
+import { getChallengeInfo } from "@/api/helper";
 import { auth } from "@/lib/auth";
-import { app } from "..";
-import { acceptChallenge, challengeConfig, getChallengeInfo } from "../helper";
 
 export const headersType = z.object({
 	authorization: z
@@ -12,8 +11,6 @@ export const headersType = z.object({
 			error: "'authorization' header must start with 'Bearer '",
 		}),
 });
-
-export const bodyType = z.optional(challengeConfig);
 
 export async function run(bearer: string, challengeId: string) {
 	const session = await auth.api.getSession({
@@ -32,18 +29,6 @@ export async function run(bearer: string, challengeId: string) {
 		};
 	}
 
-	if (
-		session.session.scopes &&
-		!session.session.scopes.includes("challenges")
-	)
-		return {
-			type: "error",
-			content: {
-				code: 403,
-				error: "Forbidden",
-			},
-		};
-
 	const cId = parseInt(challengeId, 10);
 
 	if (Number.isNaN(cId))
@@ -55,9 +40,9 @@ export async function run(bearer: string, challengeId: string) {
 			},
 		};
 
-	const challengeInfo = await getChallengeInfo(cId);
+	const challenge = await getChallengeInfo(cId);
 
-	if (!challengeInfo)
+	if (!challenge)
 		return {
 			type: "error",
 			content: {
@@ -66,23 +51,10 @@ export async function run(bearer: string, challengeId: string) {
 			},
 		};
 
-	const { match, challenge } = await acceptChallenge(challengeInfo);
-
-	app.server.publish(
-		`challenge:${challenge.from}`,
-		JSON.stringify({
-			type: "challenge:accept",
-			content: {
-				websocketUserId: challenge.from,
-				...match,
-			},
-		}),
-	);
-
 	return {
 		type: "success",
-		content: match,
+		content: challenge,
 	};
 }
 
-export default { bodyType, headersType, run };
+export default { headersType, run };

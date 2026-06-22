@@ -3,17 +3,17 @@ import { Elysia } from "elysia";
 import z from "zod";
 import { auth } from "@/lib/auth";
 
+import httpGetChallengeInfo from "./http/challenge/get-challenge-info";
+import httpRequestChallenge from "./http/challenge/request-challenge";
 import httpDeviceApprove from "./http/device/device-approve";
 import httpDeviceDeny from "./http/device/device-deny";
 import httpDeviceInit from "./http/device/device-init";
 import httpDeviceToken from "./http/device/device-token";
-import httpGetAccountInfo from "./http/get-account-info";
-import httpGetChallengeInfo from "./http/get-challenge-info";
-import httpGetChallenges from "./http/get-challenges";
-import httpGetMatchInfo from "./http/get-match-info";
-import httpGetMatches from "./http/get-matches";
-import httpMove from "./http/move";
-import httpRequestChallenge from "./http/request-challenge";
+import httpGetMatchInfo from "./http/match/get-match-info";
+import httpMove from "./http/match/move";
+import httpGetAccountInfo from "./http/me/get-account-info";
+import httpGetChallenges from "./http/me/get-challenges";
+import httpGetMatches from "./http/me/get-matches";
 
 import wsSubscribe from "./websocket/subscribe";
 import watchDeviceAuth from "./websocket/watch-device-auth";
@@ -82,7 +82,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		"/me/challenges",
 		({ headers }) => httpGetChallenges.run(headers.authorization),
 		{
-			headers: httpRequestChallenge.headersType,
+			headers: httpGetChallenges.headersType,
 		},
 	)
 	.get(

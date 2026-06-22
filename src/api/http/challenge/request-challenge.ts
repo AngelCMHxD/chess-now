@@ -1,7 +1,7 @@
 import z from "zod";
+import { app } from "@/api";
+import { challengeConfig, createChallenge, getUserInfo } from "@/api/helper";
 import { auth } from "@/lib/auth";
-import { app } from "..";
-import { challengeConfig, createChallenge, getUserInfo } from "../helper";
 
 export const headersType = z.object({
 	authorization: z
