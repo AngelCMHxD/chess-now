@@ -3,7 +3,7 @@ import {
 	integer,
 	pgEnum,
 	pgTable,
-	serial,
+	text,
 	timestamp,
 	varchar,
 } from "drizzle-orm/pg-core";
@@ -33,7 +33,7 @@ export const challengeStatus = pgEnum("challenge_status", [
 ]);
 
 export const challenges = pgTable("challenge", {
-	id: serial("id").primaryKey(),
+	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 	from: varchar("from")
 		.references(() => user.id)
 		.notNull(),
@@ -51,11 +51,11 @@ export const challenges = pgTable("challenge", {
 });
 
 export const matches = pgTable("match", {
-	id: serial("id").primaryKey(),
-	whiteId: varchar("white_id")
+	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+	whiteId: text("white_id")
 		.references(() => user.id)
 		.notNull(),
-	blackId: varchar("black_id")
+	blackId: text("black_id")
 		.references(() => user.id)
 		.notNull(),
 	status: matchStatus("status").default("active").notNull(),
@@ -71,12 +71,21 @@ export const matchRelations = relations(matches, ({ one }) => ({
 	whitePlayer: one(user, {
 		fields: [matches.whiteId],
 		references: [user.id],
-		relationName: "whitePlayer",
+		relationName: "white_player",
 	}),
 	blackPlayer: one(user, {
 		fields: [matches.blackId],
 		references: [user.id],
-		relationName: "blackPlayer",
+		relationName: "black_player",
+	}),
+}));
+
+export const userMatchRelations = relations(user, ({ many }) => ({
+	whiteMatches: many(matches, {
+		relationName: "white_player",
+	}),
+	blackMatches: many(matches, {
+		relationName: "black_player",
 	}),
 }));
 
@@ -84,6 +93,5 @@ export const challengeRelations = relations(challenges, ({ one }) => ({
 	match: one(matches, {
 		fields: [challenges.matchId],
 		references: [matches.id],
-		relationName: "whitePlayer",
 	}),
 }));
