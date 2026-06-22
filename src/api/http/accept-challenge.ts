@@ -56,13 +56,16 @@ export async function run(bearer: string, challengeId: string) {
 
 	const { match, challenge } = await acceptChallenge(challengeInfo);
 
-	app.server.ws.publish(`challenge:${challenge.from}`, {
-		type: "challenge:accept",
-		content: {
-			websocketUserId: challenge.from,
-			...match,
-		},
-	});
+	app.server.publish(
+		`challenge:${challenge.from}`,
+		JSON.stringify({
+			type: "challenge:accept",
+			content: {
+				websocketUserId: challenge.from,
+				...match,
+			},
+		}),
+	);
 
 	return {
 		type: "success",

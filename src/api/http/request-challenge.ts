@@ -53,13 +53,16 @@ export async function run(
 		options,
 	);
 
-	app.server.ws.publish(`challenge:${oponentId}`, {
-		type: "challenge:request",
-		content: {
-			...challenge,
-			websocketUserId: oponentId,
-		},
-	});
+	app.server.publish(
+		`challenge:${oponentId}`,
+		JSON.stringify({
+			type: "challenge:request",
+			content: {
+				...challenge,
+				websocketUserId: oponentId,
+			},
+		}),
+	);
 
 	return {
 		type: "success",
