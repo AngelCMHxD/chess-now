@@ -109,4 +109,13 @@ export const auth = betterAuth({
 		},
 		autoSignInAfterVerification: true,
 	},
+	advanced: {
+		database: {
+			generateId: (options) => {
+				if (options.model === "user") return crypto.randomUUID();
+
+				return false;
+			},
+		},
+	},
 });
