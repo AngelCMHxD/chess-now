@@ -12,6 +12,7 @@ import httpDeviceToken from "./http/device/device-token";
 import httpGetMatchInfo from "./http/match/get-match-info";
 import httpMove from "./http/match/move";
 import httpAcceptChallenge from "./http/me/accept-challenge";
+import httpDenyChallenge from "./http/me/deny-challenge";
 import httpGetAccountInfo from "./http/me/get-account-info";
 import httpGetChallenges from "./http/me/get-challenges";
 import httpGetMatches from "./http/me/get-matches";
@@ -92,6 +93,14 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			httpAcceptChallenge.run(headers.authorization, params.challenge_id),
 		{
 			headers: httpAcceptChallenge.headersType,
+		},
+	)
+	.post(
+		"/me/challenges/:challenge_id/deny",
+		({ headers, params }) =>
+			httpDenyChallenge.run(headers.authorization, params.challenge_id),
+		{
+			headers: httpDenyChallenge.headersType,
 		},
 	)
 	.get(
