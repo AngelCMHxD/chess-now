@@ -44,7 +44,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			const response = await (
 				await import(`./websocket/${message.type}`)
 			).run(ws, message);
-			ws.send(response);
+			ws.send(JSON.stringify(response));
 		},
 	})
 	.get("/account", async ({ headers, status }) => {
