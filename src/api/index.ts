@@ -10,6 +10,7 @@ import httpDeviceToken from "./http/device/device-token";
 import httpGetChallengeInfo from "./http/get-challenge-info";
 import httpGetChallenges from "./http/get-challenges";
 import httpGetMatchInfo from "./http/get-match-info";
+import httpGetMatches from "./http/get-matches";
 import httpMove from "./http/move";
 import httpRequestChallenge from "./http/request-challenge";
 
@@ -81,6 +82,13 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		({ headers }) => httpGetChallenges.run(headers.authorization),
 		{
 			headers: httpRequestChallenge.headersType,
+		},
+	)
+	.get(
+		"/me/matches",
+		({ headers }) => httpGetMatches.run(headers.authorization),
+		{
+			headers: httpGetMatches.headersType,
 		},
 	)
 	.get(
