@@ -52,11 +52,10 @@ export async function run(
 
 	return {
 		type: "success",
-		userId: session.user.id,
 		content: {
 			type: "subscribe",
+			websocketUserId: session.user.id,
 			events: message.content.events,
-			from: "subscribe",
 		},
 	};
 }

@@ -142,8 +142,10 @@ export async function run(
 	players.forEach((playerId) => {
 		app.server.ws.publish(`board:${playerId}`, {
 			type: "board:move",
-			userId: playerId,
-			content,
+			content: {
+				...content,
+				websocketUserId: playerId,
+			},
 		});
 	});
 

@@ -55,8 +55,10 @@ export async function run(
 
 	app.server.ws.publish(`challenge:${oponentId}`, {
 		type: "challenge:request",
-		userId: oponentId,
-		content: challenge,
+		content: {
+			...challenge,
+			websocketUserId: oponentId,
+		},
 	});
 
 	return {
