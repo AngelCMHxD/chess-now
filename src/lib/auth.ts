@@ -5,7 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { bearer, captcha, deviceAuthorization } from "better-auth/plugins";
 import { Resend } from "resend";
 import { Emails } from "@/emails/default";
-import { db } from "./database";
+import { db, secondaryStorage } from "./database";
 
 const isDev = () => ["development", "test"].includes(process.env.NODE_ENV);
 
@@ -75,6 +75,7 @@ export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg",
 	}),
+	secondaryStorage,
 	user: {
 		deleteUser: {
 			enabled: false,
