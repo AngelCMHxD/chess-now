@@ -161,11 +161,16 @@ export async function updateBoard(matchId: number, chess: Chess) {
 		return;
 	}
 
-	await db
-		.update(schemas.matches)
-		.set({
-			fen: chess.fen(),
-			pgn: chess.pgn(),
-		})
-		.where(eq(schemas.matches.id, matchId));
+	const match = (
+		await db
+			.update(schemas.matches)
+			.set({
+				fen: chess.fen(),
+				pgn: chess.pgn(),
+			})
+			.where(eq(schemas.matches.id, matchId))
+			.returning()
+	)[0];
+
+	if (match) await secondaryStorage.set(`match_${matchId}`, match);
 }
