@@ -1,7 +1,7 @@
 import type { Chess } from "chess.js";
 import { eq, or } from "drizzle-orm";
 import z from "zod";
-import { db, schemas } from "@/lib/database";
+import { db, schemas, secondaryStorage } from "@/lib/database";
 
 const challengeRules = ["noRematch", "noDraw"] as const;
 
@@ -114,6 +114,8 @@ export async function acceptChallenge(
 			.returning()
 	)[0];
 
+	secondaryStorage.set(match.id, match);
+
 	challenge = (
 		await db
 			.update(schemas.challenges)
@@ -131,13 +133,16 @@ export async function acceptChallenge(
 	};
 }
 
-export async function getMatchInfo(matchId: number) {
-	return (
-		await db
-			.select()
-			.from(schemas.matches)
-			.where(eq(schemas.matches.id, matchId))
-	)[0];
+export async function getMatchInfo(
+	matchId: number,
+): Promise<typeof schemas.matches.$inferSelect | undefined> {
+	const activeMatch = await secondaryStorage.get(`match_${matchId}`);
+
+	if (activeMatch) return activeMatch;
+
+	return await db.query.matches.findFirst({
+		where: (matches, { eq }) => eq(matches.id, matchId),
+	});
 }
 
 export async function getUserInfo(userId: string) {
@@ -147,6 +152,15 @@ export async function getUserInfo(userId: string) {
 }
 
 export async function updateBoard(matchId: number, chess: Chess) {
+	const activeMatch = await secondaryStorage.get(`match_${matchId}`);
+
+	if (activeMatch) {
+		activeMatch.fen = chess.fen();
+		activeMatch.pgn = chess.pgn();
+		secondaryStorage.set(`match_${matchId}`, activeMatch);
+		return;
+	}
+
 	await db
 		.update(schemas.matches)
 		.set({

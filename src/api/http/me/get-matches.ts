@@ -1,6 +1,6 @@
 import z from "zod";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/database";
+import { db, secondaryStorage } from "@/lib/database";
 
 export const headersType = z.object({
 	authorization: z
@@ -36,6 +36,16 @@ export async function run(bearer: string) {
 				eq(matches.blackId, session.user.id),
 			),
 	});
+
+	for (const [i, match] of matches.entries()) {
+		if (match.status !== "active") continue;
+
+		const activeMatch = await secondaryStorage.get(`match_${match.id}`);
+		if (!activeMatch) continue;
+
+		matches[i].fen = activeMatch.fen;
+		matches[i].pgn = activeMatch.pgn;
+	}
 
 	return {
 		type: "success",
