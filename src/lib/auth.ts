@@ -52,6 +52,10 @@ export const auth = betterAuth({
 				required: false,
 			},
 		},
+		storeSessionInDatabase: true,
+		cookieCache: {
+			enabled: true,
+		},
 	},
 	hooks: {
 		before: createAuthMiddleware(async (ctx) => {
