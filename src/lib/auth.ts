@@ -7,6 +7,8 @@ import { Resend } from "resend";
 import { Emails } from "@/emails/default";
 import { db, secondaryStorage } from "./database";
 
+const disableSignUp = process.env.DISABLE_SIGNUPS === "true";
+
 const isDev = () => ["development", "test"].includes(process.env.NODE_ENV);
 
 function logIfExample(email: string) {
@@ -88,6 +90,7 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
+		disableSignUp,
 		sendResetPassword: async (data) => {
 			if (isDev()) console.log(`Reset password link: ${data.url}`);
 			if (logIfExample(data.user.email)) return;
@@ -113,10 +116,12 @@ export const auth = betterAuth({
 	},
 	socialProviders: {
 		discord: {
+			disableSignUp,
 			clientId: process.env.DISCORD_CLIENT_ID as string,
 			clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
 		},
 		google: {
+			disableSignUp,
 			clientId: process.env.GOOGLE_CLIENT_ID as string,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
 			accessType: "offline",
