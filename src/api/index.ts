@@ -1,4 +1,5 @@
 import { cors } from "@elysia/cors";
+import { fromTypes, openapi } from "@elysia/openapi";
 import { Elysia } from "elysia";
 import z from "zod";
 import { auth } from "@/lib/auth";
@@ -22,6 +23,21 @@ import watchDeviceAuth from "./websocket/watch-device-auth";
 
 export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.use(cors())
+	.use(
+		openapi({
+			provider: null,
+			specPath: "/openapi",
+			references: fromTypes("src/api/index.ts"),
+			documentation: {
+				servers: [
+					{
+						url: "http://localhost:8080",
+						description: "Development Server",
+					},
+				],
+			},
+		}),
+	)
 	.mount(auth.handler)
 	.onError(({ error }) => {
 		if ("code" in error && error.code === "VALIDATION")
