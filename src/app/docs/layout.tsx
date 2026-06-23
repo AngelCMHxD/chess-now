@@ -2,6 +2,7 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import type { ReactNode } from "react";
 import "../globals.css";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
+import Image from "next/image";
 import { source } from "@/lib/source";
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -18,7 +19,10 @@ export default function Layout({ children }: { children: ReactNode }) {
 				nav={{
 					title: (
 						<div className="flex h-12 p-2 items-center gap-2 font-semibold">
-							<img
+							<Image
+								alt="Chess Now! Icon"
+								width="32"
+								height="32"
 								src="/icon.svg"
 								className="h-full w-auto aspect-square"
 							/>
