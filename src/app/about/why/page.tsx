@@ -17,6 +17,10 @@ const navigationData: NavigationSection[] = [
 		title: "Why?",
 		href: "/about/why",
 	},
+	{
+		title: "Docs",
+		href: "/docs",
+	},
 ];
 
 export default function Integrations() {
