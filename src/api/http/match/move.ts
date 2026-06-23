@@ -1,8 +1,9 @@
 import { Chess, type Move } from "chess.js";
 import z from "zod";
+import { app } from "@/api";
+import { getMatchInfo, updateBoard } from "@/api/helper";
 import { auth } from "@/lib/auth";
-import { app } from "../..";
-import { getMatchInfo, updateBoard } from "../../helper";
+import type { schemas } from "@/lib/database";
 
 export const headersType = z.object({
 	authorization: z
@@ -74,7 +75,7 @@ export async function run(
 
 	const players = [match.whiteId, match.blackId];
 
-	if (!players.includes(session.user.id))
+	if (!players.includes(session.user.id) || match.status !== "active")
 		return {
 			type: "error",
 			content: {
@@ -160,6 +161,34 @@ export async function run(
 			}),
 		);
 	});
+
+	if (chess.isGameOver()) {
+		let reason: (typeof schemas.matchEndReason.enumValues)[number];
+		let status: (typeof schemas.matchStatus.enumValues)[number] = "draw";
+
+		if (chess.isCheckmate()) {
+			reason = "checkmate";
+			status = turnBefore === "w" ? "white_won" : "black_won";
+		} else if (chess.isStalemate()) reason = "stalemate";
+		else if (chess.isInsufficientMaterial())
+			reason = "insufficient-material";
+		else if (chess.isDrawByFiftyMoves()) reason = "50-moves";
+
+		players.forEach((playerId) => {
+			app.server.publish(
+				`match:${playerId}`,
+				JSON.stringify({
+					type: "match:board:gameover",
+					content: {
+						match: content,
+						status,
+						reason,
+						websocketUserId: playerId,
+					},
+				}),
+			);
+		});
+	}
 
 	return {
 		type: "success",

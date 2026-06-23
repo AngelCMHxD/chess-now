@@ -24,6 +24,14 @@ export const matchStatus = pgEnum("match_status", [
 	"black_won",
 ]);
 
+export const matchEndReason = pgEnum("match_end_reason", [
+	"draw",
+	"checkmate",
+	"stalemate",
+	"insufficient-material",
+	"50-moves",
+]);
+
 export const challengeStatus = pgEnum("challenge_status", [
 	"pending",
 	"denied",
@@ -59,6 +67,7 @@ export const matches = pgTable("match", {
 		.references(() => user.id)
 		.notNull(),
 	status: matchStatus("status").default("active").notNull(),
+	endReason: matchEndReason("end_reason"),
 	fen: varchar("fen")
 		.default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 		.notNull(),

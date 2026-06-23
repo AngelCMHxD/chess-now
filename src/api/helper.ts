@@ -174,3 +174,22 @@ export async function updateBoard(matchId: number, chess: Chess) {
 
 	if (match) await secondaryStorage.set(`match_${matchId}`, match);
 }
+
+export async function endMatch(
+	matchId: number,
+	chess: Chess,
+	endReason: (typeof schemas.matchEndReason.enumValues)[number],
+	status: (typeof schemas.matchStatus.enumValues)[number],
+) {
+	await secondaryStorage.delete(`match_${matchId}`);
+
+	await db
+		.update(schemas.matches)
+		.set({
+			fen: chess.fen(),
+			pgn: chess.pgn(),
+			endReason,
+			status,
+		})
+		.where(eq(schemas.matches.id, matchId));
+}
