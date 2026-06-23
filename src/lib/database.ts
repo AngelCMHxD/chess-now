@@ -14,14 +14,18 @@ const cache = new NodeCacheStore({
 });
 
 export const secondaryStorage = {
-	get: async (key: string) => {
+	get: async (key: string | number) => {
 		return await cache.get(key);
 	},
-	set: async (key: string, value: unknown, ttl?: number) => {
+	set: async (
+		key: string | number,
+		value: unknown,
+		ttl?: number | string,
+	) => {
 		if (ttl) await cache.set(key, value, ttl);
 		else await cache.set(key, value);
 	},
-	delete: async (key: string) => {
+	delete: async (key: string | number) => {
 		await cache.del(key);
 	},
 };
