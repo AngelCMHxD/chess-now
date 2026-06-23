@@ -20,11 +20,25 @@ export type NavigationSection = {
 };
 
 type HeaderProps = {
-	navigationData: NavigationSection[];
 	className?: string;
 };
 
-const Header = ({ navigationData, className }: HeaderProps) => {
+const navigationData: NavigationSection[] = [
+	{
+		title: "Integrations",
+		href: "/about/integrations",
+	},
+	{
+		title: "Docs",
+		href: "/docs",
+	},
+	{
+		title: "Why this proyect?",
+		href: "/about/why",
+	},
+];
+
+const Header = ({ className }: HeaderProps) => {
 	return (
 		<header
 			className={cn(

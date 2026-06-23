@@ -1,5 +1,4 @@
-import type { NavigationSection } from "@/components/blocks/hero/header";
-import Header from "@/components/blocks/hero/header";
+import Header from "@/components/header";
 import {
 	Accordion,
 	AccordionContent,
@@ -8,25 +7,10 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 
-const navigationData: NavigationSection[] = [
-	{
-		title: "Integrations",
-		href: "/about/integrations",
-	},
-	{
-		title: "Why?",
-		href: "/about/why",
-	},
-	{
-		title: "Docs",
-		href: "/docs",
-	},
-];
-
 export default function Integrations() {
 	return (
 		<div className="relative">
-			<Header navigationData={navigationData} />
+			<Header />
 
 			<main className="flex flex-col items-center min-h-screen w-full">
 				<h1 className="text-3xl leading-[1.29167] font-bold text-balance sm:text-4xl lg:text-5xl p-15 pt-30">

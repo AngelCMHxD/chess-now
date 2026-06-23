@@ -1,28 +1,12 @@
 import { GlobeIcon } from "lucide-react";
 import type { JSX } from "react/jsx-runtime";
-import type { NavigationSection } from "@/components/blocks/hero/header";
-import Header from "@/components/blocks/hero/header";
+import Header from "@/components/header";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardTitle,
 } from "@/components/ui/card";
-
-const navigationData: NavigationSection[] = [
-	{
-		title: "Integrations",
-		href: "/about/integrations",
-	},
-	{
-		title: "Docs",
-		href: "/docs",
-	},
-	{
-		title: "Why?",
-		href: "/about/why",
-	},
-];
 
 const integrationsData: {
 	title: string;
@@ -55,7 +39,7 @@ const integrationsData: {
 export default function IntegrationsPage() {
 	return (
 		<div className="relative">
-			<Header navigationData={navigationData} />
+			<Header />
 
 			<main className="flex flex-col items-center h-screen w-screen">
 				<h1 className="text-3xl leading-[1.29167] font-bold text-balance sm:text-4xl lg:text-5xl p-15 pt-30">
