@@ -114,7 +114,7 @@ export async function acceptChallenge(
 			.returning()
 	)[0];
 
-	secondaryStorage.set(match.id, match);
+	await secondaryStorage.set(match.id, match);
 
 	challenge = (
 		await db
@@ -157,7 +157,7 @@ export async function updateBoard(matchId: number, chess: Chess) {
 	if (activeMatch) {
 		activeMatch.fen = chess.fen();
 		activeMatch.pgn = chess.pgn();
-		secondaryStorage.set(`match_${matchId}`, activeMatch);
+		await secondaryStorage.set(`match_${matchId}`, activeMatch);
 		return;
 	}
 
