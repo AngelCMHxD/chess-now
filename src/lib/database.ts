@@ -22,8 +22,7 @@ export const secondaryStorage = {
 		value: unknown,
 		ttl?: number | string,
 	) => {
-		if (ttl) await cache.set(key, value, ttl);
-		else await cache.set(key, value);
+		await cache.set(key, value, ttl);
 	},
 	delete: async (key: string | number) => {
 		await cache.del(key);
