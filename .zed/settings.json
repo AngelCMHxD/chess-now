@@ -58,6 +58,13 @@
 					"name": "biome"
 				}
 			}
+		},
+		"CSS": {
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
 		}
 	}
 }
