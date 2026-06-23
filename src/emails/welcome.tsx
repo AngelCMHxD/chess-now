@@ -17,7 +17,7 @@ import { emailsTailwindConfig } from "./theme";
 import { EmailsFonts } from "./theme-fonts";
 
 const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-interface WelcomeEmailProps {
+export interface WelcomeEmailProps {
 	url: string;
 }
 

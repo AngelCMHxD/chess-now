@@ -18,7 +18,7 @@ import { EmailsFonts } from "./theme-fonts";
 
 const baseUrl = process.env.BASE_URL || "http://localhost:3000";
 
-interface ConfirmEmailProps {
+export interface ConfirmEmailProps {
 	url: string;
 }
 

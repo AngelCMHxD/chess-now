@@ -9,7 +9,8 @@ import { db, secondaryStorage } from "./database";
 
 const disableSignUp = process.env.DISABLE_SIGNUPS === "true";
 
-const isDev = () => ["development", "test"].includes(process.env.NODE_ENV);
+const isDev = () =>
+	["development", "test"].includes(process.env.NODE_ENV || "development");
 
 function logIfExample(email: string) {
 	if (email.split("@")[1] === "example.com") {
