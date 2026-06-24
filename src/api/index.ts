@@ -39,6 +39,24 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						description: "Development Server",
 					},
 				],
+				tags: [
+					{
+						name: "Challenges",
+						description: "Challenge endpoints",
+					},
+					{
+						name: "Matches",
+						description: "Match endpoints",
+					},
+					{
+						name: "Me",
+						description: "User account endpoints",
+					},
+					{
+						name: "Device auth",
+						description: "Device authentication endpoints",
+					},
+				],
 			},
 			exclude: {
 				tags: ["Internal"],
@@ -90,6 +108,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			body: httpRequestChallenge.bodyType,
 			headers: httpRequestChallenge.headersType,
+			detail: {
+				summary: "Request a challenge",
+				tags: ["Challenges"],
+			},
 		},
 	)
 	.get(
@@ -101,6 +123,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			),
 		{
 			headers: httpGetChallengeInfo.headersType,
+			detail: {
+				summary: "Get challenge info",
+				tags: ["Challenges"],
+			},
 		},
 	)
 	.get(
@@ -108,6 +134,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		({ headers }) => httpGetChallenges.run(headers.authorization),
 		{
 			headers: httpGetChallenges.headersType,
+			detail: {
+				summary: "Get your challenge history",
+				tags: ["Me"],
+			},
 		},
 	)
 	.post(
@@ -116,6 +146,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			httpAcceptChallenge.run(headers.authorization, params.challenge_id),
 		{
 			headers: httpAcceptChallenge.headersType,
+			detail: {
+				summary: "Accept a challenge",
+				tags: ["Challenges"],
+			},
 		},
 	)
 	.post(
@@ -124,6 +158,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			httpDenyChallenge.run(headers.authorization, params.challenge_id),
 		{
 			headers: httpDenyChallenge.headersType,
+			detail: {
+				summary: "Deny a challenge",
+				tags: ["Challenges"],
+			},
 		},
 	)
 	.get(
@@ -131,6 +169,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		({ headers }) => httpGetMatches.run(headers.authorization),
 		{
 			headers: httpGetMatches.headersType,
+			detail: {
+				summary: "Get your match history",
+				tags: ["Me"],
+			},
 		},
 	)
 	.get(
@@ -138,6 +180,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		({ headers }) => httpGetAccountInfo.run(headers.authorization),
 		{
 			headers: httpGetAccountInfo.headersType,
+			detail: {
+				summary: "Get account info",
+				tags: ["Me"],
+			},
 		},
 	)
 	.get(
@@ -146,6 +192,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			httpGetMatchInfo.run(headers.authorization, params.match_id),
 		{
 			headers: httpGetMatchInfo.headersType,
+			detail: {
+				summary: "Get match info",
+				tags: ["Matches"],
+			},
 		},
 	)
 	.post(
@@ -155,10 +205,18 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			body: httpMove.bodyType,
 			headers: httpMove.headersType,
+			detail: {
+				summary: "Make a move",
+				tags: ["Matches"],
+			},
 		},
 	)
 	.post("/device/init", ({ body }) => httpDeviceInit.run(body), {
 		body: httpDeviceInit.bodyType,
+		detail: {
+			summary: "Start device auth",
+			tags: ["Device auth"],
+		},
 	})
 	.post(
 		"/device/approve",
@@ -182,6 +240,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	)
 	.post("/device/token", ({ body }) => httpDeviceToken.run(body), {
 		body: httpDeviceToken.bodyType,
+		detail: {
+			summary: "Get token by device auth",
+			tags: ["Device auth"],
+		},
 	})
 	.listen(8080);
 
