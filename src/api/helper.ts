@@ -8,12 +8,9 @@ const challengeRules = ["noRematch", "noDraw"] as const;
 export const challengeConfig = z.object(
 	{
 		color: z.optional(
-			z.union(
-				[z.literal("white"), z.literal("black"), z.literal("random")],
-				{
-					error: "'color' needs to be one of: 'white', 'black' or 'random'",
-				},
-			),
+			z.enum(["white", "black", "random"], {
+				error: "'color' needs to be one of: 'white', 'black' or 'random'",
+			}),
 		),
 		rules: z.optional(
 			z.array(
