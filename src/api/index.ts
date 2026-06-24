@@ -36,6 +36,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				],
 			},
+			exclude: {
+				paths: ["/api/device/approve", "/api/device/deny"],
+			},
 		}),
 	)
 	.mount(auth.handler)
