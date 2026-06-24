@@ -41,7 +41,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 				],
 			},
 			exclude: {
-				paths: ["/api/device/approve", "/api/device/deny"],
+				tags: ["Internal"],
 			},
 		}),
 	)
@@ -165,6 +165,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		({ request, body }) => httpDeviceApprove.run(request.headers, body),
 		{
 			body: httpDeviceApprove.bodyType,
+			detail: {
+				tags: ["Internal"],
+			},
 		},
 	)
 	.post(
@@ -172,6 +175,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		({ request, body }) => httpDeviceDeny.run(request.headers, body),
 		{
 			body: httpDeviceDeny.bodyType,
+			detail: {
+				tags: ["Internal"],
+			},
 		},
 	)
 	.post("/device/token", ({ body }) => httpDeviceToken.run(body), {
