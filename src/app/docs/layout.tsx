@@ -2,8 +2,16 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import type { ReactNode } from "react";
 import "../globals.css";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { source } from "@/lib/source";
+
+export const metadata: Metadata = {
+	title: {
+		template: "%s | Chess Now! Docs",
+		default: "Chess Now! Docs",
+	},
+};
 
 export default function Layout({ children }: { children: ReactNode }) {
 	return (
