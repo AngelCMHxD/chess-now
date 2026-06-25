@@ -73,7 +73,7 @@ export async function run(headers: Headers, challengeId: string) {
 			),
 		);
 
-	app.server.publish(
+	app.server?.publish(
 		`challenge:${challengeInfo.from}`,
 		JSON.stringify({
 			type: "challenge:denied",

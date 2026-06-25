@@ -138,7 +138,7 @@ export async function run(
 	};
 
 	players.forEach((playerId) => {
-		app.server.publish(
+		app.server?.publish(
 			`match:${playerId}`,
 			JSON.stringify({
 				type: "match:board:move",
@@ -163,7 +163,7 @@ export async function run(
 		else if (chess.isDrawByFiftyMoves()) reason = "50-moves";
 
 		players.forEach((playerId) => {
-			app.server.publish(
+			app.server?.publish(
 				`match:${playerId}`,
 				JSON.stringify({
 					type: "match:board:gameover",

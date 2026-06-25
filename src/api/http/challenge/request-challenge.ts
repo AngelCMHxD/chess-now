@@ -41,7 +41,7 @@ export async function run(
 		options,
 	);
 
-	app.server.publish(
+	app.server?.publish(
 		`challenge:${oponentId}`,
 		JSON.stringify({
 			type: "challenge:request",

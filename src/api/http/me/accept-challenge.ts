@@ -62,7 +62,7 @@ export async function run(headers: Headers, challengeId: string) {
 
 	const { match, challenge } = await acceptChallenge(challengeInfo);
 
-	app.server.publish(
+	app.server?.publish(
 		`challenge:${challenge.from}`,
 		JSON.stringify({
 			type: "challenge:accept",

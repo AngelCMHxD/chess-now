@@ -28,7 +28,7 @@ export async function run(headers: Headers, body: z.infer<typeof bodyType>) {
 	});
 
 	if (deviceAuth.success)
-		app.server.publish(
+		app.server?.publish(
 			`device-auth:${body.userCode}`,
 			JSON.stringify({
 				type: "device-auth",

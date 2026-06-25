@@ -27,7 +27,9 @@ export async function run(headers: Headers) {
 	for (const [i, match] of matches.entries()) {
 		if (match.status !== "active") continue;
 
-		const activeMatch = await secondaryStorage.get(`match_${match.id}`);
+		const activeMatch = (await secondaryStorage.get(
+			`match_${match.id}`,
+		)) as (typeof matches)[number];
 		if (!activeMatch) continue;
 
 		matches[i].fen = activeMatch.fen;
