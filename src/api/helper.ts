@@ -148,7 +148,9 @@ export async function acceptChallenge(
 export async function getMatchInfo(
 	matchId: number,
 ): Promise<typeof schemas.matches.$inferSelect | undefined> {
-	const activeMatch = await secondaryStorage.get(`match_${matchId}`);
+	const activeMatch = (await secondaryStorage.get(
+		`match_${matchId}`,
+	)) as typeof schemas.matches.$inferSelect;
 
 	if (activeMatch) return activeMatch;
 
@@ -164,7 +166,9 @@ export async function getUserInfo(userId: string) {
 }
 
 export async function updateBoard(matchId: number, chess: Chess) {
-	const activeMatch = await secondaryStorage.get(`match_${matchId}`);
+	const activeMatch = (await secondaryStorage.get(
+		`match_${matchId}`,
+	)) as typeof schemas.matches.$inferSelect;
 
 	if (activeMatch) {
 		activeMatch.fen = chess.fen();
