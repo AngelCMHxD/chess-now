@@ -17,15 +17,15 @@
 		"db:push": "bunx drizzle-kit push"
 	},
 	"dependencies": {
-		"@better-auth/api-key": "^1.6.19",
-		"@better-auth/drizzle-adapter": "^1.6.19",
+		"@better-auth/api-key": "^1.6.20",
+		"@better-auth/drizzle-adapter": "^1.6.20",
 		"@cacheable/node-cache": "^3.0.1",
 		"@elysia/cors": "^1.4.2",
 		"@elysia/openapi": "^1.4.15",
 		"@keyv/redis": "^5.1.6",
 		"@marsidev/react-turnstile": "1.5.3",
 		"@types/mdx": "^2.0.14",
-		"better-auth": "^1.6.19",
+		"better-auth": "^1.6.20",
 		"better-sqlite3": "^12.11.1",
 		"chess.js": "^1.4.0",
 		"class-variance-authority": "^0.7.1",
@@ -35,7 +35,7 @@
 		"elysia": "^1.4.29",
 		"fumadocs-core": "^16.10.5",
 		"fumadocs-mdx": "^15.0.12",
-		"fumadocs-openapi": "^11.0.3",
+		"fumadocs-openapi": "^11.0.5",
 		"fumadocs-ui": "^16.10.5",
 		"input-otp": "^1.4.2",
 		"lucide-react": "^1.21.0",
@@ -45,7 +45,7 @@
 		"radix-ui": "^1.6.0",
 		"react": "19.2.7",
 		"react-dom": "19.2.7",
-		"react-email": "^6.6.3",
+		"react-email": "^6.6.4",
 		"resend": "^6.14.0",
 		"shadcn": "^4.11.0",
 		"shiki": "^4.2.0",
@@ -55,16 +55,16 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.0",
-		"@react-email/ui": "6.6.3",
+		"@biomejs/biome": "2.5.1",
+		"@react-email/ui": "6.6.4",
 		"@tailwindcss/postcss": "^4.3.1",
 		"@types/better-sqlite3": "^7.6.13",
-		"@types/node": "^20.19.42",
+		"@types/node": "^26.0.1",
 		"@types/pg": "^8.20.0",
 		"@types/react": "^19.2.17",
 		"@types/react-dom": "^19.2.3",
 		"drizzle-kit": "^0.31.10",
 		"tailwindcss": "^4.3.1",
-		"typescript": "^5.9.3"
+		"typescript": "^6.0.3"
 	}
 }
