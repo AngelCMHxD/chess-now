@@ -39,6 +39,9 @@ export default function Integrations() {
 												"Why not make one with a unique
 												spin and learn something new on
 												the way?"
+												<br />
+												<br />
+												Also, who doesn't like chess? :P
 											</AccordionContent>
 										</AccordionItem>
 										<AccordionItem value="returns">
@@ -62,7 +65,13 @@ export default function Integrations() {
 												them. ;P
 												<br />
 												<br />
-												With his project, I'm learning a
+												Also, why isn't there a Lichess public
+												WebSocket server available? I
+												believe it's way better than
+												HTTP streaming :/
+												<br />
+												<br />
+												With this project, I'm learning a
 												lot of things that I've been
 												meaning to learn a long time
 												ago, like:
@@ -101,15 +110,22 @@ export default function Integrations() {
 												or comments about the project.
 												<br />
 												<br />
-												<b>Why inside the dashboard?</b>{" "}
-												Mostly to prevent other people
-												from botting them or send other
-												kind of spam, as you need to
-												have an account. Your account
-												will be linked to the feedback
-												you give, but it'll only be used
-												in order to send you my thoughts
-												about it to your email ;D
+												That button is just a link to
+												the issue tracker of the Chess
+												Now! repo. You can also get
+												there by{" "}
+												<a
+													href={`${process.env.NEXT_PUBLIC_REPO_LINK}/issues`}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													clicking here.
+												</a>
+												<br />
+												In there, you can report any
+												bugs or request a new feature.
+												Your feedback is really
+												appreciated! :D
 											</AccordionContent>
 										</AccordionItem>
 									</Accordion>
