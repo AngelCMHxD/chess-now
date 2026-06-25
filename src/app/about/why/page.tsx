@@ -65,14 +65,14 @@ export default function Integrations() {
 												them. ;P
 												<br />
 												<br />
-												Also, why isn't there a Lichess public
-												WebSocket server available? I
-												believe it's way better than
-												HTTP streaming :/
+												Also, why isn't there a Lichess
+												public WebSocket server
+												available? I believe it's way
+												better than HTTP streaming :/
 												<br />
 												<br />
-												With this project, I'm learning a
-												lot of things that I've been
+												With this project, I'm learning
+												a lot of things that I've been
 												meaning to learn a long time
 												ago, like:
 												<ul className="list-disc pt-1 pb-1 pl-6 space-y-2">
