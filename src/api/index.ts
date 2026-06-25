@@ -3,6 +3,7 @@ import { fromTypes, openapi } from "@elysia/openapi";
 import { Elysia } from "elysia";
 import z from "zod";
 import { auth } from "@/lib/auth";
+import { authHeadersSchema } from "./helper";
 
 import httpGetChallengeInfo from "./http/challenge/get-challenge-info";
 import httpRequestChallenge from "./http/challenge/request-challenge";
@@ -103,11 +104,11 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	})
 	.post(
 		"/challenge/request/:uid",
-		({ params, body, headers }) =>
-			httpRequestChallenge.run(headers.authorization, params.uid, body),
+		({ params, body, request }) =>
+			httpRequestChallenge.run(request.headers, params.uid, body),
 		{
+			headers: authHeadersSchema,
 			body: httpRequestChallenge.bodyType,
-			headers: httpRequestChallenge.headersType,
 			detail: {
 				summary: "Request a challenge",
 				tags: ["Challenges"],
@@ -116,13 +117,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	)
 	.get(
 		"/challenge/:challenge_id",
-		({ params, headers }) =>
-			httpGetChallengeInfo.run(
-				headers.authorization,
-				params.challenge_id,
-			),
+		({ params, request }) =>
+			httpGetChallengeInfo.run(request.headers, params.challenge_id),
 		{
-			headers: httpGetChallengeInfo.headersType,
+			headers: authHeadersSchema,
 			detail: {
 				summary: "Get challenge info",
 				tags: ["Challenges"],
@@ -131,9 +129,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	)
 	.get(
 		"/me/challenges",
-		({ headers }) => httpGetChallenges.run(headers.authorization),
+		({ request }) => httpGetChallenges.run(request.headers),
 		{
-			headers: httpGetChallenges.headersType,
+			headers: authHeadersSchema,
 			detail: {
 				summary: "Get your challenge history",
 				tags: ["Me"],
@@ -142,10 +140,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	)
 	.post(
 		"/me/challenges/:challenge_id/accept",
-		({ headers, params }) =>
-			httpAcceptChallenge.run(headers.authorization, params.challenge_id),
+		({ request, params }) =>
+			httpAcceptChallenge.run(request.headers, params.challenge_id),
 		{
-			headers: httpAcceptChallenge.headersType,
+			headers: authHeadersSchema,
 			detail: {
 				summary: "Accept a challenge",
 				tags: ["Challenges"],
@@ -154,44 +152,36 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	)
 	.post(
 		"/me/challenges/:challenge_id/deny",
-		({ headers, params }) =>
-			httpDenyChallenge.run(headers.authorization, params.challenge_id),
+		({ request, params }) =>
+			httpDenyChallenge.run(request.headers, params.challenge_id),
 		{
-			headers: httpDenyChallenge.headersType,
+			headers: authHeadersSchema,
 			detail: {
 				summary: "Deny a challenge",
 				tags: ["Challenges"],
 			},
 		},
 	)
-	.get(
-		"/me/matches",
-		({ headers }) => httpGetMatches.run(headers.authorization),
-		{
-			headers: httpGetMatches.headersType,
-			detail: {
-				summary: "Get your match history",
-				tags: ["Me"],
-			},
+	.get("/me/matches", ({ request }) => httpGetMatches.run(request.headers), {
+		headers: authHeadersSchema,
+		detail: {
+			summary: "Get your match history",
+			tags: ["Me"],
 		},
-	)
-	.get(
-		"/me",
-		({ headers }) => httpGetAccountInfo.run(headers.authorization),
-		{
-			headers: httpGetAccountInfo.headersType,
-			detail: {
-				summary: "Get account info",
-				tags: ["Me"],
-			},
+	})
+	.get("/me", ({ request }) => httpGetAccountInfo.run(request.headers), {
+		headers: authHeadersSchema,
+		detail: {
+			summary: "Get account info",
+			tags: ["Me"],
 		},
-	)
+	})
 	.get(
 		"/match/:match_id",
-		({ params, headers }) =>
-			httpGetMatchInfo.run(headers.authorization, params.match_id),
+		({ params, request }) =>
+			httpGetMatchInfo.run(request.headers, params.match_id),
 		{
-			headers: httpGetMatchInfo.headersType,
+			headers: authHeadersSchema,
 			detail: {
 				summary: "Get match info",
 				tags: ["Matches"],
@@ -200,11 +190,11 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	)
 	.post(
 		"/match/:match_id/move",
-		({ params, body, headers }) =>
-			httpMove.run(headers.authorization, params.match_id, body),
+		({ params, body, request }) =>
+			httpMove.run(request.headers, params.match_id, body),
 		{
+			headers: authHeadersSchema,
 			body: httpMove.bodyType,
-			headers: httpMove.headersType,
 			detail: {
 				summary: "Make a move",
 				tags: ["Matches"],

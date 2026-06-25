@@ -5,16 +5,6 @@ import { getMatchInfo, updateBoard } from "@/api/helper";
 import { auth } from "@/lib/auth";
 import type { schemas } from "@/lib/database";
 
-export const headersType = z.object({
-	authorization: z
-		.string({
-			error: "An 'authorization' header is required",
-		})
-		.startsWith("Bearer ", {
-			error: "'authorization' header must start with 'Bearer '",
-		}),
-});
-
 export const bodyType = z.object({
 	move: z.string({
 		error: "'body' is required and is a string containing the move in SAN notation",
@@ -22,14 +12,12 @@ export const bodyType = z.object({
 });
 
 export async function run(
-	bearer: string,
+	headers: Headers,
 	matchId: string,
 	body: z.infer<typeof bodyType>,
 ) {
 	const session = await auth.api.getSession({
-		headers: {
-			Authorization: bearer,
-		},
+		headers,
 	});
 
 	if (!session) {
@@ -196,4 +184,4 @@ export async function run(
 	};
 }
 
-export default { bodyType, headersType, run };
+export default { bodyType, run };

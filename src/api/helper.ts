@@ -3,6 +3,21 @@ import { eq, or } from "drizzle-orm";
 import z from "zod";
 import { db, schemas, secondaryStorage } from "@/lib/database";
 
+export const authHeadersSchema = z
+	.looseObject({
+		cookie: z.string().optional(),
+		authorization: z.optional(
+			z.string().startsWith("Bearer ", {
+				error: "'authorization' header must start with 'Bearer '",
+			}),
+		),
+	})
+	.refine((data) => data.cookie || data.authorization, {
+		message:
+			"Either a 'cookie' or an 'authorization' header must be provided",
+		path: ["authorization"],
+	});
+
 const challengeRules = ["noRematch", "noDraw"] as const;
 
 export const challengeConfig = z.object(

@@ -1,22 +1,9 @@
-import z from "zod";
 import { auth } from "@/lib/auth";
 import { db, secondaryStorage } from "@/lib/database";
 
-export const headersType = z.object({
-	authorization: z
-		.string({
-			error: "An 'authorization' header is required",
-		})
-		.startsWith("Bearer ", {
-			error: "'authorization' header must start with 'Bearer '",
-		}),
-});
-
-export async function run(bearer: string) {
+export async function run(headers: Headers) {
 	const session = await auth.api.getSession({
-		headers: {
-			Authorization: bearer,
-		},
+		headers,
 	});
 
 	if (!session) {
@@ -53,4 +40,4 @@ export async function run(bearer: string) {
 	};
 }
 
-export default { headersType, run };
+export default { run };

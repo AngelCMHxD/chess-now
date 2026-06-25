@@ -3,27 +3,15 @@ import { app } from "@/api";
 import { challengeConfig, createChallenge, getUserInfo } from "@/api/helper";
 import { auth } from "@/lib/auth";
 
-export const headersType = z.object({
-	authorization: z
-		.string({
-			error: "An 'authorization' header is required",
-		})
-		.startsWith("Bearer ", {
-			error: "'authorization' header must start with 'Bearer '",
-		}),
-});
-
 export const bodyType = z.optional(challengeConfig);
 
 export async function run(
-	bearer: string,
+	headers: Headers,
 	oponentId: string,
 	options: z.infer<typeof bodyType>,
 ) {
 	const session = await auth.api.getSession({
-		headers: {
-			Authorization: bearer,
-		},
+		headers,
 	});
 
 	if (!session) {
@@ -70,4 +58,4 @@ export async function run(
 	};
 }
 
-export default { bodyType, headersType, run };
+export default { bodyType, run };
