@@ -1,3 +1,4 @@
+import { UnauthorizedError } from "@/api/errors";
 import { auth } from "@/lib/auth";
 import { db, secondaryStorage } from "@/lib/database";
 
@@ -6,15 +7,7 @@ export async function run(headers: Headers) {
 		headers,
 	});
 
-	if (!session) {
-		return {
-			type: "error",
-			content: {
-				code: 401,
-				error: "Unauthorized",
-			},
-		};
-	}
+	if (!session) throw new UnauthorizedError();
 
 	const matches = await db.query.matches.findMany({
 		where: (matches, { eq, or }) =>

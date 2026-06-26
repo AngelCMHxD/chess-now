@@ -1,9 +1,12 @@
 import type { ServerWebSocket } from "elysia/ws/bun";
 import z from "zod";
+import { publishToSubscriber } from "@/api/ws-events";
 import { db } from "@/lib/database";
+import { createWSError, createWSResponse, WSErrors } from "../ws-response";
 
 export const bodyType = z.object({
-	type: z.literal("watch-device-auth"),
+	type: z.literal("watch_device_auth"),
+	id: z.optional(z.string()),
 	content: z.object(
 		{
 			userCode: z.string({
@@ -31,49 +34,38 @@ export async function run(
 			),
 	});
 
-	if (!auth) {
-		return JSON.stringify({
-			type: "error",
-			content: {
-				code: 404,
-				error: "Not Found",
-				from: "watch-device-auth",
-			},
-		});
-	}
+	if (!auth)
+		return createWSError(
+			"watch_device_auth",
+			message.id || message.content.userCode,
+			WSErrors.NOT_FOUND,
+		);
 
 	if (auth.status !== "pending")
-		return JSON.stringify({
-			type: "error",
-			content: {
-				code: 409,
-				error: "Conflict",
-				from: "watch-device-auth",
-			},
-		});
+		return createWSError(
+			"watch_device_auth",
+			message.id || auth.userCode,
+			WSErrors.CONFLICT,
+		);
 
-	ws.subscribe(`device-auth:${auth.userCode}`);
+	ws.subscribe(`device_auth:${auth.userCode}`);
 
 	setTimeout(() => {
-		ws.publish(
-			`device-auth:${auth.userCode}`,
-			JSON.stringify({
-				type: "device-auth",
-				content: {
-					action: "expired",
-					userCode: auth.userCode,
-				},
-			}),
+		publishToSubscriber(
+			`device_auth:${auth.userCode}`,
+			"device_auth",
+			auth.userCode,
+			{
+				action: "expired",
+				userCode: auth.userCode,
+			},
 		);
-		ws.unsubscribe(`device-auth:${auth.userCode}`);
+
+		ws.unsubscribe(`device_auth:${auth.userCode}`);
 	}, auth.expiresAt.getTime() - Date.now());
 
-	return JSON.stringify({
-		type: "success",
-		content: {
-			type: "watch-device-auth",
-			userCode: auth.userCode,
-		},
+	return createWSResponse("watch_device_auth", message.id || auth.userCode, {
+		userCode: auth.userCode,
 	});
 }
 

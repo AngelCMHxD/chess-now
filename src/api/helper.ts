@@ -3,6 +3,69 @@ import { eq, or } from "drizzle-orm";
 import z from "zod";
 import { db, schemas, secondaryStorage } from "@/lib/database";
 
+export const subscribeEventsSchema = z.array(z.enum(["challenge", "match"]));
+export type SubscribeEvents = z.infer<typeof subscribeEventsSchema>;
+
+export const moveSchema = z.object({
+	players: z.object({
+		whiteId: z.string(),
+		blackId: z.string(),
+	}),
+	turn: z.object({
+		before: z.string(),
+		after: z.string(),
+	}),
+	pgn: z.object({
+		before: z.string(),
+		after: z.string(),
+	}),
+	fen: z.object({
+		before: z.string(),
+		after: z.string(),
+	}),
+	san: z.string(),
+	lan: z.string(),
+	piece: z.string(),
+});
+
+export type Move = z.infer<typeof moveSchema>;
+
+export const matchSchema = z.object({
+	id: z.number().int(),
+	createdAt: z.date(),
+	status: z.enum(["active", "draw", "white_won", "black_won"]),
+	whiteId: z.string(),
+	blackId: z.string(),
+	endReason: z
+		.enum([
+			"checkmate",
+			"draw",
+			"stalemate",
+			"insufficient-material",
+			"50-moves",
+		])
+		.nullable(),
+	fen: z.string(),
+	pgn: z.string(),
+	finishedAt: z.date().nullable(),
+});
+
+export type Match = z.infer<typeof matchSchema>;
+
+export const challengeSchema = z.object({
+	id: z.number().int(),
+	createdAt: z.date(),
+	from: z.string(),
+	to: z.string(),
+	rules: z.array(z.enum(["noRematch", "noDraw"])),
+	challengerColor: z.enum(["white", "black", "random"]),
+	timeLimit: z.number().int(),
+	status: z.enum(["pending", "denied", "expired", "ongoing", "finished"]),
+	matchId: z.number().int().nullable(),
+});
+
+export type Challenge = z.infer<typeof challengeSchema>;
+
 export const authHeadersSchema = z
 	.looseObject({
 		cookie: z.string().optional(),
@@ -59,7 +122,7 @@ export async function createChallenge(
 	challengerId: string,
 	challengedId: string,
 	config?: z.infer<typeof challengeConfig>,
-) {
+): Promise<Challenge> {
 	return (
 		await db
 			.insert(schemas.challenges)
@@ -73,7 +136,7 @@ export async function createChallenge(
 	)[0];
 }
 
-export async function getChallenges(userId: string) {
+export async function getChallenges(userId: string): Promise<Challenge[]> {
 	return await db
 		.select()
 		.from(schemas.challenges)
@@ -85,7 +148,9 @@ export async function getChallenges(userId: string) {
 		);
 }
 
-export async function getChallengeInfo(challengeId: number) {
+export async function getChallengeInfo(
+	challengeId: number,
+): Promise<Challenge | undefined> {
 	return (
 		await db
 			.select()
@@ -96,7 +161,10 @@ export async function getChallengeInfo(challengeId: number) {
 
 export async function acceptChallenge(
 	challenge: typeof schemas.challenges.$inferSelect,
-) {
+): Promise<{
+	match: Match;
+	challenge: Challenge;
+}> {
 	let whiteId: string;
 	let blackId: string;
 
@@ -147,7 +215,7 @@ export async function acceptChallenge(
 
 export async function getMatchInfo(
 	matchId: number,
-): Promise<typeof schemas.matches.$inferSelect | undefined> {
+): Promise<Match | undefined> {
 	const activeMatch = (await secondaryStorage.get(
 		`match_${matchId}`,
 	)) as typeof schemas.matches.$inferSelect;
@@ -165,7 +233,10 @@ export async function getUserInfo(userId: string) {
 	)[0];
 }
 
-export async function updateBoard(matchId: number, chess: Chess) {
+export async function updateBoard(
+	matchId: number,
+	chess: Chess,
+): Promise<Match> {
 	const activeMatch = (await secondaryStorage.get(
 		`match_${matchId}`,
 	)) as typeof schemas.matches.$inferSelect;
@@ -174,7 +245,7 @@ export async function updateBoard(matchId: number, chess: Chess) {
 		activeMatch.fen = chess.fen();
 		activeMatch.pgn = chess.pgn();
 		await secondaryStorage.set(`match_${matchId}`, activeMatch);
-		return;
+		return activeMatch;
 	}
 
 	const match = (
@@ -189,13 +260,15 @@ export async function updateBoard(matchId: number, chess: Chess) {
 	)[0];
 
 	if (match) await secondaryStorage.set(`match_${matchId}`, match);
+
+	return match;
 }
 
 export async function endMatch(
 	matchId: number,
 	chess: Chess,
-	endReason: (typeof schemas.matchEndReason.enumValues)[number],
-	status: (typeof schemas.matchStatus.enumValues)[number],
+	endReason: Match["endReason"],
+	status: Match["status"],
 ) {
 	await secondaryStorage.delete(`match_${matchId}`);
 

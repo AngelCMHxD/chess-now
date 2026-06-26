@@ -1,3 +1,4 @@
+import { UnauthorizedError } from "@/api/errors";
 import { auth } from "@/lib/auth";
 
 export async function run(headers: Headers) {
@@ -5,15 +6,7 @@ export async function run(headers: Headers) {
 		headers,
 	});
 
-	if (!session) {
-		return {
-			type: "error",
-			content: {
-				code: 401,
-				error: "Unauthorized",
-			},
-		};
-	}
+	if (!session) throw new UnauthorizedError();
 
 	return {
 		type: "success",

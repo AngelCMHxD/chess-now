@@ -1,3 +1,4 @@
+import { UnauthorizedError } from "@/api/errors";
 import { getChallenges } from "@/api/helper";
 import { auth } from "@/lib/auth";
 
@@ -6,15 +7,7 @@ export async function run(headers: Headers) {
 		headers,
 	});
 
-	if (!session) {
-		return {
-			type: "error",
-			content: {
-				code: 401,
-				error: "Unauthorized",
-			},
-		};
-	}
+	if (!session) throw new UnauthorizedError();
 
 	const challenges = await getChallenges(session.user.id);
 

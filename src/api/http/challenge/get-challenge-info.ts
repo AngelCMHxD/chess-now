@@ -1,3 +1,8 @@
+import {
+	BadRequestError,
+	NotFoundError,
+	UnauthorizedError,
+} from "@/api/errors";
 import { getChallengeInfo } from "@/api/helper";
 import { auth } from "@/lib/auth";
 
@@ -6,37 +11,15 @@ export async function run(headers: Headers, challengeId: string) {
 		headers,
 	});
 
-	if (!session) {
-		return {
-			type: "error",
-			content: {
-				code: 401,
-				error: "Unauthorized",
-			},
-		};
-	}
+	if (!session) throw new UnauthorizedError();
 
 	const cId = parseInt(challengeId, 10);
 
-	if (Number.isNaN(cId))
-		return {
-			type: "error",
-			content: {
-				code: 400,
-				error: "Bad Request",
-			},
-		};
+	if (Number.isNaN(cId)) throw new BadRequestError();
 
 	const challenge = await getChallengeInfo(cId);
 
-	if (!challenge)
-		return {
-			type: "error",
-			content: {
-				code: 404,
-				error: "Challenge Not Found",
-			},
-		};
+	if (!challenge) throw new NotFoundError("Challenge Not Found");
 
 	return {
 		type: "success",

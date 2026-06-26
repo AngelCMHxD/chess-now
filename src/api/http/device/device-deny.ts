@@ -1,5 +1,6 @@
 import z from "zod";
-import { app } from "@/api";
+import { ForbiddenError } from "@/api/errors";
+import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 
 export const bodyType = z.object({
@@ -13,14 +14,7 @@ export async function run(headers: Headers, body: z.infer<typeof bodyType>) {
 		headers,
 	});
 
-	if ((session?.session?.scopes?.length ?? 0) > 0)
-		return {
-			type: "error",
-			content: {
-				code: 403,
-				error: "Forbidden",
-			},
-		};
+	if ((session?.session?.scopes?.length ?? 0) > 0) throw new ForbiddenError();
 
 	const deviceAuth = await auth.api.deviceDeny({
 		body,
@@ -28,15 +22,14 @@ export async function run(headers: Headers, body: z.infer<typeof bodyType>) {
 	});
 
 	if (deviceAuth.success)
-		app.server?.publish(
-			`device-auth:${body.userCode}`,
-			JSON.stringify({
-				type: "device-auth",
-				content: {
-					action: "denied",
-					userCode: body.userCode,
-				},
-			}),
+		publishToSubscriber(
+			`device_auth:${body.userCode}`,
+			"device_auth",
+			body.userCode,
+			{
+				action: "denied",
+				userCode: body.userCode,
+			},
 		);
 
 	return deviceAuth;

@@ -1,15 +1,18 @@
 import type { ServerWebSocket } from "elysia/ws/bun";
 import z from "zod";
+import { subscribeEventsSchema } from "@/api/helper";
 import { auth } from "@/lib/auth";
+import { createWSError, createWSResponse, WSErrors } from "../ws-response";
 
-export const validEvents = ["challenge", "match"] as const;
+const allEvents = subscribeEventsSchema.element.options;
 
 export const bodyType = z.object({
 	type: z.literal("subscribe"),
+	id: z.optional(z.string()),
 	content: z.object(
 		{
-			events: z.union([z.array(z.enum(validEvents)), z.literal("all")], {
-				error: `'events' needs to be 'all' or an array of valid events to listen: ${validEvents.map((a) => `'${a}'`).join(", ")}`,
+			events: z.union([subscribeEventsSchema, z.literal("all")], {
+				error: `'events' needs to be 'all' or an array of valid events to listen: ${allEvents.map((a) => `'${a}'`).join(", ")}`,
 			}),
 			authorization: z.string({
 				error: "'authorization' needs to be a string containing the user's Bearer token: 'Bearer <token>'",
@@ -31,33 +34,27 @@ export async function run(
 		},
 	});
 
-	if (!session) {
-		return {
-			type: "error",
-			content: {
-				code: 401,
-				error: "Unauthorized",
-				from: "subscribe",
-			},
-		};
-	}
+	if (!session)
+		return createWSError(
+			"subscribe",
+			message.id || message.content.authorization,
+			WSErrors.UNAUTHORIZED,
+		);
 
-	if (message.content.events === "all")
-		message.content.events =
-			validEvents as unknown as (typeof validEvents)[number][];
+	if (message.content.events === "all") message.content.events = allEvents;
 
 	for (const event of message.content.events) {
 		ws.subscribe(`${event}:${session.user.id}`);
 	}
 
-	return {
-		type: "success",
-		content: {
-			type: "subscribe",
-			websocketUserId: session.user.id,
+	return createWSResponse(
+		"subscribe",
+		message.id || message.content.authorization,
+		{
 			events: message.content.events,
+			userId: session.user.id,
 		},
-	};
+	);
 }
 
 export default { bodyType, run };

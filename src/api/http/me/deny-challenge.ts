@@ -1,6 +1,12 @@
 import { and, eq } from "drizzle-orm";
-import { app } from "@/api";
+import {
+	BadRequestError,
+	ForbiddenError,
+	NotFoundError,
+	UnauthorizedError,
+} from "@/api/errors";
 import { getChallengeInfo } from "@/api/helper";
+import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
@@ -9,58 +15,23 @@ export async function run(headers: Headers, challengeId: string) {
 		headers,
 	});
 
-	if (!session) {
-		return {
-			type: "error",
-			content: {
-				code: 401,
-				error: "Unauthorized",
-			},
-		};
-	}
+	if (!session) throw new UnauthorizedError();
 
 	if (
 		session.session.scopes &&
 		!session.session.scopes.includes("challenges")
 	)
-		return {
-			type: "error",
-			content: {
-				code: 403,
-				error: "Forbidden",
-			},
-		};
+		throw new ForbiddenError();
 
 	const cId = parseInt(challengeId, 10);
 
-	if (Number.isNaN(cId))
-		return {
-			type: "error",
-			content: {
-				code: 400,
-				error: "Bad Request",
-			},
-		};
+	if (Number.isNaN(cId)) throw new BadRequestError();
 
 	const challengeInfo = await getChallengeInfo(cId);
 
-	if (!challengeInfo)
-		return {
-			type: "error",
-			content: {
-				code: 404,
-				error: "Challenge Not Found",
-			},
-		};
+	if (!challengeInfo) throw new NotFoundError("Challenge Not Found");
 
-	if (challengeInfo.to !== session.user.id)
-		return {
-			type: "error",
-			content: {
-				code: 403,
-				error: "Forbidden",
-			},
-		};
+	if (challengeInfo.to !== session.user.id) throw new ForbiddenError();
 
 	db.update(schemas.challenges)
 		.set({
@@ -73,14 +44,14 @@ export async function run(headers: Headers, challengeId: string) {
 			),
 		);
 
-	app.server?.publish(
+	publishToSubscriber(
 		`challenge:${challengeInfo.from}`,
-		JSON.stringify({
-			type: "challenge:denied",
-			content: {
-				websocketUserId: challengeInfo.from,
-			},
-		}),
+		"challenge:denied",
+		challengeInfo.from,
+		{
+			challengeId: challengeInfo.id,
+			deniedBy: session.user.id,
+		},
 	);
 
 	return {

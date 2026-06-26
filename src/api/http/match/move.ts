@@ -1,9 +1,18 @@
 import { Chess, type Move } from "chess.js";
+import { eq } from "drizzle-orm";
 import z from "zod";
-import { app } from "@/api";
+import {
+	BadRequestError,
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+	UnauthorizedError,
+	UnprocessableContentError,
+} from "@/api/errors";
 import { getMatchInfo, updateBoard } from "@/api/helper";
+import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
-import type { schemas } from "@/lib/database";
+import { db, schemas } from "@/lib/database";
 
 export const bodyType = z.object({
 	move: z.string({
@@ -20,57 +29,23 @@ export async function run(
 		headers,
 	});
 
-	if (!session) {
-		return {
-			type: "error",
-			content: {
-				code: 401,
-				error: "Unauthorized",
-			},
-		};
-	}
+	if (!session) throw new UnauthorizedError();
 
 	if (session.session.scopes && !session.session.scopes.includes("matches"))
-		return {
-			type: "error",
-			content: {
-				code: 403,
-				error: "Forbidden",
-			},
-		};
+		throw new ForbiddenError();
 
 	const mId = parseInt(matchId, 10);
 
-	if (Number.isNaN(mId))
-		return {
-			type: "error",
-			content: {
-				code: 400,
-				error: "Bad Request",
-			},
-		};
+	if (Number.isNaN(mId)) throw new BadRequestError();
 
 	const match = await getMatchInfo(mId);
 
-	if (!match)
-		return {
-			type: "error",
-			content: {
-				code: 404,
-				error: "Not Found",
-			},
-		};
+	if (!match) throw new NotFoundError("Match Not Found");
 
 	const players = [match.whiteId, match.blackId];
 
 	if (!players.includes(session.user.id) || match.status !== "active")
-		return {
-			type: "error",
-			content: {
-				code: 403,
-				error: "Forbidden",
-			},
-		};
+		throw new ForbiddenError();
 
 	const roles = {
 		[match.whiteId]: "w",
@@ -86,39 +61,25 @@ export async function run(
 
 	const turnBefore = chess.turn();
 	const pgnBefore = chess.pgn();
-	if (roles[session.user.id] !== turnBefore)
-		return {
-			type: "error",
-			content: {
-				code: 409,
-				error: "Conflict",
-			},
-		};
+	if (roles[session.user.id] !== turnBefore) throw new ConflictError();
 
 	let move: Move;
 
 	try {
 		move = chess.move(body.move);
 	} catch (_e) {
-		return {
-			type: "error",
-			content: {
-				code: 422,
-				error: "Unprocessable Content",
-			},
-		};
+		throw new UnprocessableContentError();
 	}
 
-	await updateBoard(match.id, chess);
+	const matchAfterMove = await updateBoard(match.id, chess);
 
 	const pgnAfter = chess.pgn();
 	const turnAfter = chess.turn();
 
-	const content = {
-		matchId: mId,
+	const moveInfo = {
 		players: {
-			whiteId: match.whiteId,
-			blackId: match.blackId,
+			whiteId: matchAfterMove.whiteId,
+			blackId: matchAfterMove.blackId,
 		},
 		turn: {
 			before: turnBefore,
@@ -138,49 +99,52 @@ export async function run(
 	};
 
 	players.forEach((playerId) => {
-		app.server?.publish(
-			`match:${playerId}`,
-			JSON.stringify({
-				type: "match:board:move",
-				content: {
-					...content,
-					websocketUserId: playerId,
-				},
-			}),
-		);
+		publishToSubscriber(`match:${playerId}`, "match:board-move", playerId, {
+			match: matchAfterMove,
+			move: moveInfo,
+		});
 	});
 
 	if (chess.isGameOver()) {
-		let reason: (typeof schemas.matchEndReason.enumValues)[number];
+		let endReason: (typeof schemas.matchEndReason.enumValues)[number] =
+			"draw";
 		let status: (typeof schemas.matchStatus.enumValues)[number] = "draw";
 
 		if (chess.isCheckmate()) {
-			reason = "checkmate";
+			endReason = "checkmate";
 			status = turnBefore === "w" ? "white_won" : "black_won";
-		} else if (chess.isStalemate()) reason = "stalemate";
+		} else if (chess.isStalemate()) endReason = "stalemate";
 		else if (chess.isInsufficientMaterial())
-			reason = "insufficient-material";
-		else if (chess.isDrawByFiftyMoves()) reason = "50-moves";
+			endReason = "insufficient-material";
+		else if (chess.isDrawByFiftyMoves()) endReason = "50-moves";
+
+		const finalMatch = (
+			await db
+				.update(schemas.matches)
+				.set({
+					status,
+					endReason,
+				})
+				.where(eq(schemas.matches.id, mId))
+				.returning()
+		)[0];
 
 		players.forEach((playerId) => {
-			app.server?.publish(
+			publishToSubscriber(
 				`match:${playerId}`,
-				JSON.stringify({
-					type: "match:board:gameover",
-					content: {
-						match: content,
-						status,
-						reason,
-						websocketUserId: playerId,
-					},
-				}),
+				"match:game_over",
+				playerId,
+				{
+					match: finalMatch,
+					lastMove: moveInfo,
+				},
 			);
 		});
 	}
 
 	return {
 		type: "success",
-		content,
+		content: moveInfo,
 	};
 }
 

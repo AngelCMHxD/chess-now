@@ -1,4 +1,5 @@
 import z from "zod";
+import { ForbiddenError } from "@/api/errors";
 import { auth } from "@/lib/auth";
 
 export const bodyType = z.object({
@@ -18,14 +19,7 @@ export async function run(body: z.infer<typeof bodyType>) {
 		headers,
 	});
 
-	if (!deviceToken)
-		return {
-			ype: "error",
-			content: {
-				code: 403,
-				error: "Forbidden",
-			},
-		};
+	if (!deviceToken) throw new ForbiddenError();
 
 	if (deviceToken.scope) {
 		const scopes = deviceToken.scope.split(" ").filter(Boolean);

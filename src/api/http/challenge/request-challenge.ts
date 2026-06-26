@@ -1,6 +1,7 @@
 import z from "zod";
-import { app } from "@/api";
+import { NotFoundError, UnauthorizedError } from "@/api/errors";
 import { challengeConfig, createChallenge, getUserInfo } from "@/api/helper";
+import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 
 export const bodyType = z.optional(challengeConfig);
@@ -14,26 +15,11 @@ export async function run(
 		headers,
 	});
 
-	if (!session) {
-		return {
-			type: "error",
-			content: {
-				code: 401,
-				error: "Unauthorized",
-			},
-		};
-	}
+	if (!session) throw new UnauthorizedError();
 
 	const oponent = await getUserInfo(oponentId);
 
-	if (!oponent)
-		return {
-			type: "error",
-			content: {
-				code: 404,
-				error: "User Not Found",
-			},
-		};
+	if (!oponent) throw new NotFoundError("User Not Found");
 
 	const challenge = await createChallenge(
 		session.user.id,
@@ -41,15 +27,13 @@ export async function run(
 		options,
 	);
 
-	app.server?.publish(
+	publishToSubscriber(
 		`challenge:${oponentId}`,
-		JSON.stringify({
-			type: "challenge:request",
-			content: {
-				...challenge,
-				websocketUserId: oponentId,
-			},
-		}),
+		"challenge:request",
+		oponentId,
+		{
+			challenge,
+		},
 	);
 
 	return {

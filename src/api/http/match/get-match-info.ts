@@ -1,3 +1,8 @@
+import {
+	BadRequestError,
+	NotFoundError,
+	UnauthorizedError,
+} from "@/api/errors";
 import { getMatchInfo } from "@/api/helper";
 import { auth } from "@/lib/auth";
 
@@ -6,37 +11,15 @@ export async function run(headers: Headers, matchId: string) {
 		headers,
 	});
 
-	if (!session) {
-		return {
-			type: "error",
-			content: {
-				code: 401,
-				error: "Unauthorized",
-			},
-		};
-	}
+	if (!session) throw new UnauthorizedError();
 
 	const mId = parseInt(matchId, 10);
 
-	if (Number.isNaN(mId))
-		return {
-			type: "error",
-			content: {
-				code: 400,
-				error: "Bad Request",
-			},
-		};
+	if (Number.isNaN(mId)) throw new BadRequestError();
 
 	const match = await getMatchInfo(mId);
 
-	if (!match)
-		return {
-			type: "error",
-			content: {
-				code: 404,
-				error: "Match Not Found",
-			},
-		};
+	if (!match) throw new NotFoundError("Match Not Found");
 
 	return {
 		type: "success",
