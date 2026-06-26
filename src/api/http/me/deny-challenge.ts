@@ -27,11 +27,11 @@ export async function run(headers: Headers, challengeId: string) {
 
 	if (Number.isNaN(cId)) throw new BadRequestError();
 
-	const challengeInfo = await getChallengeInfo(cId);
+	const challenge = await getChallengeInfo(cId);
 
-	if (!challengeInfo) throw new NotFoundError("Challenge Not Found");
+	if (!challenge) throw new NotFoundError("Challenge Not Found");
 
-	if (challengeInfo.to !== session.user.id) throw new ForbiddenError();
+	if (challenge.to !== session.user.id) throw new ForbiddenError();
 
 	db.update(schemas.challenges)
 		.set({
@@ -39,23 +39,26 @@ export async function run(headers: Headers, challengeId: string) {
 		})
 		.where(
 			and(
-				eq(schemas.challenges.id, challengeInfo.id),
+				eq(schemas.challenges.id, challenge.id),
 				eq(schemas.challenges.to, session.user.id),
 			),
 		);
 
 	publishToSubscriber(
-		`challenge:${challengeInfo.from}`,
+		`challenge:${challenge.from}`,
 		"challenge:denied",
-		challengeInfo.from,
+		challenge.from,
 		{
-			challengeId: challengeInfo.id,
+			challengeId: challenge.id,
 			deniedBy: session.user.id,
 		},
 	);
 
 	return {
-		type: "success",
+		success: true,
+		data: {
+			challenge,
+		},
 	};
 }
 

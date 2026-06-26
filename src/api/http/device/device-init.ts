@@ -24,8 +24,8 @@ export async function run(body: z.infer<typeof bodyType>) {
 	});
 
 	return {
-		type: "success",
-		content: deviceAuth,
+		success: true,
+		data: deviceAuth,
 	};
 }
 

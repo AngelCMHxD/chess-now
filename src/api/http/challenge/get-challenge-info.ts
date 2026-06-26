@@ -22,8 +22,8 @@ export async function run(headers: Headers, challengeId: string) {
 	if (!challenge) throw new NotFoundError("Challenge Not Found");
 
 	return {
-		type: "success",
-		content: challenge,
+		success: true,
+		data: challenge,
 	};
 }
 

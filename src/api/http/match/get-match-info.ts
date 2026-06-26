@@ -22,8 +22,8 @@ export async function run(headers: Headers, matchId: string) {
 	if (!match) throw new NotFoundError("Match Not Found");
 
 	return {
-		type: "success",
-		content: match,
+		success: true,
+		data: match,
 	};
 }
 

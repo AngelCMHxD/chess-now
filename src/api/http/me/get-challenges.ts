@@ -12,8 +12,8 @@ export async function run(headers: Headers) {
 	const challenges = await getChallenges(session.user.id);
 
 	return {
-		type: "success",
-		content: challenges,
+		success: true,
+		data: challenges,
 	};
 }
 

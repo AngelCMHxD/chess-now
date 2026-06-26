@@ -37,8 +37,8 @@ export async function run(
 	);
 
 	return {
-		type: "success",
-		content: challenge,
+		success: true,
+		data: challenge,
 	};
 }
 

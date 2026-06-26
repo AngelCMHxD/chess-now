@@ -30,8 +30,8 @@ export async function run(headers: Headers) {
 	}
 
 	return {
-		type: "success",
-		content: matches,
+		success: true,
+		data: matches,
 	};
 }
 

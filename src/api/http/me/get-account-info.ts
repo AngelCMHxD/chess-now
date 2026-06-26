@@ -9,8 +9,8 @@ export async function run(headers: Headers) {
 	if (!session) throw new UnauthorizedError();
 
 	return {
-		type: "success",
-		content: session.user,
+		success: true,
+		data: session.user,
 	};
 }
 

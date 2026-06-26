@@ -45,8 +45,11 @@ export async function run(headers: Headers, challengeId: string) {
 	);
 
 	return {
-		type: "success",
-		content: match,
+		success: true,
+		data: {
+			challenge,
+			match,
+		},
 	};
 }
 

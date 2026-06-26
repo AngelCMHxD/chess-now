@@ -39,8 +39,8 @@ export async function run(body: z.infer<typeof bodyType>) {
 	}
 
 	return {
-		type: "success",
-		content: {
+		success: true,
+		data: {
 			...deviceToken,
 			scope: deviceToken.scope.split(" "),
 		},

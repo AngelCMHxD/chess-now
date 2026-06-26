@@ -143,8 +143,8 @@ export async function run(
 	}
 
 	return {
-		type: "success",
-		content: moveInfo,
+		success: true,
+		data: moveInfo,
 	};
 }
 
