@@ -2,10 +2,12 @@
 
 import {
 	BookOpenIcon,
-	ChessPawnIcon,
+	ChartColumnIcon,
 	MessageSquareHeartIcon,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import * as React from "react";
 import { NavUser } from "@/components/nav-user";
 import { Navbar } from "@/components/navbar";
@@ -35,15 +37,17 @@ import {
 
 const navMain = [
 	{
-		title: "Documentation",
-		url: "/docs",
-		icon: <BookOpenIcon />,
+		title: "Match History",
+		url: "/account/dashboard/matches",
+		icon: <ChartColumnIcon />,
 	},
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const [session, setSession] = React.useState<Session | null>(null);
 	const [loading, setLoading] = React.useState(true);
+
+	const pathname = usePathname();
 
 	React.useEffect(() => {
 		authClient.getSession().then((session) => {
@@ -57,10 +61,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
-						<SidebarMenuButton size="lg" asChild>
+						<SidebarMenuButton
+							size="lg"
+							isActive={pathname === "/account/dashboard"}
+							asChild
+						>
 							<a href="/account/dashboard">
-								<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-									<ChessPawnIcon className="size-4" />
+								<div className="flex aspect-square size-7 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
+									<Image
+										alt="Chess Now! Icon"
+										width="8"
+										height="8"
+										src="/icon.svg"
+										className="h-full w-auto"
+									/>
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-medium">
@@ -77,6 +91,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<SidebarGroup className="mt-auto">
 					<SidebarGroupContent>
 						<SidebarMenu>
+							<SidebarMenuItem>
+								<Link href="/docs">
+									<SidebarMenuButton
+										asChild
+										size="sm"
+										className="cursor-pointer"
+									>
+										<div>
+											<BookOpenIcon />
+											<span>Documentation</span>
+										</div>
+									</SidebarMenuButton>
+								</Link>
+							</SidebarMenuItem>
 							<SidebarMenuItem>
 								<Dialog>
 									<DialogTrigger asChild>
