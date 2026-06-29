@@ -15,6 +15,10 @@ export async function run(headers: Headers) {
 				eq(matches.whiteId, session.user.id),
 				eq(matches.blackId, session.user.id),
 			),
+		with: {
+			blackPlayer: true,
+			whitePlayer: true,
+		},
 	});
 
 	for (const [i, match] of matches.entries()) {

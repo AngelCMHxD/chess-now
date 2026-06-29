@@ -224,6 +224,10 @@ export async function getMatchInfo(
 
 	return await db.query.matches.findFirst({
 		where: (matches, { eq }) => eq(matches.id, matchId),
+		with: {
+			whitePlayer: true,
+			blackPlayer: true,
+		},
 	});
 }
 
