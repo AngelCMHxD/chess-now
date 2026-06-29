@@ -92,7 +92,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							<SidebarMenuItem>
-								<Link href="/docs">
+								<Link
+									href="/docs"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
 									<SidebarMenuButton
 										asChild
 										size="sm"

@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import {
 	Breadcrumb,
@@ -12,8 +13,28 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
+import { authClient, type Session } from "@/lib/auth-client";
 
 export default function DashboardPage() {
+	const [session, setSession] = React.useState<Session | null>(null);
+	const [loading, setLoading] = React.useState(true);
+
+	React.useEffect(() => {
+		authClient.getSession().then((session) => {
+			setSession(session.data);
+			setLoading(false);
+		});
+	}, []);
+
+	if (loading) {
+		return (
+			<div className="flex justify-center items-center w-full h-screen">
+				<Spinner />
+			</div>
+		);
+	}
+
 	return (
 		<SidebarProvider>
 			<AppSidebar />
@@ -35,12 +56,17 @@ export default function DashboardPage() {
 					</div>
 				</header>
 				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-					<div className="grid auto-rows-min gap-4 md:grid-cols-3">
-						<div className="aspect-video rounded-xl bg-muted/50" />
-						<div className="aspect-video rounded-xl bg-muted/50" />
-						<div className="aspect-video rounded-xl bg-muted/50" />
+					<div className="min-h-screen flex-1 rounded-xl bg-muted/50 md:min-h-min">
+						<div className="flex flex-col gap-4 p-4 justify-center items-center h-full">
+							<h1 className="text-2xl font-bold">
+								Welcome, {session?.user?.name}.
+							</h1>
+							<p>
+								You can find the available options on the
+								sidebar.
+							</p>
+						</div>
 					</div>
-					<div className="min-h-screen flex-1 rounded-xl bg-muted/50 md:min-h-min" />
 				</div>
 			</SidebarInset>
 		</SidebarProvider>

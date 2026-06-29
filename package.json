@@ -44,6 +44,7 @@
 		"pg": "^8.22.0",
 		"radix-ui": "^1.6.0",
 		"react": "19.2.7",
+		"react-chessboard": "^5.10.0",
 		"react-dom": "19.2.7",
 		"react-email": "^6.6.4",
 		"resend": "^6.14.0",
