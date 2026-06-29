@@ -35,7 +35,7 @@ export default function MatchesPage() {
 
 	useEffect(() => {
 		async function fetchData() {
-			const res = await fetch("http://localhost:8080/api/me/matches", {
+			const res = await fetch(`${process.env.API_ENDPOINT}/me/matches`, {
 				credentials: "include",
 			});
 			const result = await res.json();

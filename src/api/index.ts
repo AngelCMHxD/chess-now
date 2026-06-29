@@ -32,12 +32,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			documentation: {
 				servers: [
 					{
-						url: process.env.BASE_URL ?? "",
+						url: process.env.API_BASE_URL ?? "",
 						description: "Main Server",
-					},
-					{
-						url: "http://localhost:8080",
-						description: "Development Server",
 					},
 				],
 				tags: [

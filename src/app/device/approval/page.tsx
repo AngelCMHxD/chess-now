@@ -22,7 +22,7 @@ export default function InputOTPForm() {
 	const handleApprove = async () => {
 		setSubmittingApprove(true);
 		const response = (await fetch(
-			"http://localhost:8080/api/device/approve",
+			`${process.env.API_ENDPOINT}/device/approve`,
 			{
 				method: "POST",
 				headers: {
@@ -53,16 +53,19 @@ export default function InputOTPForm() {
 
 	const handleDeny = async () => {
 		setSubmittingDeny(true);
-		const response = (await fetch("http://localhost:8080/api/device/deny", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
+		const response = (await fetch(
+			`${process.env.API_ENDPOINT}/device/deny`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					userCode: code,
+				}),
+				credentials: "include",
 			},
-			body: JSON.stringify({
-				userCode: code,
-			}),
-			credentials: "include",
-		}).then((res) => res.json())) as {
+		).then((res) => res.json())) as {
 			success: boolean;
 		};
 
