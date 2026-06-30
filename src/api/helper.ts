@@ -151,12 +151,13 @@ export async function getChallenges(userId: string): Promise<Challenge[]> {
 export async function getChallengeInfo(
 	challengeId: number,
 ): Promise<Challenge | undefined> {
-	return (
-		await db
-			.select()
-			.from(schemas.challenges)
-			.where(eq(schemas.challenges.id, challengeId))
-	)[0];
+	const challenge = await db.query.challenges.findFirst({
+		where: eq(schemas.challenges.id, challengeId),
+		with: {
+			match: true,
+		},
+	});
+	return challenge;
 }
 
 export async function acceptChallenge(
