@@ -127,8 +127,8 @@ export async function createChallenge(
 		await db
 			.insert(schemas.challenges)
 			.values({
-				from: challengerId,
-				to: challengedId,
+				fromId: challengerId,
+				toId: challengedId,
 				rules: config?.rules,
 				challengerColor: config?.color,
 			})
@@ -142,8 +142,8 @@ export async function getChallenges(userId: string): Promise<Challenge[]> {
 		.from(schemas.challenges)
 		.where(
 			or(
-				eq(schemas.challenges.to, userId),
-				eq(schemas.challenges.from, userId),
+				eq(schemas.challenges.toId, userId),
+				eq(schemas.challenges.fromId, userId),
 			),
 		);
 }
@@ -155,6 +155,24 @@ export async function getChallengeInfo(
 		where: eq(schemas.challenges.id, challengeId),
 		with: {
 			match: true,
+			from: {
+				columns: {
+					name: true,
+					id: true,
+					image: true,
+					createdAt: true,
+					updatedAt: true,
+				},
+			},
+			to: {
+				columns: {
+					name: true,
+					id: true,
+					image: true,
+					createdAt: true,
+					updatedAt: true,
+				},
+			},
 		},
 	});
 	return challenge;
@@ -170,18 +188,18 @@ export async function acceptChallenge(
 	let blackId: string;
 
 	if (challenge.challengerColor === "white") {
-		whiteId = challenge.from;
-		blackId = challenge.to;
+		whiteId = challenge.fromId;
+		blackId = challenge.toId;
 	} else if (challenge.challengerColor === "black") {
-		blackId = challenge.from;
-		whiteId = challenge.to;
+		blackId = challenge.fromId;
+		whiteId = challenge.toId;
 	} else {
 		if (Math.random() < 0.5) {
-			whiteId = challenge.from;
-			blackId = challenge.to;
+			whiteId = challenge.fromId;
+			blackId = challenge.toId;
 		} else {
-			blackId = challenge.from;
-			whiteId = challenge.to;
+			blackId = challenge.fromId;
+			whiteId = challenge.toId;
 		}
 	}
 

@@ -1,3 +1,5 @@
+import type { PublicUser } from "./user";
+
 export interface ChallengeConfig {
 	color?: "white" | "black" | "random";
 	rules?: ("noRematch" | "noDraw")[];
@@ -7,8 +9,10 @@ export interface ChallengeConfig {
 export interface Challenge {
 	id: number;
 	createdAt: Date;
-	from: string;
-	to: string;
+	fromId: string;
+	fromUser?: PublicUser;
+	toId: string;
+	toUser?: PublicUser;
 	rules: ("noRematch" | "noDraw")[];
 	challengerColor: "white" | "black" | "random";
 	timeLimit: number;

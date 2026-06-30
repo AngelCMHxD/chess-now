@@ -42,10 +42,10 @@ export const challengeStatus = pgEnum("challenge_status", [
 
 export const challenges = pgTable("challenge", {
 	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-	from: varchar("from")
+	fromId: varchar("from_id")
 		.references(() => user.id)
 		.notNull(),
-	to: varchar("to")
+	toId: varchar("to_id")
 		.references(() => user.id)
 		.notNull(),
 	rules: matchRules("rules").array().default([]).notNull(),
@@ -102,5 +102,15 @@ export const challengeRelations = relations(challenges, ({ one }) => ({
 	match: one(matches, {
 		fields: [challenges.matchId],
 		references: [matches.id],
+	}),
+	from: one(user, {
+		fields: [challenges.fromId],
+		references: [user.id],
+		relationName: "white_player",
+	}),
+	to: one(user, {
+		fields: [challenges.toId],
+		references: [user.id],
+		relationName: "black_player",
 	}),
 }));
