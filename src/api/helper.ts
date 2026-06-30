@@ -10,6 +10,14 @@ import { eq, or } from "drizzle-orm";
 import z from "zod";
 import { db, schemas, secondaryStorage } from "@/lib/database";
 
+const publicUserColumns = {
+	name: true,
+	id: true,
+	image: true,
+	createdAt: true,
+	updatedAt: true,
+} as const;
+
 export const subscribeEventsSchema = z.array(z.enum(["challenge", "match"]));
 
 export const moveSchema = z.object({
@@ -156,22 +164,10 @@ export async function getChallengeInfo(
 		with: {
 			match: true,
 			from: {
-				columns: {
-					name: true,
-					id: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-				},
+				columns: publicUserColumns,
 			},
 			to: {
-				columns: {
-					name: true,
-					id: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-				},
+				columns: publicUserColumns,
 			},
 		},
 	});
@@ -245,22 +241,10 @@ export async function getMatchInfo(
 		where: (matches, { eq }) => eq(matches.id, matchId),
 		with: {
 			blackPlayer: {
-				columns: {
-					name: true,
-					id: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-				},
+				columns: publicUserColumns,
 			},
 			whitePlayer: {
-				columns: {
-					name: true,
-					id: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-				},
+				columns: publicUserColumns,
 			},
 		},
 	});
@@ -349,22 +333,10 @@ export async function getUserMatches(userId: string): Promise<Match[]> {
 			or(eq(matches.whiteId, userId), eq(matches.blackId, userId)),
 		with: {
 			blackPlayer: {
-				columns: {
-					name: true,
-					id: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-				},
+				columns: publicUserColumns,
 			},
 			whitePlayer: {
-				columns: {
-					name: true,
-					id: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-				},
+				columns: publicUserColumns,
 			},
 		},
 	});
