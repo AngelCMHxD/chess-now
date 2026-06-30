@@ -23,6 +23,21 @@ api.setDefaultToken("main-account-token");
 
 const user = await api.getAccountInfo(); // To use the previously set default token
 const match = await api.getMatch(42, "another-account-token"); // To use a specific token
+
+// WebSocket
+api.connect();
+
+api.subscribe(); // subscribes you to all events you are authorized to receive with the default token
+// or
+api.subscribe(["challenge", "match"]); // subscribes you to specific events with the default token
+// or
+api.subscribe("another-account-token"); // subscribes you to all events you are authorized to receive with "another-account-token"
+// or
+api.subscribe("another-account-token", ["challenge", "match"]); // subscribes you to specific events with "another-account-token"
+
+api.on("challenge:request", ({ payload }) => {
+  console.log("New challenge from", payload.challenge.from);
+});
 ```
 
 ### HTTP Methods

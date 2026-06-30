@@ -1,5 +1,49 @@
 ---
 title: Introduction
+description: Chess Now! API & Package Documentation
 ---
 
-Here be docs
+Welcome to the Chess Now! developer docs. Here you'll find everything you need to use the Chess Now! API.
+
+## API Reference
+
+The [API Reference](/docs/openapi) has every single available and public HTTP endpoint. It's all auto-generated from the live OpenAPI spec. Meaning that it's always up-to-date with the latest API changes.
+
+While there is public WebSocket events available, they are not documented there. The best documentation for them is in the [WebSocket Events](/docs/api-wrapper/ws-events) and the [WebSocket Messages](/docs/api-wrapper/ws-messages) reference made for the `@chess-now/api` package.
+
+## Package Reference
+
+The [`@chess-now/api`](https://www.npmjs.com/package/@chess-now/api) npm package is the official TypeScript wrapper. It handles authentication, validation, and WebSocket events for you.
+
+- [Client](/docs/api-wrapper/client): `ChessNowClient` class with HTTP methods and WebSocket events
+- [Types](/docs/api-wrapper/types): All types used in the API
+- [Errors](/docs/api-wrapper/errors): Error classes thrown by the client
+- [WebSocket Messages](/docs/api-wrapper/ws-messages): Messages the client sends to the server through the ws connection
+- [WebSocket Events](/docs/api-wrapper/ws-events): Events and response payloads received from the server through the ws connection
+
+### Quick start
+
+```ts
+import { ChessNowClient } from "@chess-now/api";
+
+const api = new ChessNowClient("https://chess.example.com");
+api.setDefaultToken("main-account-token");
+
+const user = await api.getAccountInfo(); // To use the previously set default token
+const match = await api.getMatch(42, "another-account-token"); // To use a specific token
+
+// WebSocket
+api.connect();
+
+api.subscribe(); // subscribes you to all events you are authorized to receive with the default token
+// or
+api.subscribe(["challenge", "match"]); // subscribes you to specific events with the default token
+// or
+api.subscribe("another-account-token"); // subscribes you to all events you are authorized to receive with "another-account-token"
+// or
+api.subscribe("another-account-token", ["challenge", "match"]); // subscribes you to specific events with "another-account-token"
+
+api.on("challenge:request", ({ payload }) => {
+  console.log("New challenge from", payload.challenge.from);
+});
+```
