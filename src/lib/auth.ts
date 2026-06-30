@@ -31,7 +31,7 @@ const privateEndpoints = [
 ];
 
 export const auth = betterAuth({
-	baseURL: process.env.API_BASE_URL,
+	baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
 	trustedOrigins: [process.env.BASE_URL as string],
 	basePath: process.env.BETTER_AUTH_PATH,
 	plugins: [

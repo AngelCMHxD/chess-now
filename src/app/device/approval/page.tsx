@@ -22,7 +22,7 @@ export default function InputOTPForm() {
 	const handleApprove = async () => {
 		setSubmittingApprove(true);
 		const response = (await fetch(
-			`${process.env.API_ENDPOINT}/device/approve`,
+			`${process.env.NEXT_PUBLIC_API_ENDPOINT}/device/approve`,
 			{
 				method: "POST",
 				headers: {
@@ -54,7 +54,7 @@ export default function InputOTPForm() {
 	const handleDeny = async () => {
 		setSubmittingDeny(true);
 		const response = (await fetch(
-			`${process.env.API_ENDPOINT}/device/deny`,
+			`${process.env.NEXT_PUBLIC_API_ENDPOINT}/device/deny`,
 			{
 				method: "POST",
 				headers: {
