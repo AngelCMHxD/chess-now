@@ -26,6 +26,7 @@ export type {
 	MatchGameOverPayload,
 	MatchMovePayload,
 	Move,
+	PublicUser,
 	ServerMessage,
 	ServerResponse,
 	ServerResponseError,

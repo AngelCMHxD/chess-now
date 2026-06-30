@@ -19,6 +19,8 @@ import httpDenyChallenge from "./http/me/deny-challenge";
 import httpGetAccountInfo from "./http/me/get-account-info";
 import httpGetChallenges from "./http/me/get-challenges";
 import httpGetMatches from "./http/me/get-matches";
+import httpGetUserInfo from "./http/user/get-user-info";
+import httpGetUserMatches from "./http/user/get-user-matches";
 
 import wsSubscribe from "./websocket/subscribe";
 import watchDeviceAuth from "./websocket/watch-device-auth";
@@ -48,7 +50,11 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 					{
 						name: "Me",
-						description: "User account endpoints",
+						description: "Authenticated user data endpoints",
+					},
+					{
+						name: "User",
+						description: "User data endpoints",
 					},
 					{
 						name: "Device auth",
@@ -173,6 +179,30 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			tags: ["Me"],
 		},
 	})
+	.get(
+		"/user/:user_id",
+		({ request, params }) =>
+			httpGetUserInfo.run(request.headers, params.user_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Get user info",
+				tags: ["User"],
+			},
+		},
+	)
+	.get(
+		"/user/:user_id/matches",
+		({ request, params }) =>
+			httpGetUserMatches.run(request.headers, params.user_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Get user matches",
+				tags: ["User"],
+			},
+		},
+	)
 	.get(
 		"/match/:match_id",
 		({ params, request }) =>

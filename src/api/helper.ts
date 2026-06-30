@@ -1,4 +1,10 @@
-import type { Challenge, ChallengeConfig, Match } from "@chess-now/api";
+import type {
+	Challenge,
+	ChallengeConfig,
+	Match,
+	PublicUser,
+	User,
+} from "@chess-now/api";
 import type { Chess } from "chess.js";
 import { eq, or } from "drizzle-orm";
 import z from "zod";
@@ -219,16 +225,53 @@ export async function getMatchInfo(
 	return await db.query.matches.findFirst({
 		where: (matches, { eq }) => eq(matches.id, matchId),
 		with: {
-			whitePlayer: true,
-			blackPlayer: true,
+			blackPlayer: {
+				columns: {
+					name: true,
+					id: true,
+					image: true,
+					createdAt: true,
+					updatedAt: true,
+				},
+			},
+			whitePlayer: {
+				columns: {
+					name: true,
+					id: true,
+					image: true,
+					createdAt: true,
+					updatedAt: true,
+				},
+			},
 		},
 	});
 }
 
-export async function getUserInfo(userId: string) {
-	return (
-		await db.select().from(schemas.user).where(eq(schemas.user.id, userId))
-	)[0];
+export async function getUserInfo(
+	userId: string,
+	publicUser?: undefined,
+): Promise<User | undefined>;
+export async function getUserInfo(
+	userId: string,
+	publicUser: true,
+): Promise<PublicUser | undefined>;
+export async function getUserInfo(
+	userId: string,
+	publicUser: false,
+): Promise<User | undefined>;
+export async function getUserInfo(
+	userId: string,
+	publicUser: boolean = false,
+): Promise<User | PublicUser | undefined> {
+	const user = await db.query.user.findFirst({
+		where: (user, { eq }) => eq(user.id, userId),
+	});
+
+	if (!user || !publicUser) return user;
+
+	const { email, emailVerified, ...userWithoutEmail } = user;
+
+	return userWithoutEmail;
 }
 
 export async function updateBoard(
@@ -279,4 +322,45 @@ export async function endMatch(
 			status,
 		})
 		.where(eq(schemas.matches.id, matchId));
+}
+
+export async function getUserMatches(userId: string): Promise<Match[]> {
+	const matches = await db.query.matches.findMany({
+		where: (matches, { eq, or }) =>
+			or(eq(matches.whiteId, userId), eq(matches.blackId, userId)),
+		with: {
+			blackPlayer: {
+				columns: {
+					name: true,
+					id: true,
+					image: true,
+					createdAt: true,
+					updatedAt: true,
+				},
+			},
+			whitePlayer: {
+				columns: {
+					name: true,
+					id: true,
+					image: true,
+					createdAt: true,
+					updatedAt: true,
+				},
+			},
+		},
+	});
+
+	for (const [i, match] of matches.entries()) {
+		if (match.status !== "active") continue;
+
+		const activeMatch = (await secondaryStorage.get(
+			`match_${match.id}`,
+		)) as (typeof matches)[number];
+		if (!activeMatch) continue;
+
+		matches[i].fen = activeMatch.fen;
+		matches[i].pgn = activeMatch.pgn;
+	}
+
+	return matches;
 }

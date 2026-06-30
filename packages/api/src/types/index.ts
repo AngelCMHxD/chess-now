@@ -22,7 +22,7 @@ export type {
 	Move,
 } from "./match";
 
-export type { User } from "./user";
+export type { PublicUser, User } from "./user";
 
 export type {
 	ChallengeAcceptedPayload,

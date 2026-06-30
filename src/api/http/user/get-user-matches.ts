@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 
 export async function run(
 	headers: Headers,
+	userId: string,
 ): Promise<ApiSuccessResponse<Match[]>> {
 	const session = await auth.api.getSession({
 		headers,
@@ -12,7 +13,7 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	const matches = await getUserMatches(session.user.id);
+	const matches = await getUserMatches(userId);
 
 	return {
 		success: true,
