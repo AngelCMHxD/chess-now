@@ -57,6 +57,12 @@ Each return type links to its full definition on the Types page.
 | `makeMove(id, san, token?)`               | [`Move`](/docs/api-wrapper/types#move)                                                                         |
 | `initDeviceAuth(scopes)`                  | [`DeviceAuthInitResponse`](/docs/api-wrapper/types#deviceauthinitresponse)                                     |
 | `getDeviceToken(deviceCode)`              | [`DeviceTokenResponse`](/docs/api-wrapper/types#devicetokenresponse)                                           |
+| `getFriends(token?)`                      | [`Friendship[]`](/docs/api-wrapper/types#user)                                                                 |
+| `getFriendRequests(token?)`               | [`FriendRequest[]`](/docs/api-wrapper/types#user)                                                              |
+| `sendFriendRequest(userId, token?)`       | [`FriendRequest`](/docs/api-wrapper/types#user)                                                                |
+| `acceptFriendRequest(id, token?)`         | [`Friendship`](/docs/api-wrapper/types#user)                                                                   |
+| `denyFriendRequest(id, token?)`           | [`FriendRequest`](/docs/api-wrapper/types#user)                                                                |
+| `removeFriend(friendshipId, token?)`      | [`Friendship`](/docs/api-wrapper/types#user)                                                                   |
 
 ### WebSocket Events
 
@@ -72,6 +78,10 @@ Events starting with `response:` are sent so you can verify the success or failu
 | `match:board-move`           | [`MatchMovePayload`](/docs/api-wrapper/ws-events#matchboard-move)                         |
 | `match:game_over`            | [`MatchGameOverPayload`](/docs/api-wrapper/ws-events#matchgame_over)                      |
 | `device_auth`                | [`DeviceAuthPayload`](/docs/api-wrapper/ws-events#device_auth)                            |
+| `friend:request`             | [`FriendRequestPayload`](/docs/api-wrapper/ws-events#friendrequest)                       |
+| `friend:accepted`            | [`FriendAcceptedPayload`](/docs/api-wrapper/ws-events#friendaccepted)                     |
+| `friend:denied`              | [`FriendDeniedPayload`](/docs/api-wrapper/ws-events#frienddenied)                         |
+| `friend:removed`             | [`FriendRemovedPayload`](/docs/api-wrapper/ws-events#friendremoved)                       |
 | `response:subscribe`         | [`SubscribeResponsePayload`](/docs/api-wrapper/ws-events#responsesubscribe)               |
 | `response:watch_device_auth` | [`WatchDeviceAuthResponsePayload`](/docs/api-wrapper/ws-events#responsewatch_device_auth) |
 

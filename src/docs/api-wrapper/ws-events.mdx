@@ -5,7 +5,7 @@ description: Push events and response types for the WebSocket connection
 
 ## Push Events
 
-Listen with `client.on(event, handler)`.
+Listen with `client.on(event, callback)`.
 
 ### `challenge:request`
 
@@ -47,6 +47,34 @@ Listen with `client.on(event, handler)`.
 <AutoTypeTable
   path="packages/api/src/types/ws-events.ts"
   name="DeviceAuthPayload"
+/>
+
+### `friend:request`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="FriendRequestPayload"
+/>
+
+### `friend:accepted`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="FriendAcceptedPayload"
+/>
+
+### `friend:denied`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="FriendDeniedPayload"
+/>
+
+### `friend:removed`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="FriendRemovedPayload"
 />
 
 ## Response Events
