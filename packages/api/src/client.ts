@@ -49,8 +49,8 @@ const scopeSchema = z.enum(VALID_SCOPES, {
 const scopesSchema = z
 	.array(scopeSchema)
 	.min(1, "at least one scope is required");
-const eventSchema = z.enum(["challenge", "match"], {
-	error: "must be 'challenge' or 'match'",
+const eventSchema = z.enum(["challenge", "match", "friend"], {
+	error: "must be 'challenge', 'match', or 'friend'",
 });
 const eventsSchema = z.optional(
 	z.array(eventSchema).min(1, "at least one event is required"),

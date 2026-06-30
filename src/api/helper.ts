@@ -20,7 +20,9 @@ export const publicUserColumns = {
 	updatedAt: true,
 } as const;
 
-export const subscribeEventsSchema = z.array(z.enum(["challenge", "match"]));
+export const subscribeEventsSchema = z.array(
+	z.enum(["challenge", "match", "friend"]),
+);
 
 export const moveSchema = z.object({
 	players: z.object({

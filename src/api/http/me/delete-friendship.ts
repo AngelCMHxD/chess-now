@@ -2,6 +2,7 @@ import type { ApiSuccessResponse, Friendship } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
 import { publicUserColumns } from "@/api/helper";
+import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
@@ -42,6 +43,18 @@ export async function run(
 	await db
 		.delete(schemas.friendships)
 		.where(eq(schemas.friendships.id, friendshipIdNum));
+
+	const otherUserId =
+		friendship.userAId === session.user.id
+			? friendship.userBId
+			: friendship.userAId;
+
+	publishToSubscriber<"friend:removed">(
+		`friend:${otherUserId}`,
+		"friend:removed",
+		otherUserId,
+		{ friendship },
+	);
 
 	return {
 		success: true,

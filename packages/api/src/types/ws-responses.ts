@@ -10,7 +10,7 @@ export interface WatchDeviceAuthResponsePayload {
 	userCode: string;
 }
 
-export type SubscribeEvents = ("challenge" | "match")[];
+export type SubscribeEvents = ("challenge" | "match" | "friend")[];
 
 export interface SubscribeResponsePayload {
 	userId: string;

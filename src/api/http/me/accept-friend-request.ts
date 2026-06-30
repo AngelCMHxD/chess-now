@@ -2,6 +2,7 @@ import type { ApiSuccessResponse, Friendship } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
 import { publicUserColumns } from "@/api/helper";
+import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
@@ -61,6 +62,13 @@ export async function run(
 			},
 		});
 	})) as Friendship;
+
+	publishToSubscriber<"friend:accepted">(
+		`friend:${friendRequest.fromId}`,
+		"friend:accepted",
+		friendRequest.fromId,
+		{ friendship },
+	);
 
 	return {
 		success: true,

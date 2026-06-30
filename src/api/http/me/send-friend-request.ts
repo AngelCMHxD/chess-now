@@ -1,5 +1,6 @@
 import type { ApiSuccessResponse, FriendRequest } from "@chess-now/api";
 import { UnauthorizedError } from "@/api/errors";
+import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
@@ -29,6 +30,13 @@ export async function run(
 				eq(friendRequest.id, initialFriendRequest.id),
 		});
 	})) as FriendRequest;
+
+	publishToSubscriber<"friend:request">(
+		`friend:${toId}`,
+		"friend:request",
+		toId,
+		{ request },
+	);
 
 	return {
 		success: true,

@@ -2,6 +2,7 @@ import type { ApiSuccessResponse, FriendRequest } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
 import { publicUserColumns } from "@/api/helper";
+import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
@@ -46,6 +47,13 @@ export async function run(
 		.where(eq(schemas.friendRequests.id, requestIdNum));
 
 	friendRequest.status = "denied";
+
+	publishToSubscriber<"friend:denied">(
+		`friend:${friendRequest.fromId}`,
+		"friend:denied",
+		friendRequest.fromId,
+		{ request: friendRequest },
+	);
 
 	return {
 		success: true,
