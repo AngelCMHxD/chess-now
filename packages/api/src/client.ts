@@ -121,7 +121,7 @@ export class ChessNowClient {
 			throw new ChessNowError(
 				401,
 				"UNAUTHORIZED",
-				"Authentication is required — pass a token or call setDefaultToken",
+				"An authentication token is required. Pass a token or call setDefaultToken before making this request.",
 			);
 		}
 
