@@ -2,9 +2,10 @@
 import type { User } from "better-auth/types";
 import { BellIcon, SearchXIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Chessboard } from "react-chessboard";
 import type { Match } from "@/api/helper";
 import { AppSidebar } from "@/components/dashboard-sidebar";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { ThemedChessboard } from "@/components/themed-chessboard";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -15,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import {
 	Card,
-	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
@@ -27,6 +27,7 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
+import { formatMiliseconds } from "@/lib/utils";
 
 export default function MatchesPage() {
 	const [matches, setMatches] = useState<
@@ -83,7 +84,7 @@ export default function MatchesPage() {
 							</BreadcrumbList>
 						</Breadcrumb>
 					</div>
-					<div className="ms-auto me-5">
+					<div className="ms-auto me-5 flex gap-2">
 						<Button
 							variant="outline"
 							size="icon"
@@ -91,59 +92,99 @@ export default function MatchesPage() {
 						>
 							<BellIcon />
 						</Button>
+						<div className="flex justify-end max-w-full">
+							<ThemeSwitcher popupAlign="end" />
+						</div>
 					</div>
 				</header>
-				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-					<div className="grid grid-cols-3 gap-4 w-full">
-						{matches.map((match) => (
-							<Card
-								size="default"
-								className="w-full overflow-hidden p-0"
-								key={match.id}
-							>
-								<div className="flex flex-col md:flex-row">
-									<div className="flex flex-col justify-between w-full">
-										<CardHeader>
-											<CardTitle className="pt-4">
-												{match.whitePlayer.name} vs{" "}
-												{match.blackPlayer.name}
-											</CardTitle>
-											<CardDescription>
-												Duration:{" "}
-												{match.finishedAt?.toLocaleDateString()}
-											</CardDescription>
-										</CardHeader>
-										<CardContent>
-											<p>
-												* Winner:{" "}
-												{match.status === "white_won"
-													? match.whitePlayer.name
-													: match.status ===
-															"black_won"
-														? match.blackPlayer.name
-														: "Draw"}
-											</p>
-										</CardContent>
-									</div>
-									<div className="w-1/2 aspect-square">
-										<Chessboard
-											options={{
-												allowDragging: false,
-												position: match.fen,
-											}}
-										/>
-									</div>
-								</div>
-							</Card>
-						))}
-					</div>
-					<div className="min-h-screen flex-1 rounded-xl bg-muted/50 md:min-h-min">
-						{matches && matches.length === 0 && (
-							<div className="w-full h-full flex flex-col justify-center items-center gap-1">
-								<SearchXIcon />
-								<p>No matches found.</p>
+				<div className="p-5">
+					<div className="min-h-screen flex-1 rounded-xl bg-muted/50 md:min-h-min pt-4">
+						<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+							<div className="grid grid-cols-3 gap-4 w-full">
+								{matches.map((match) => (
+									<Card
+										size="default"
+										className="w-full overflow-hidden p-0"
+										key={match.id}
+									>
+										<div className="flex flex-col md:flex-row">
+											<div className="flex flex-col justify-between w-full">
+												<CardHeader>
+													<CardTitle className="pt-4">
+														{match.whitePlayer.name}{" "}
+														vs{" "}
+														{match.blackPlayer.name}
+													</CardTitle>
+													<CardDescription>
+														{match.status ===
+														"active" ? (
+															<p>
+																Started at:{" "}
+																{match.createdAt?.toLocaleString()}
+																<br />
+																Active
+															</p>
+														) : (
+															<p>
+																Duration:{" "}
+																{formatMiliseconds(
+																	(match.finishedAt?.getTime() ||
+																		0) -
+																		match.createdAt?.getTime(),
+																)}
+																<br />
+																{match.endReason ===
+																"checkmate"
+																	? `Winner: ${
+																			match.status ===
+																			"white_won"
+																				? match
+																						.whitePlayer
+																						.name
+																				: match
+																						.blackPlayer
+																						.name
+																		}`
+																	: `Draw: ${(() => {
+																			switch (
+																				match.endReason
+																			) {
+																				case "50-moves":
+																					return "50 Moves";
+																				case "insufficient-material":
+																					return "Insufficient Material";
+																				case "draw":
+																					return "Draw";
+																				case "stalemate":
+																					return "Stalemate";
+																				default:
+																					return "Unknown";
+																			}
+																		})()}`}
+															</p>
+														)}
+													</CardDescription>
+												</CardHeader>
+											</div>
+											<div className="w-1/2 aspect-square">
+												<ThemedChessboard
+													options={{
+														allowDragging: false,
+														position: match.fen,
+													}}
+												/>
+											</div>
+										</div>
+									</Card>
+								))}
 							</div>
-						)}
+							{matches && matches.length === 0 && (
+								<div className="w-full h-full flex flex-col justify-center items-center gap-1 pb-4">
+									<SearchXIcon />
+									<p>No matches found.</p>
+								</div>
+							)}
+						</div>
 					</div>
 				</div>
 			</SidebarInset>
