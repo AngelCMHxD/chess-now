@@ -7,6 +7,8 @@ import type {
 	DeviceAuthInitResponse,
 	DeviceAuthPayload,
 	DeviceTokenResponse,
+	FriendRequest,
+	Friendship,
 	Match,
 	Move,
 	SubscribeEvents,
@@ -136,6 +138,64 @@ export class ChessNowClient {
 
 	async getMyMatches(token?: string): Promise<Match[]> {
 		return this._fetch<Match[]>("/me/matches", { token });
+	}
+
+	async getFriends(token?: string): Promise<Friendship[]> {
+		return this._fetch<Friendship[]>("/me/friends", { token });
+	}
+
+	async getFriendRequests(token?: string): Promise<FriendRequest[]> {
+		return this._fetch<FriendRequest[]>("/me/friend-requests", { token });
+	}
+
+	async sendFriendRequest(
+		userId: string,
+		token?: string,
+	): Promise<FriendRequest> {
+		assert(nonEmptyStr, userId, "userId");
+		return this._fetch<FriendRequest>(`/me/friends/add/${userId}`, {
+			method: "POST",
+			token,
+		});
+	}
+
+	async acceptFriendRequest(
+		friendRequestId: string,
+		token?: string,
+	): Promise<Friendship> {
+		assert(nonEmptyStr, friendRequestId, "friendRequestId");
+		return this._fetch<Friendship>(
+			`/me/friend-requests/${friendRequestId}/accept`,
+			{
+				method: "POST",
+				token,
+			},
+		);
+	}
+
+	async denyFriendRequest(
+		friendRequestId: string,
+		token?: string,
+	): Promise<FriendRequest> {
+		assert(nonEmptyStr, friendRequestId, "friendRequestId");
+		return this._fetch<FriendRequest>(
+			`/me/friend-requests/${friendRequestId}/deny`,
+			{
+				method: "POST",
+				token,
+			},
+		);
+	}
+
+	async removeFriend(
+		friendshipId: string,
+		token?: string,
+	): Promise<Friendship> {
+		assert(nonEmptyStr, friendshipId, "friendshipId");
+		return this._fetch<Friendship>(`/me/friends/${friendshipId}`, {
+			method: "DELETE",
+			token,
+		});
 	}
 
 	async getChallenge(
