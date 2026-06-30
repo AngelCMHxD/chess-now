@@ -1,0 +1,33 @@
+---
+title: WebSocket Messages
+description: Messages the client sends to the server over WebSocket
+---
+
+Messages sent by `ChessNowClient` over the WebSocket connection. The client sends these automatically when you call `subscribe()` or `watchDeviceAuth()`.
+
+## ClientMessage
+
+The union type for all outgoing messages.
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-messages.ts"
+  name="ClientMessage"
+/>
+
+### `subscribe`
+
+Sent when you call `client.subscribe(token, events)`. The server authenticates the token and subscribes the connection to the requested event channels.
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-messages.ts"
+  name="SubscribeMessage"
+/>
+
+### `watch_device_auth`
+
+Sent when you call `client.watchDeviceAuth(userCode, deviceCode)`. The server starts watching the device auth flow and sends back events when the user approves or denies.
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-messages.ts"
+  name="WatchDeviceAuthMessage"
+/>

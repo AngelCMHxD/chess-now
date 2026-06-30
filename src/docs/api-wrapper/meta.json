@@ -1,4 +1,4 @@
 {
 	"title": "Package Reference",
-	"pages": ["client", "types", "errors", "websocket"]
+	"pages": ["client", "types", "errors", "ws-messages", "ws-events"]
 }
