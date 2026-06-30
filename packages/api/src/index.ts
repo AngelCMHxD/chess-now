@@ -18,6 +18,7 @@ export type {
 	ChallengeConfig,
 	ChallengeDeniedPayload,
 	ChallengeRequestPayload,
+	ClientMessage,
 	DeviceAuthInitResponse,
 	DeviceAuthPayload,
 	DeviceTokenResponse,
@@ -30,12 +31,14 @@ export type {
 	ServerResponseError,
 	ServerResponseSuccess,
 	SubscribeEvents,
+	SubscribeMessage,
 	SubscribeResponsePayload,
 	User,
+	WSErrorPayload,
+	WatchDeviceAuthMessage,
 	WatchDeviceAuthResponsePayload,
 	WebSocketEvent,
 	WebSocketResponse,
-	WSErrorPayload,
 	WsPushEvent,
 } from "./types";
 export { VALID_SCOPES } from "./types";

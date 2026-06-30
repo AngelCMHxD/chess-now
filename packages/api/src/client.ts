@@ -3,13 +3,16 @@ import { ChessNowError } from "./errors";
 import type {
 	Challenge,
 	ChallengeConfig,
+	ClientMessage,
 	DeviceAuthInitResponse,
 	DeviceAuthPayload,
 	DeviceTokenResponse,
 	Match,
 	Move,
 	SubscribeEvents,
+	SubscribeMessage,
 	User,
+	WatchDeviceAuthMessage,
 	WebSocketEvent,
 } from "./types";
 import { VALID_SCOPES } from "./types";
@@ -51,28 +54,6 @@ const eventsSchema = z.union([
 	z.literal("all"),
 	z.array(eventSchema).min(1, "at least one event is required, or use 'all'"),
 ]);
-
-type ClientMessage =
-	| {
-			type: "subscribe";
-			content: {
-				events: string[];
-				authorization: string;
-			};
-	  }
-	| {
-			type: "watch_device_auth";
-			content: {
-				userCode: string;
-				deviceCode: string;
-			};
-	  };
-
-type SubscribeMessage = Extract<ClientMessage, { type: "subscribe" }>;
-type WatchDeviceAuthMessage = Extract<
-	ClientMessage,
-	{ type: "watch_device_auth" }
->;
 
 export class ChessNowClient {
 	/** @internal */
