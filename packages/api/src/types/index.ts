@@ -34,21 +34,19 @@ export type {
 	ServerMessage,
 	WsPushEvent,
 } from "./ws-events";
-
+export type {
+	ClientMessage,
+	SubscribeMessage,
+	WatchDeviceAuthMessage,
+} from "./ws-messages";
 export type {
 	ServerResponse,
 	ServerResponseError,
 	ServerResponseSuccess,
 	SubscribeEvents,
 	SubscribeResponsePayload,
-	WSErrorPayload,
 	WatchDeviceAuthResponsePayload,
 	WebSocketEvent,
 	WebSocketResponse,
+	WSErrorPayload,
 } from "./ws-responses";
-
-export type {
-	ClientMessage,
-	SubscribeMessage,
-	WatchDeviceAuthMessage,
-} from "./ws-messages";

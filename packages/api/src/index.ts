@@ -34,11 +34,11 @@ export type {
 	SubscribeMessage,
 	SubscribeResponsePayload,
 	User,
-	WSErrorPayload,
 	WatchDeviceAuthMessage,
 	WatchDeviceAuthResponsePayload,
 	WebSocketEvent,
 	WebSocketResponse,
+	WSErrorPayload,
 	WsPushEvent,
 } from "./types";
 export { VALID_SCOPES } from "./types";
