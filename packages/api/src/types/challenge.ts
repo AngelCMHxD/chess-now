@@ -10,9 +10,9 @@ export interface Challenge {
 	id: number;
 	createdAt: Date;
 	fromId: string;
-	fromUser?: PublicUser;
+	from?: PublicUser;
 	toId: string;
-	toUser?: PublicUser;
+	to?: PublicUser;
 	rules: ("noRematch" | "noDraw")[];
 	challengerColor: "white" | "black" | "random";
 	timeLimit: number;
