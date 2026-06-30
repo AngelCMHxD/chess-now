@@ -75,19 +75,29 @@ type WatchDeviceAuthMessage = Extract<
 >;
 
 export class ChessNowClient {
+	/** @internal */
 	private baseUrl: string;
+	/** @internal */
 	private defaultToken?: string;
 
+	/** @internal */
 	private ws: WebSocket | null = null;
+	/** @internal */
 	private wsUrl: string;
+	/** @internal */
 	private handlers = new Map<string, Handler[]>();
+	/** @internal */
 	private subscriptions: Array<{ token: string; events: string[] }> = [];
+	/** @internal */
 	private deviceAuthWatchers: Array<{
 		userCode: string;
 		deviceCode: string;
 	}> = [];
+	/** @internal */
 	private reconnectAttempts = 0;
+	/** @internal */
 	private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+	/** @internal */
 	private intentionalClose = false;
 
 	constructor(baseUrl: string) {
@@ -100,6 +110,7 @@ export class ChessNowClient {
 		this.defaultToken = token;
 	}
 
+	/** @internal */
 	private async _fetch<T>(
 		path: string,
 		init: RequestInit & { token?: string; auth?: false } = {},
@@ -307,6 +318,7 @@ export class ChessNowClient {
 		if (i !== -1) list.splice(i, 1);
 	}
 
+	/** @internal */
 	private _open(): void {
 		this.ws = new WebSocket(this.wsUrl);
 
@@ -348,12 +360,14 @@ export class ChessNowClient {
 		};
 	}
 
+	/** @internal */
 	private _send<T extends ClientMessage>(message: T): void {
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			this.ws.send(JSON.stringify(message));
 		}
 	}
 
+	/** @internal */
 	private _handleMessage(data: string): void {
 		let parsed: Record<string, unknown>;
 		try {
@@ -388,6 +402,7 @@ export class ChessNowClient {
 		}
 	}
 
+	/** @internal */
 	private _scheduleReconnect(): void {
 		if (this.intentionalClose) return;
 

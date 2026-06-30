@@ -1,0 +1,75 @@
+---
+title: WebSocket Events
+description: Push events and response types for the WebSocket connection
+---
+
+## Push Events
+
+Listen with `client.on(event, handler)`.
+
+### `challenge:request`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="ChallengeRequestPayload"
+/>
+
+### `challenge:accepted`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="ChallengeAcceptedPayload"
+/>
+
+### `challenge:denied`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="ChallengeDeniedPayload"
+/>
+
+### `match:board-move`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="MatchMovePayload"
+/>
+
+### `match:game_over`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="MatchGameOverPayload"
+/>
+
+### `device_auth`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-events.ts"
+  name="DeviceAuthPayload"
+/>
+
+## Response Events
+
+Listen with `client.on("response:...", handler)`.
+
+### `response:subscribe`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-responses.ts"
+  name="SubscribeResponsePayload"
+/>
+
+### `response:watch_device_auth`
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-responses.ts"
+  name="WatchDeviceAuthResponsePayload"
+/>
+
+### Error payload
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-responses.ts"
+  name="WSErrorPayload"
+/>

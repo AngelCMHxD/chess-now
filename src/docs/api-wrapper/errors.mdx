@@ -1,0 +1,31 @@
+---
+title: Errors
+description: Error classes thrown by ChessNowClient
+---
+
+<AutoTypeTable path="packages/api/src/errors.ts" name="ChessNowError" />
+
+## Subclasses
+
+| Class                       | Status | Code                    |
+| --------------------------- | ------ | ----------------------- |
+| `BadRequestError`           | 400    | `BAD_REQUEST`           |
+| `UnauthorizedError`         | 401    | `UNAUTHORIZED`          |
+| `ForbiddenError`            | 403    | `FORBIDDEN`             |
+| `NotFoundError`             | 404    | `NOT_FOUND`             |
+| `ConflictError`             | 409    | `CONFLICT`              |
+| `UnprocessableContentError` | 422    | `UNPROCESSABLE_CONTENT` |
+
+```ts
+import { ChessNowError, UnauthorizedError } from "@chess-now/api";
+
+try {
+  await api.getAccountInfo();
+} catch (e) {
+  if (e instanceof UnauthorizedError) {
+    console.log("Not logged in");
+  } else if (e instanceof ChessNowError) {
+    console.log(e.status, e.code, e.message);
+  }
+}
+```

@@ -1,0 +1,65 @@
+---
+title: Client
+description: The ChessNowClient Class
+---
+
+## ChessNowClient
+
+You should probably create only one instance. All HTTP methods throw `ChessNowError` on failure.
+
+You can set a default token or specify a token for each request.
+
+This is useful if you build a client that needs to make requests on behalf of multiple users, while keeping it simple for clients that only need to make requests on behalf of a single user.
+
+Even if you only need to make requests on behalf of a single user at a time, being able to set a token per request could prove useful. For example, if you setup an account switcher.
+
+### Usage
+
+```ts
+import { ChessNowClient } from "@chess-now/api";
+
+const api = new ChessNowClient("https://chess.example.com");
+api.setDefaultToken("main-account-token");
+
+const user = await api.getAccountInfo(); // To use the previously set default token
+const match = await api.getMatch(42, "another-account-token"); // To use a specific token
+```
+
+### HTTP Methods
+
+Each return type links to its full definition on the Types page.
+
+| Method                                    | Returns                                                                                                        |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `getAccountInfo(token?)`                  | [`User`](/docs/api-wrapper/types#user)                                                                         |
+| `getMyChallenges(token?)`                 | [`Challenge[]`](/docs/api-wrapper/types#challenge)                                                             |
+| `getMyMatches(token?)`                    | [`Match[]`](/docs/api-wrapper/types#match)                                                                     |
+| `getChallenge(id, token?)`                | [`Challenge`](/docs/api-wrapper/types#challenge)                                                               |
+| `requestChallenge(uid, options?, token?)` | [`Challenge`](/docs/api-wrapper/types#challenge)                                                               |
+| `acceptChallenge(id, token?)`             | \{ challenge: [Challenge](/docs/api-wrapper/types#challenge), match: [Match](/docs/api-wrapper/types#match) \} |
+| `denyChallenge(id, token?)`               | \{ challenge: [Challenge](/docs/api-wrapper/types#challenge) \}                                                |
+| `getMatch(id, token?)`                    | [`Match`](/docs/api-wrapper/types#match)                                                                       |
+| `makeMove(id, san, token?)`               | [`Move`](/docs/api-wrapper/types#move)                                                                         |
+| `initDeviceAuth(scopes)`                  | [`DeviceAuthInitResponse`](/docs/api-wrapper/types#deviceauthinitresponse)                                     |
+| `getDeviceToken(deviceCode)`              | [`DeviceTokenResponse`](/docs/api-wrapper/types#devicetokenresponse)                                           |
+
+### WebSocket Events
+
+Each payload links to its full definition on the WebSocket Events page.
+
+Events starting with `response:` are sent so you can verify the success or failure of a websocket request, as they don't have the usual flow of a HTTP request.
+
+| Event                        | Payload                                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------------------- |
+| `challenge:request`          | [`ChallengeRequestPayload`](/docs/api-wrapper/websocket#challengerequest)                 |
+| `challenge:accepted`         | [`ChallengeAcceptedPayload`](/docs/api-wrapper/websocket#challengeaccepted)               |
+| `challenge:denied`           | [`ChallengeDeniedPayload`](/docs/api-wrapper/websocket#challengedenied)                   |
+| `match:board-move`           | [`MatchMovePayload`](/docs/api-wrapper/websocket#matchboard-move)                         |
+| `match:game_over`            | [`MatchGameOverPayload`](/docs/api-wrapper/websocket#matchgame_over)                      |
+| `device_auth`                | [`DeviceAuthPayload`](/docs/api-wrapper/websocket#device_auth)                            |
+| `response:subscribe`         | [`SubscribeResponsePayload`](/docs/api-wrapper/websocket#responsesubscribe)               |
+| `response:watch_device_auth` | [`WatchDeviceAuthResponsePayload`](/docs/api-wrapper/websocket#responsewatch_device_auth) |
+
+## Full API
+
+<AutoTypeTable path="packages/api/src/client.ts" name="ChessNowClient" />
