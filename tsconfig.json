@@ -19,6 +19,7 @@
 			}
 		],
 		"paths": {
+			"@chess-now/api": ["./packages/api/src"],
 			"@/*": ["./src/*"]
 		}
 	},

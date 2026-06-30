@@ -1,3 +1,4 @@
+import type { ApiSuccessResponse, Match } from "@chess-now/api";
 import {
 	BadRequestError,
 	NotFoundError,
@@ -6,7 +7,10 @@ import {
 import { getMatchInfo } from "@/api/helper";
 import { auth } from "@/lib/auth";
 
-export async function run(headers: Headers, matchId: string) {
+export async function run(
+	headers: Headers,
+	matchId: string,
+): Promise<ApiSuccessResponse<Match>> {
 	const session = await auth.api.getSession({
 		headers,
 	});

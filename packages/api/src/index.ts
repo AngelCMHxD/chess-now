@@ -1,0 +1,41 @@
+export { ChessNowClient } from "./client";
+export type { ErrorPayload } from "./errors";
+export {
+	BadRequestError,
+	ChessNowError,
+	ConflictError,
+	ForbiddenError,
+	NotFoundError,
+	UnauthorizedError,
+	UnprocessableContentError,
+} from "./errors";
+export type {
+	ApiErrorResponse,
+	ApiResponse,
+	ApiSuccessResponse,
+	Challenge,
+	ChallengeAcceptedPayload,
+	ChallengeConfig,
+	ChallengeDeniedPayload,
+	ChallengeRequestPayload,
+	DeviceAuthInitResponse,
+	DeviceAuthPayload,
+	DeviceTokenResponse,
+	Match,
+	MatchGameOverPayload,
+	MatchMovePayload,
+	Move,
+	ServerMessage,
+	ServerResponse,
+	ServerResponseError,
+	ServerResponseSuccess,
+	SubscribeEvents,
+	SubscribeResponsePayload,
+	User,
+	WatchDeviceAuthResponsePayload,
+	WebSocketEvent,
+	WebSocketResponse,
+	WSErrorPayload,
+	WsPushEvent,
+} from "./types";
+export { VALID_SCOPES } from "./types";

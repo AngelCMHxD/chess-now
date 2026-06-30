@@ -1,8 +1,11 @@
+import type { ApiSuccessResponse, Match } from "@chess-now/api";
 import { UnauthorizedError } from "@/api/errors";
 import { auth } from "@/lib/auth";
 import { db, secondaryStorage } from "@/lib/database";
 
-export async function run(headers: Headers) {
+export async function run(
+	headers: Headers,
+): Promise<ApiSuccessResponse<Match[]>> {
 	const session = await auth.api.getSession({
 		headers,
 	});

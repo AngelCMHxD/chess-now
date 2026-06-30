@@ -1,12 +1,15 @@
 import z from "zod";
 import { ForbiddenError } from "@/api/errors";
 import { auth } from "@/lib/auth";
+import type { ApiSuccessResponse, DeviceTokenResponse } from "@chess-now/api";
 
 export const bodyType = z.object({
 	deviceCode: z.string(),
 });
 
-export async function run(body: z.infer<typeof bodyType>) {
+export async function run(
+	body: z.infer<typeof bodyType>,
+): Promise<ApiSuccessResponse<DeviceTokenResponse>> {
 	const headers = new Headers();
 	headers.set("x-internal-call", process.env.INTERNAL_API_SECRET as string);
 
@@ -41,7 +44,9 @@ export async function run(body: z.infer<typeof bodyType>) {
 	return {
 		success: true,
 		data: {
-			...deviceToken,
+			accessToken: deviceToken.access_token,
+			tokenType: deviceToken.token_type,
+			expiresIn: deviceToken.expires_in,
 			scope: deviceToken.scope.split(" "),
 		},
 	};

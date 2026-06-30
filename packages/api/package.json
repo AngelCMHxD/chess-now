@@ -1,0 +1,19 @@
+{
+	"name": "@chess-now/api",
+	"description": "The official API wrapper for Chess Now!",
+	"license": "MIT",
+	"maintainers": [
+		"AngelCMHxD"
+	],
+	"module": "src/index.ts",
+	"type": "module",
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"zod": "^4.4.3"
+	}
+}

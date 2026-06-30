@@ -1,4 +1,5 @@
-import { Chess, type Move } from "chess.js";
+import type { ApiSuccessResponse, Move } from "@chess-now/api";
+import { Chess, type Move as ChessMove } from "chess.js";
 import { eq } from "drizzle-orm";
 import z from "zod";
 import {
@@ -24,7 +25,7 @@ export async function run(
 	headers: Headers,
 	matchId: string,
 	body: z.infer<typeof bodyType>,
-) {
+): Promise<ApiSuccessResponse<Move>> {
 	const session = await auth.api.getSession({
 		headers,
 	});
@@ -63,7 +64,7 @@ export async function run(
 	const pgnBefore = chess.pgn();
 	if (roles[session.user.id] !== turnBefore) throw new ConflictError();
 
-	let move: Move;
+	let move: ChessMove;
 
 	try {
 		move = chess.move(body.move);

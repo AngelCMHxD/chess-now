@@ -1,10 +1,10 @@
+import type { Challenge, ChallengeConfig, Match } from "@chess-now/api";
 import type { Chess } from "chess.js";
 import { eq, or } from "drizzle-orm";
 import z from "zod";
 import { db, schemas, secondaryStorage } from "@/lib/database";
 
 export const subscribeEventsSchema = z.array(z.enum(["challenge", "match"]));
-export type SubscribeEvents = z.infer<typeof subscribeEventsSchema>;
 
 export const moveSchema = z.object({
 	players: z.object({
@@ -28,8 +28,6 @@ export const moveSchema = z.object({
 	piece: z.string(),
 });
 
-export type Move = z.infer<typeof moveSchema>;
-
 export const matchSchema = z.object({
 	id: z.number().int(),
 	createdAt: z.date(),
@@ -50,8 +48,6 @@ export const matchSchema = z.object({
 	finishedAt: z.date().nullable(),
 });
 
-export type Match = z.infer<typeof matchSchema>;
-
 export const challengeSchema = z.object({
 	id: z.number().int(),
 	createdAt: z.date(),
@@ -63,8 +59,6 @@ export const challengeSchema = z.object({
 	status: z.enum(["pending", "denied", "expired", "ongoing", "finished"]),
 	matchId: z.number().int().nullable(),
 });
-
-export type Challenge = z.infer<typeof challengeSchema>;
 
 export const authHeadersSchema = z
 	.looseObject({
@@ -121,7 +115,7 @@ export const challengeConfig = z.object(
 export async function createChallenge(
 	challengerId: string,
 	challengedId: string,
-	config?: z.infer<typeof challengeConfig>,
+	config?: ChallengeConfig,
 ): Promise<Challenge> {
 	return (
 		await db

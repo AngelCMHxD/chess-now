@@ -1,3 +1,4 @@
+import type { ApiSuccessResponse, Challenge } from "@chess-now/api";
 import z from "zod";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
 import { challengeConfig, createChallenge, getUserInfo } from "@/api/helper";
@@ -10,7 +11,7 @@ export async function run(
 	headers: Headers,
 	oponentId: string,
 	options: z.infer<typeof bodyType>,
-) {
+): Promise<ApiSuccessResponse<Challenge>> {
 	const session = await auth.api.getSession({
 		headers,
 	});

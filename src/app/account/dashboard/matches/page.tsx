@@ -1,8 +1,8 @@
 "use client";
+import type { Match } from "@chess-now/api";
 import type { User } from "better-auth/types";
 import { BellIcon, SearchXIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { Match } from "@/api/helper";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { ThemedChessboard } from "@/components/themed-chessboard";

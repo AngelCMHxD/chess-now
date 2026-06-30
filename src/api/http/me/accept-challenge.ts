@@ -1,3 +1,4 @@
+import type { ApiSuccessResponse, Challenge, Match } from "@chess-now/api";
 import {
 	BadRequestError,
 	ForbiddenError,
@@ -8,7 +9,10 @@ import { acceptChallenge, getChallengeInfo } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 
-export async function run(headers: Headers, challengeId: string) {
+export async function run(
+	headers: Headers,
+	challengeId: string,
+): Promise<ApiSuccessResponse<{ challenge: Challenge; match: Match }>> {
 	const session = await auth.api.getSession({
 		headers,
 	});

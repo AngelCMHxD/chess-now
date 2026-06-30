@@ -1,3 +1,4 @@
+import type { ApiSuccessResponse, Challenge } from "@chess-now/api";
 import { and, eq } from "drizzle-orm";
 import {
 	BadRequestError,
@@ -10,7 +11,10 @@ import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
-export async function run(headers: Headers, challengeId: string) {
+export async function run(
+	headers: Headers,
+	challengeId: string,
+): Promise<ApiSuccessResponse<{ challenge: Challenge }>> {
 	const session = await auth.api.getSession({
 		headers,
 	});
