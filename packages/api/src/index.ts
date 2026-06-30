@@ -22,6 +22,8 @@ export type {
 	DeviceAuthInitResponse,
 	DeviceAuthPayload,
 	DeviceTokenResponse,
+	FriendRequest,
+	Friendship,
 	Match,
 	MatchGameOverPayload,
 	MatchMovePayload,

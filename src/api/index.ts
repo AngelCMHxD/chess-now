@@ -15,10 +15,17 @@ import httpDeviceToken from "./http/device/device-token";
 import httpGetMatchInfo from "./http/match/get-match-info";
 import httpMove from "./http/match/move";
 import httpAcceptChallenge from "./http/me/accept-challenge";
+import httpAcceptFriendRequest from "./http/me/accept-friend-request";
+import httpDeleteFriendship from "./http/me/delete-friendship";
 import httpDenyChallenge from "./http/me/deny-challenge";
+import httpDenyFriendRequest from "./http/me/deny-friend-request";
 import httpGetAccountInfo from "./http/me/get-account-info";
 import httpGetChallenges from "./http/me/get-challenges";
+import httpGetFriendRequests from "./http/me/get-friend-requests";
+import httpGetFriends from "./http/me/get-friends";
 import httpGetMatches from "./http/me/get-matches";
+import httpSendFriendRequest from "./http/me/send-friend-request";
+import httpGetUserFriends from "./http/user/get-user-friends";
 import httpGetUserInfo from "./http/user/get-user-info";
 import httpGetUserMatches from "./http/user/get-user-matches";
 
@@ -43,6 +50,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					{
 						name: "Challenges",
 						description: "Challenge endpoints",
+					},
+					{
+						name: "Friends",
+						description: "Friend request and friendship endpoints",
 					},
 					{
 						name: "Matches",
@@ -172,6 +183,72 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			tags: ["Me"],
 		},
 	})
+	.post(
+		"/me/friends/add/:uid",
+		({ params, request }) =>
+			httpSendFriendRequest.run(request.headers, params.uid),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Send a friend request",
+				tags: ["Friends"],
+			},
+		},
+	)
+	.get(
+		"/me/friend-requests",
+		({ request }) => httpGetFriendRequests.run(request.headers),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Get your pending friend requests",
+				tags: ["Friends"],
+			},
+		},
+	)
+	.post(
+		"/me/friend-requests/:request_id/accept",
+		({ request, params }) =>
+			httpAcceptFriendRequest.run(request.headers, params.request_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Accept a friend request",
+				tags: ["Friends"],
+			},
+		},
+	)
+	.post(
+		"/me/friend-requests/:request_id/deny",
+		({ request, params }) =>
+			httpDenyFriendRequest.run(request.headers, params.request_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Deny a friend request",
+				tags: ["Friends"],
+			},
+		},
+	)
+	.get("/me/friends", ({ request }) => httpGetFriends.run(request.headers), {
+		headers: authHeadersSchema,
+		detail: {
+			summary: "Get your friends list",
+			tags: ["Friends"],
+		},
+	})
+	.delete(
+		"/me/friends/:friendship_id",
+		({ request, params }) =>
+			httpDeleteFriendship.run(request.headers, params.friendship_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Remove a friend",
+				tags: ["Friends"],
+			},
+		},
+	)
 	.get("/me", ({ request }) => httpGetAccountInfo.run(request.headers), {
 		headers: authHeadersSchema,
 		detail: {
@@ -199,6 +276,18 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: authHeadersSchema,
 			detail: {
 				summary: "Get user matches",
+				tags: ["User"],
+			},
+		},
+	)
+	.get(
+		"/user/:user_id/friends",
+		({ request, params }) =>
+			httpGetUserFriends.run(request.headers, params.user_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Get user friends",
 				tags: ["User"],
 			},
 		},

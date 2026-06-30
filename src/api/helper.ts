@@ -1,6 +1,8 @@
 import type {
 	Challenge,
 	ChallengeConfig,
+	FriendRequest,
+	Friendship,
 	Match,
 	PublicUser,
 	User,
@@ -10,7 +12,7 @@ import { eq, or } from "drizzle-orm";
 import z from "zod";
 import { db, schemas, secondaryStorage } from "@/lib/database";
 
-const publicUserColumns = {
+export const publicUserColumns = {
 	name: true,
 	id: true,
 	image: true,
@@ -354,4 +356,39 @@ export async function getUserMatches(userId: string): Promise<Match[]> {
 	}
 
 	return matches;
+}
+
+export async function getFriendRequests(
+	userId: string,
+): Promise<FriendRequest[]> {
+	const requests = await db.query.friendRequests.findMany({
+		where: (requests, { eq }) => eq(requests.toId, userId),
+		with: {
+			from: {
+				columns: publicUserColumns,
+			},
+			to: {
+				columns: publicUserColumns,
+			},
+		},
+	});
+
+	return requests;
+}
+
+export async function getFriendships(userId: string): Promise<Friendship[]> {
+	const friends = await db.query.friendships.findMany({
+		where: (friends, { eq, or }) =>
+			or(eq(friends.userAId, userId), eq(friends.userBId, userId)),
+		with: {
+			userA: {
+				columns: publicUserColumns,
+			},
+			userB: {
+				columns: publicUserColumns,
+			},
+		},
+	});
+
+	return friends;
 }
