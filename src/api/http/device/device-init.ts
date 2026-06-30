@@ -1,8 +1,8 @@
-import { VALID_SCOPES } from "@chess-now/api";
 import type {
 	ApiSuccessResponse,
 	DeviceAuthInitResponse,
 } from "@chess-now/api";
+import { VALID_SCOPES } from "@chess-now/api";
 import z from "zod";
 import { auth } from "@/lib/auth";
 

@@ -1,7 +1,7 @@
+import type { ApiSuccessResponse, DeviceTokenResponse } from "@chess-now/api";
 import z from "zod";
 import { ForbiddenError } from "@/api/errors";
 import { auth } from "@/lib/auth";
-import type { ApiSuccessResponse, DeviceTokenResponse } from "@chess-now/api";
 
 export const bodyType = z.object({
 	deviceCode: z.string(),
