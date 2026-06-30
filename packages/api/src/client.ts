@@ -50,10 +50,9 @@ const scopesSchema = z
 const eventSchema = z.enum(["challenge", "match"], {
 	error: "must be 'challenge' or 'match'",
 });
-const eventsSchema = z.union([
-	z.literal("all"),
-	z.array(eventSchema).min(1, "at least one event is required, or use 'all'"),
-]);
+const eventsSchema = z.optional(
+	z.array(eventSchema).min(1, "at least one event is required"),
+);
 
 export class ChessNowClient {
 	/** @internal */
@@ -245,17 +244,17 @@ export class ChessNowClient {
 		}
 	}
 
-	subscribe(token: string, events: SubscribeEvents | "all"): void {
+	subscribe(token: string, events?: SubscribeEvents): void {
 		assert(nonEmptyStr, token, "token");
 		assert(eventsSchema, events, "events");
-		const evts = events === "all" ? ["challenge", "match"] : events;
-		this.subscriptions.push({ token, events: evts });
+		const finalEvents = events || ["challenge", "match"];
+		this.subscriptions.push({ token, events: finalEvents });
 
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			this._send<SubscribeMessage>({
 				type: "subscribe",
 				content: {
-					events: evts,
+					events: finalEvents,
 					authorization: token.startsWith("Bearer ")
 						? token
 						: `Bearer ${token}`,
