@@ -18,7 +18,7 @@ Even if you only need to make requests on behalf of a single user at a time, bei
 ```ts
 import { ChessNowClient } from "@chess-now/api";
 
-const api = new ChessNowClient("https://chess.example.com");
+const api = new ChessNowClient("https://chess-now.example.com");
 api.setDefaultToken("main-account-token");
 
 const user = await api.getAccountInfo(); // To use the previously set default token
