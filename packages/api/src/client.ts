@@ -244,17 +244,37 @@ export class ChessNowClient {
 		}
 	}
 
-	subscribe(token: string, events?: SubscribeEvents): void {
+	subscribe(): void;
+	subscribe(events: SubscribeEvents): void;
+	subscribe(token: string): void;
+	subscribe(token: string, events: SubscribeEvents): void;
+	subscribe(
+		tokenOrEvents?: string | SubscribeEvents,
+		eventsArg?: SubscribeEvents,
+	): void {
+		let token: string;
+		let events: SubscribeEvents;
+
+		if (typeof tokenOrEvents === "string") {
+			token = tokenOrEvents;
+			events = eventsArg ?? ["challenge", "match"];
+		} else if (Array.isArray(tokenOrEvents)) {
+			token = this.defaultToken as string;
+			events = tokenOrEvents;
+		} else {
+			token = this.defaultToken as string;
+			events = ["challenge", "match"];
+		}
+
 		assert(nonEmptyStr, token, "token");
 		assert(eventsSchema, events, "events");
-		const finalEvents = events || ["challenge", "match"];
-		this.subscriptions.push({ token, events: finalEvents });
+		this.subscriptions.push({ token, events });
 
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			this._send<SubscribeMessage>({
 				type: "subscribe",
 				content: {
-					events: finalEvents,
+					events,
 					authorization: token.startsWith("Bearer ")
 						? token
 						: `Bearer ${token}`,
