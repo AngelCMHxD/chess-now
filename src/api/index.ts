@@ -3,6 +3,7 @@ import { fromTypes, openapi } from "@elysia/openapi";
 import { Elysia } from "elysia";
 import z from "zod";
 import { auth } from "@/lib/auth";
+import { APIError, UnprocessableContentError } from "./errors";
 import { authHeadersSchema } from "./helper";
 
 import httpGetChallengeInfo from "./http/challenge/get-challenge-info";
@@ -61,27 +62,27 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		}),
 	)
 	.mount(auth.handler)
-	.onError(({ error }) => {
-		if ("code" in error && error.code === "VALIDATION")
-			return {
-				type: "validationError",
-				content: {
-					message: "customError" in error && error.customError,
-					found:
-						("valueError" in error &&
-							error.valueError &&
-							"path" in error.valueError &&
-							Array.isArray(error.valueError.path) &&
-							error.valueError.path.reduce(
-								(currentValue, nextKey) =>
-									currentValue[nextKey],
-								error.value,
-							)) ||
-						false,
-				},
-			};
+	.onError(({ error, set }) => {
+		if (error instanceof APIError) {
+			set.status = error.status;
+			return error.toResponse();
+		}
 
-		return error;
+		if ("code" in error && error.code === "VALIDATION") {
+			set.status = 422;
+			return new UnprocessableContentError(
+				"customError" in error && typeof error.customError === "string"
+					? error.customError
+					: "Invalid request",
+			).toResponse();
+		}
+
+		set.status = 500;
+		return new APIError(
+			error instanceof Error
+				? error.message
+				: "An unexpected server error occurred.",
+		).toResponse();
 	})
 	.ws("/websocket", {
 		body: z.discriminatedUnion(
