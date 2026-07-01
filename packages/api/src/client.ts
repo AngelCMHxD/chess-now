@@ -279,10 +279,18 @@ export class ChessNowClient {
 		});
 	}
 
-	connect(): void {
-		if (this.ws) return;
+	connect(): Promise<void> {
+		if (this.ws?.readyState === WebSocket.OPEN) {
+			return Promise.resolve();
+		}
+
 		this.intentionalClose = false;
-		this._open();
+
+		if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
+			this._open();
+		}
+
+		return this._waitForOpen();
 	}
 
 	disconnect(): void {
@@ -420,6 +428,56 @@ export class ChessNowClient {
 				this._scheduleReconnect();
 			}
 		};
+	}
+
+	/** @internal */
+	private _waitForOpen(): Promise<void> {
+		if (!this.ws) {
+			return Promise.reject(
+				new Error(
+					"Failed to create the ChessNow WebSocket connection.",
+				),
+			);
+		}
+
+		if (this.ws.readyState === WebSocket.OPEN) {
+			return Promise.resolve();
+		}
+
+		const ws = this.ws;
+
+		return new Promise((resolve, reject) => {
+			const cleanup = () => {
+				ws.removeEventListener("open", handleOpen);
+				ws.removeEventListener("error", handleError);
+				ws.removeEventListener("close", handleClose);
+			};
+
+			const handleOpen = () => {
+				cleanup();
+				resolve();
+			};
+
+			const handleError = () => {
+				cleanup();
+				reject(
+					new Error("Failed to connect to the ChessNow WebSocket."),
+				);
+			};
+
+			const handleClose = () => {
+				cleanup();
+				reject(
+					new Error(
+						"Connection to the ChessNow WebSocket closed before opening.",
+					),
+				);
+			};
+
+			ws.addEventListener("open", handleOpen);
+			ws.addEventListener("error", handleError);
+			ws.addEventListener("close", handleClose);
+		});
 	}
 
 	/** @internal */
