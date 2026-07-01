@@ -35,7 +35,7 @@ export async function run(
 
 	if (!challenge) throw new NotFoundError("Challenge Not Found");
 
-	if (challenge.to !== session.user.id) throw new ForbiddenError();
+	if (challenge.toId !== session.user.id) throw new ForbiddenError();
 
 	db.update(schemas.challenges)
 		.set({
@@ -44,14 +44,14 @@ export async function run(
 		.where(
 			and(
 				eq(schemas.challenges.id, challenge.id),
-				eq(schemas.challenges.to, session.user.id),
+				eq(schemas.challenges.toId, session.user.id),
 			),
 		);
 
 	publishToSubscriber(
-		`challenge:${challenge.from}`,
+		`challenge:${challenge.fromId}`,
 		"challenge:denied",
-		challenge.from,
+		challenge.fromId,
 		{
 			challengeId: challenge.id,
 			deniedBy: session.user.id,

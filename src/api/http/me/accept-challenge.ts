@@ -33,14 +33,14 @@ export async function run(
 
 	if (!challengeInfo) throw new NotFoundError("Challenge Not Found");
 
-	if (challengeInfo.to !== session.user.id) throw new ForbiddenError();
+	if (challengeInfo.toId !== session.user.id) throw new ForbiddenError();
 
 	const { match, challenge } = await acceptChallenge(challengeInfo);
 
 	publishToSubscriber(
-		`challenge:${challengeInfo.from}`,
+		`challenge:${challengeInfo.fromId}`,
 		"challenge:accepted",
-		challengeInfo.from,
+		challengeInfo.fromId,
 		{
 			challengeId: challenge.id,
 			acceptedBy: session.user.id,
