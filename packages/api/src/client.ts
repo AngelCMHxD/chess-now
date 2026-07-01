@@ -369,12 +369,15 @@ export class ChessNowClient {
 		}
 	}
 
-	off(event: string, handler: Handler): void {
+	off<E extends WebSocketEvent["event"]>(
+		event: E,
+		handler: (msg: Extract<WebSocketEvent, { event: E }>) => void,
+	): void {
 		const list = this.handlers.get(event);
 
 		if (!list) return;
 
-		const i = list.indexOf(handler);
+		const i = list.indexOf(handler as Handler);
 		if (i !== -1) list.splice(i, 1);
 	}
 
