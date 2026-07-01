@@ -1,4 +1,4 @@
-export const VALID_SCOPES = ["challenges", "matches"] as const;
+export const VALID_SCOPES = ["challenges", "matches", "friends"] as const;
 
 export type Scope = (typeof VALID_SCOPES)[number];
 

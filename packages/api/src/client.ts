@@ -11,6 +11,7 @@ import type {
 	Friendship,
 	Match,
 	Move,
+	Scope,
 	SubscribeEvents,
 	SubscribeMessage,
 	User,
@@ -44,7 +45,7 @@ const nonEmptyStr = z.string().refine((s) => s.trim().length > 0, {
 	message: "must be a non-empty string",
 });
 const scopeSchema = z.enum(VALID_SCOPES, {
-	error: "must be 'challenges' or 'matches'",
+	error: "must be 'challenges', 'matches', or 'friends'",
 });
 const scopesSchema = z
 	.array(scopeSchema)
@@ -260,9 +261,7 @@ export class ChessNowClient {
 		});
 	}
 
-	async initDeviceAuth(
-		scopes: ("challenges" | "matches")[],
-	): Promise<DeviceAuthInitResponse> {
+	async initDeviceAuth(scopes: Scope[]): Promise<DeviceAuthInitResponse> {
 		assert(scopesSchema, scopes, "scopes");
 		return this._fetch<DeviceAuthInitResponse>("/device/init", {
 			method: "POST",
