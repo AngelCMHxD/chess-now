@@ -17,12 +17,11 @@ export const secondaryStorage = {
 	get: async (key: string | number) => {
 		return await cache.get(key);
 	},
-	set: async (
-		key: string | number,
-		value: unknown,
-		ttl?: number | string,
-	) => {
-		await cache.set(key, value, ttl);
+	set: async (key: string | number, value: unknown, ttlSeconds?: number) => {
+		const ttlMs =
+			ttlSeconds && ttlSeconds > 0 ? ttlSeconds * 1000 : undefined;
+
+		await cache.set(key, value, ttlMs);
 	},
 	delete: async (key: string | number) => {
 		await cache.del(key);
