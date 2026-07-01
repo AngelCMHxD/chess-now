@@ -213,7 +213,7 @@ export async function acceptChallenge(
 			.returning()
 	)[0];
 
-	await secondaryStorage.set(match.id, match);
+	await secondaryStorage.set(`match_${match.id}`, match);
 
 	challenge = (
 		await db
