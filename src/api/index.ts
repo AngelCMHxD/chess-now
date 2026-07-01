@@ -110,10 +110,12 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			},
 		),
 		async message(ws, message) {
-			const response = await (
-				await import(`./websocket/${message.type}`)
-			).run(ws, message);
-			ws.send(JSON.stringify(response));
+			const response =
+				message.type === "subscribe"
+					? await wsSubscribe.run(ws, message)
+					: await watchDeviceAuth.run(ws, message);
+
+			ws.send(response);
 		},
 	})
 	.post(
