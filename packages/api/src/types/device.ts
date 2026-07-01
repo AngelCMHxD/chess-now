@@ -1,6 +1,12 @@
-export const VALID_SCOPES = ["challenges", "matches", "friends"] as const;
+export const Scope = {
+	Challenges: "challenges",
+	Matches: "matches",
+	Friends: "friends",
+} as const;
 
-export type Scope = (typeof VALID_SCOPES)[number];
+export const SCOPES = [Scope.Challenges, Scope.Matches, Scope.Friends] as const;
+
+export type ScopeType = (typeof SCOPES)[number];
 
 export interface DeviceAuthInitResponse {
 	deviceCode: string;

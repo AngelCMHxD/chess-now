@@ -11,14 +11,14 @@ import type {
 	Friendship,
 	Match,
 	Move,
-	Scope,
+	ScopeType,
 	SubscribeEvents,
 	SubscribeMessage,
 	User,
 	WatchDeviceAuthMessage,
 	WebSocketEvent,
 } from "./types";
-import { VALID_SCOPES } from "./types";
+import { SCOPES } from "./types";
 
 function wsUrl(baseUrl: string): string {
 	const protocol = baseUrl.startsWith("https") ? "wss" : "ws";
@@ -44,7 +44,7 @@ const positiveInt = z.number().int().positive("must be a positive integer");
 const nonEmptyStr = z.string().refine((s) => s.trim().length > 0, {
 	message: "must be a non-empty string",
 });
-const scopeSchema = z.enum(VALID_SCOPES, {
+const scopeSchema = z.enum(SCOPES, {
 	error: "must be 'challenges', 'matches', or 'friends'",
 });
 const scopesSchema = z
@@ -261,7 +261,7 @@ export class ChessNowClient {
 		});
 	}
 
-	async initDeviceAuth(scopes: Scope[]): Promise<DeviceAuthInitResponse> {
+	async initDeviceAuth(scopes: ScopeType[]): Promise<DeviceAuthInitResponse> {
 		assert(scopesSchema, scopes, "scopes");
 		return this._fetch<DeviceAuthInitResponse>("/device/init", {
 			method: "POST",

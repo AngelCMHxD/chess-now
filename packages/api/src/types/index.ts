@@ -3,13 +3,13 @@ export type {
 	ChallengeConfig,
 } from "./challenge";
 
-export type {
-	DeviceAuthInitResponse,
-	DeviceTokenResponse,
+export {
+	type DeviceAuthInitResponse,
+	type DeviceTokenResponse,
+	SCOPES,
 	Scope,
+	type ScopeType,
 } from "./device";
-
-export { VALID_SCOPES } from "./device";
 
 export type {
 	ApiErrorResponse,

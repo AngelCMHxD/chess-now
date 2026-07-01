@@ -19,9 +19,7 @@ export type {
 	ChallengeDeniedPayload,
 	ChallengeRequestPayload,
 	ClientMessage,
-	DeviceAuthInitResponse,
 	DeviceAuthPayload,
-	DeviceTokenResponse,
 	FriendAcceptedPayload,
 	FriendDeniedPayload,
 	FriendRemovedPayload,
@@ -48,4 +46,10 @@ export type {
 	WSErrorPayload,
 	WsPushEvent,
 } from "./types";
-export { VALID_SCOPES } from "./types";
+export {
+	type DeviceAuthInitResponse,
+	type DeviceTokenResponse,
+	SCOPES,
+	Scope,
+	type ScopeType,
+} from "./types";

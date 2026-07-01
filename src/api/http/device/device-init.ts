@@ -2,15 +2,15 @@ import type {
 	ApiSuccessResponse,
 	DeviceAuthInitResponse,
 } from "@chess-now/api";
-import { VALID_SCOPES } from "@chess-now/api";
+import { SCOPES } from "@chess-now/api";
 import z from "zod";
 import { auth } from "@/lib/auth";
 
 export const bodyType = z.object({
 	scopes: z
-		.array(z.enum(VALID_SCOPES))
+		.array(z.enum(SCOPES))
 		.min(1)
-		.max(VALID_SCOPES.length)
+		.max(SCOPES.length)
 		.transform((items) => [...new Set(items)]),
 });
 
