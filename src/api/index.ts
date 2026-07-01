@@ -3,6 +3,7 @@ import { fromTypes, openapi } from "@elysia/openapi";
 import { Elysia } from "elysia";
 import z from "zod";
 import { auth } from "@/lib/auth";
+
 import { APIError, UnprocessableContentError } from "./errors";
 import { authHeadersSchema } from "./helper";
 
@@ -42,7 +43,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			documentation: {
 				servers: [
 					{
-						url: process.env.NEXT_PUBLIC_API_BASE_URL ?? "",
+						url: process.env.NEXT_PUBLIC_API_ENDPOINT ?? "",
 						description: "Main Server",
 					},
 				],
@@ -353,7 +354,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			tags: ["Device auth"],
 		},
 	})
-	.listen(8080);
+	.listen(Number(process.env.INTERNAL_API_PORT) || 8080);
 
 console.log(
 	`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,

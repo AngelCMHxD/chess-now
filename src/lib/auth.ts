@@ -31,8 +31,7 @@ const privateEndpoints = [
 ];
 
 export const auth = betterAuth({
-	baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
-	trustedOrigins: [process.env.BASE_URL as string],
+	baseURL: process.env.NEXT_PUBLIC_BASE_URL,
 	basePath: process.env.BETTER_AUTH_PATH,
 	plugins: [
 		bearer(),
@@ -150,7 +149,7 @@ export const auth = betterAuth({
 				to: [user.email],
 				subject: "Welcome - Chess Now!",
 				react: Emails.Welcome({
-					url: `${process.env.BASE_URL}/account/dashboard`,
+					url: `${process.env.NEXT_PUBLIC_BASE_URL}/account/dashboard`,
 				}),
 			});
 		},

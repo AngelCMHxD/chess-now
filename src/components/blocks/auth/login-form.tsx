@@ -1,6 +1,6 @@
 "use client";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { type SubmitEvent, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ export function LoginForm({
 	redirectTo = "/account/dashboard",
 	...props
 }: React.ComponentProps<"div"> & { redirectTo?: string }) {
+	const router = useRouter();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [submitting, setSubmitting] = useState(false);
@@ -64,7 +65,7 @@ export function LoginForm({
 			toast.success(
 				`Logged in successfully as ${response.data.user.name}!`,
 			);
-			redirect(redirectTo);
+			router.push(redirectTo);
 		}
 
 		setSubmitting(false);
@@ -83,7 +84,7 @@ export function LoginForm({
 			return;
 		}
 
-		redirect(res.data.url as string);
+		window.location.assign(res.data.url as string);
 	};
 
 	return (

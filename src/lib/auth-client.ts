@@ -4,7 +4,7 @@ import type { auth } from "./auth";
 
 export const authClient = createAuthClient({
 	plugins: [deviceAuthorizationClient()],
-	baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+	baseURL: process.env.NEXT_PUBLIC_BASE_URL,
 	basePath: process.env.BETTER_AUTH_PATH,
 });
 export type Session = typeof auth.$Infer.Session;
