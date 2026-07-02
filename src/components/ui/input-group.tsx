@@ -1,3 +1,4 @@
+// biome-ignore-all lint: shad/cn component
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
