@@ -1,5 +1,6 @@
 "use client";
 
+import type { User } from "@chess-now/api";
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
@@ -21,18 +22,10 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { Skeleton } from "./ui/skeleton";
 
-export function NavUser({
-	user,
-	loading,
-}: {
-	user?: {
-		name?: string;
-		email?: string;
-		avatar?: string;
-	};
-	loading: boolean;
-}) {
+export function NavUser({ user, loading }: { user?: User; loading: boolean }) {
 	const { isMobile } = useSidebar();
+
+	if (user?.image === null) user.image = undefined;
 
 	const handleLogout = async () => {
 		authClient.signOut();
@@ -74,10 +67,7 @@ export function NavUser({
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
 							<Avatar className="h-8 w-8 rounded-full">
-								<AvatarImage
-									src={user.avatar}
-									alt={user.name}
-								/>
+								<AvatarImage src={user.image} alt={user.name} />
 								<AvatarFallback className="rounded-full">
 									{(user.name ?? "")
 										.split(" ")
@@ -90,6 +80,9 @@ export function NavUser({
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								<span className="truncate font-medium">
 									{user.name}
+								</span>
+								<span className="truncate text-xs font-extralight">
+									@{user.username}
 								</span>
 							</div>
 							<ChevronsUpDownIcon className="ml-auto size-4" />
@@ -105,7 +98,7 @@ export function NavUser({
 							<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 								<Avatar className="h-8 w-8 rounded-full">
 									<AvatarImage
-										src={user.avatar}
+										src={user.image}
 										alt={user.name}
 									/>
 									<AvatarFallback className="rounded-full">
