@@ -1,7 +1,8 @@
 import z from "zod";
-import { ForbiddenError } from "@/api/errors";
+import { ForbiddenError, UnauthorizedError } from "@/api/errors";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
+import { isExternalAuth } from "@/api/helper";
 
 export const bodyType = z.object({
 	userCode: z.string(),
@@ -14,7 +15,8 @@ export async function run(headers: Headers, body: z.infer<typeof bodyType>) {
 		headers,
 	});
 
-	if ((session?.session?.scopes?.length ?? 0) > 0) throw new ForbiddenError();
+	if (!session) throw new UnauthorizedError();
+	if (isExternalAuth(session)) throw new ForbiddenError();
 
 	const deviceAuth = await auth.api.deviceDeny({
 		body,

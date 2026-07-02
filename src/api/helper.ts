@@ -11,6 +11,7 @@ import type { Chess } from "chess.js";
 import { eq, or } from "drizzle-orm";
 import z from "zod";
 import { db, schemas, secondaryStorage } from "@/lib/database";
+import { Session } from "@/lib/auth-client";
 
 export const publicUserColumns = {
 	name: true,
@@ -385,4 +386,9 @@ export function removePrivateUserFields(user: User): PublicUser {
 	return Object.fromEntries(
 		Object.entries(user).filter(([key]) => key in publicUserColumns),
 	) as PublicUser;
+}
+
+// only external auth sessions (like device auth) have scopes
+export function isExternalAuth(session: Session) {
+	return (session?.session?.scopes?.length ?? 0) > 0;
 }
