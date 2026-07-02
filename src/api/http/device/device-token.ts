@@ -1,4 +1,4 @@
-import type { ApiSuccessResponse, DeviceTokenResponse } from "@chess-now/api";
+import type { ApiSuccessResponse, DeviceTokenResponse, ScopeType } from "@chess-now/api";
 import z from "zod";
 import { ForbiddenError } from "@/api/errors";
 import { auth } from "@/lib/auth";
@@ -47,7 +47,7 @@ export async function run(
 			accessToken: deviceToken.access_token,
 			tokenType: deviceToken.token_type,
 			expiresIn: deviceToken.expires_in,
-			scope: deviceToken.scope.split(" "),
+			scope: deviceToken.scope.split(" ") as ScopeType[],
 		},
 	};
 }

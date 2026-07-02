@@ -45,7 +45,7 @@ const nonEmptyStr = z.string().refine((s) => s.trim().length > 0, {
 	message: "must be a non-empty string",
 });
 const scopeSchema = z.enum(SCOPES, {
-	error: "must be 'challenges', 'matches', or 'friends'",
+	error: "must be 'challenges', 'matches', 'friends', or 'bots'",
 });
 const scopesSchema = z
 	.array(scopeSchema)

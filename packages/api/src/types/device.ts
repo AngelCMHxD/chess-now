@@ -2,9 +2,10 @@ export const Scope = {
 	Challenges: "challenges",
 	Matches: "matches",
 	Friends: "friends",
+	Bots: "bots",
 } as const;
 
-export const SCOPES = [Scope.Challenges, Scope.Matches, Scope.Friends] as const;
+export const SCOPES = [Scope.Challenges, Scope.Matches, Scope.Friends, Scope.Bots] as const;
 
 export type ScopeType = (typeof SCOPES)[number];
 
@@ -21,5 +22,5 @@ export interface DeviceTokenResponse {
 	accessToken: string;
 	tokenType: string;
 	expiresIn: number;
-	scope: string[];
+	scope: ScopeType[];
 }
