@@ -41,7 +41,9 @@ export default function VerifiedPage() {
 								className="w-full"
 								asChild
 							>
-								<Link href="/account/login">Login</Link>
+								<Link href="/account/dashboard">
+									Go to Dashboard
+								</Link>
 							</Button>
 							<Button
 								variant="secondary"
