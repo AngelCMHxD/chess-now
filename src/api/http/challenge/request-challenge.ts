@@ -1,4 +1,4 @@
-import type { ApiSuccessResponse, Challenge } from "@chess-now/api";
+import { ForbiddenError, type ApiSuccessResponse, type Challenge } from "@chess-now/api";
 import z from "zod";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
 import {
@@ -21,6 +21,12 @@ export async function run(
 	});
 
 	if (!session) throw new UnauthorizedError();
+
+	if (
+		session.session.scopes &&
+		!session.session.scopes.includes("challenges")
+	)
+		throw new ForbiddenError();
 
 	const oponent = await getUserByUsername(username);
 
