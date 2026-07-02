@@ -1,6 +1,10 @@
 import type { ApiSuccessResponse, PublicUser } from "@chess-now/api";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
-import { getUserByUsername, getUserInfo } from "@/api/helper";
+import {
+	getUserByUsername,
+	getUserInfo,
+	removePrivateUserFields,
+} from "@/api/helper";
 import { auth } from "@/lib/auth";
 
 export async function run(
@@ -16,13 +20,13 @@ export async function run(
 	const resolvedUser = await getUserByUsername(username);
 	if (!resolvedUser) throw new NotFoundError();
 
-	const user = await getUserInfo(resolvedUser.id, true);
+	const user = await getUserInfo(resolvedUser.id);
 
 	if (!user) throw new NotFoundError();
 
 	return {
 		success: true,
-		data: user,
+		data: removePrivateUserFields(user),
 	};
 }
 

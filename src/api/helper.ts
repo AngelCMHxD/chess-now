@@ -19,7 +19,7 @@ export const publicUserColumns = {
 	image: true,
 	createdAt: true,
 	updatedAt: true,
-} as const;
+} as Record<keyof PublicUser, true>;
 
 export const subscribeEventsSchema = z.array(
 	z.enum(["challenge", "match", "friend"]),
@@ -255,38 +255,10 @@ export async function getMatchInfo(
 	});
 }
 
-export async function getUserInfo(
-	userId: string,
-	publicUser?: undefined,
-): Promise<User | undefined>;
-export async function getUserInfo(
-	userId: string,
-	publicUser: true,
-): Promise<PublicUser | undefined>;
-export async function getUserInfo(
-	userId: string,
-	publicUser: false,
-): Promise<User | undefined>;
-export async function getUserInfo(
-	userId: string,
-	publicUser: boolean = false,
-): Promise<User | PublicUser | undefined> {
-	const user = await db.query.user.findFirst({
+export async function getUserInfo(userId: string): Promise<User | undefined> {
+	return await db.query.user.findFirst({
 		where: (user, { eq }) => eq(user.id, userId),
 	});
-
-	if (!user || !publicUser) return user;
-
-	const { id, name, username, image, createdAt, updatedAt } = user;
-
-	return {
-		id,
-		name,
-		username,
-		image,
-		createdAt,
-		updatedAt,
-	};
 }
 
 export async function getUserByUsername(username: string) {
@@ -410,12 +382,7 @@ export async function getFriendships(userId: string): Promise<Friendship[]> {
 }
 
 export function removePrivateUserFields(user: User): PublicUser {
-	return {
-		id: user.id,
-		username: user.username,
-		name: user.name,
-		image: user.image,
-		createdAt: user.createdAt,
-		updatedAt: user.updatedAt,
-	};
+	return Object.fromEntries(
+		Object.entries(user).filter(([key]) => key in publicUserColumns),
+	) as PublicUser;
 }
