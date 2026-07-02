@@ -105,7 +105,9 @@ export const auth = betterAuth({
 	hooks: {
 		before: createAuthMiddleware(async (ctx) => {
 			if (ctx.path === "/sign-up/email") {
-				const body = ctx.body as { username?: unknown } | undefined;
+				const body = ctx.body as
+					| { username?: unknown; image?: unknown }
+					| undefined;
 				const username = body?.username;
 
 				if (
@@ -129,10 +131,25 @@ export const auth = betterAuth({
 					});
 				}
 
+				const { image: _image, ...safeBody } = body ?? {};
+
 				ctx.body = {
-					...body,
+					...safeBody,
 					username,
 				};
+			}
+
+			if (ctx.path === "/update-user") {
+				const body = ctx.body as
+					| { image?: unknown; username?: unknown }
+					| undefined;
+
+				if (body?.image !== undefined || body?.username !== undefined) {
+					throw new APIError("BAD_REQUEST", {
+						message:
+							"Updating username or image is not allowed from this endpoint.",
+					});
+				}
 			}
 
 			if (privateEndpoints.includes(ctx.path)) {
