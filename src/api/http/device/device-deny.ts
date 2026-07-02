@@ -1,8 +1,8 @@
 import z from "zod";
 import { ForbiddenError, UnauthorizedError } from "@/api/errors";
+import { isExternalAuth } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
-import { isExternalAuth } from "@/api/helper";
 
 export const bodyType = z.object({
 	userCode: z.string(),

@@ -1,4 +1,8 @@
-import type { ApiSuccessResponse, DeviceTokenResponse, ScopeType } from "@chess-now/api";
+import type {
+	ApiSuccessResponse,
+	DeviceTokenResponse,
+	ScopeType,
+} from "@chess-now/api";
 import z from "zod";
 import { ForbiddenError } from "@/api/errors";
 import { auth } from "@/lib/auth";

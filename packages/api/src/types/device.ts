@@ -5,7 +5,12 @@ export const Scope = {
 	Bots: "bots",
 } as const;
 
-export const SCOPES = [Scope.Challenges, Scope.Matches, Scope.Friends, Scope.Bots] as const;
+export const SCOPES = [
+	Scope.Challenges,
+	Scope.Matches,
+	Scope.Friends,
+	Scope.Bots,
+] as const;
 
 export type ScopeType = (typeof SCOPES)[number];
 
