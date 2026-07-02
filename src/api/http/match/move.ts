@@ -1,4 +1,5 @@
 import type { ApiSuccessResponse, Move } from "@chess-now/api";
+import { Scope } from "@chess-now/api";
 import { Chess, type Move as ChessMove } from "chess.js";
 import { eq } from "drizzle-orm";
 import z from "zod";
@@ -32,7 +33,10 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	if (session.session.scopes && !session.session.scopes.includes("matches"))
+	if (
+		session.session.scopes &&
+		!session.session.scopes.includes(Scope.Matches)
+	)
 		throw new ForbiddenError();
 
 	const mId = parseInt(matchId, 10);

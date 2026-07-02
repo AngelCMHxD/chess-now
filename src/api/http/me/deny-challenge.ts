@@ -1,4 +1,5 @@
 import type { ApiSuccessResponse, Challenge } from "@chess-now/api";
+import { Scope } from "@chess-now/api";
 import { and, eq } from "drizzle-orm";
 import {
 	BadRequestError,
@@ -23,7 +24,7 @@ export async function run(
 
 	if (
 		session.session.scopes &&
-		!session.session.scopes.includes("challenges")
+		!session.session.scopes.includes(Scope.Challenges)
 	)
 		throw new ForbiddenError();
 

@@ -1,4 +1,5 @@
 import type { ApiSuccessResponse, Challenge, Match } from "@chess-now/api";
+import { Scope } from "@chess-now/api";
 import {
 	BadRequestError,
 	ForbiddenError,
@@ -25,7 +26,7 @@ export async function run(
 
 	if (
 		session.session.scopes &&
-		!session.session.scopes.includes("challenges")
+		!session.session.scopes.includes(Scope.Challenges)
 	)
 		throw new ForbiddenError();
 
