@@ -1,6 +1,6 @@
 "use client";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import { CheckIcon, InfoIcon, XIcon } from "lucide-react";
+import { AtSignIcon, CheckIcon, InfoIcon, XIcon } from "lucide-react";
 import { type SubmitEvent, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -15,6 +15,11 @@ import {
 	FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupInput,
+} from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -24,6 +29,7 @@ export function SignupForm({
 	...props
 }: React.ComponentProps<"div">) {
 	const [name, setName] = useState("");
+	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
@@ -65,6 +71,7 @@ export function SignupForm({
 				name,
 				email,
 				password,
+				username,
 				callbackURL: "/account/signup/verified",
 				fetchOptions: {
 					headers: {
@@ -123,18 +130,43 @@ export function SignupForm({
 							{!created && (
 								<div className="grid gap-4">
 									<Field>
-										<FieldLabel htmlFor="name">
-											Name
-										</FieldLabel>
-										<Input
-											id="name"
-											type="text"
-											placeholder="John Doe"
-											onChange={(e) => {
-												setName(e.target.value);
-											}}
-											required
-										/>
+										<Field className="grid grid-cols-2 gap-4">
+											<Field>
+												<FieldLabel htmlFor="name">
+													Name
+												</FieldLabel>
+												<Input
+													id="name"
+													type="text"
+													placeholder="John Doe"
+													onChange={(e) => {
+														setName(e.target.value);
+													}}
+													required
+												/>
+											</Field>
+											<Field>
+												<FieldLabel htmlFor="username">
+													Username
+												</FieldLabel>
+												<InputGroup>
+													<InputGroupAddon>
+														<AtSignIcon />
+													</InputGroupAddon>
+													<InputGroupInput
+														id="username"
+														type="text"
+														placeholder="johndoe"
+														onChange={(e) => {
+															setUsername(
+																e.target.value,
+															);
+														}}
+														required
+													/>
+												</InputGroup>
+											</Field>
+										</Field>
 									</Field>
 									<Field>
 										<FieldLabel htmlFor="email">
