@@ -47,6 +47,9 @@ export function SignupForm({
 		special: false,
 	});
 
+	const normalizeUsernameInput = (value: string) =>
+		value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
 	const onSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setSubmitting(true);
@@ -157,9 +160,13 @@ export function SignupForm({
 														id="username"
 														type="text"
 														placeholder="johndoe"
+														value={username}
 														onChange={(e) => {
 															setUsername(
-																e.target.value,
+																normalizeUsernameInput(
+																	e.target
+																		.value,
+																),
 															);
 														}}
 														required
