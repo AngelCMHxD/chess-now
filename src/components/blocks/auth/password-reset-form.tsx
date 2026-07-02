@@ -105,6 +105,7 @@ export function PasswordResetForm({
 											type="email"
 											placeholder="m@example.com"
 											required
+											value={email}
 											onChange={(e) =>
 												setEmail(e.target.value)
 											}

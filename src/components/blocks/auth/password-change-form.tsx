@@ -132,6 +132,7 @@ export function PasswordChangeForm({
 												<Input
 													id="password"
 													type="password"
+													value={password}
 													onChange={(e) => {
 														setPassword(
 															e.target.value,
@@ -176,6 +177,7 @@ export function PasswordChangeForm({
 												<Input
 													id="confirm-password"
 													type="password"
+													value={confirmPassword}
 													onChange={(e) => {
 														setConfirmPassword(
 															e.target.value,
