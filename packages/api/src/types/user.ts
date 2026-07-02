@@ -7,6 +7,7 @@ export interface User {
 	image?: string | null;
 	createdAt: Date;
 	updatedAt: Date;
+	botOwnerId?: string | null;
 }
 
 export type PublicUser = Omit<User, "email" | "emailVerified">;

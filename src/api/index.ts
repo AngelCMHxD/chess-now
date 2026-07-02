@@ -6,7 +6,9 @@ import { auth } from "@/lib/auth";
 
 import { APIError, UnprocessableContentError } from "./errors";
 import { authHeadersSchema } from "./helper";
-
+import httpCreateBot from "./http/bot/create-bot";
+import httpDeleteBot from "./http/bot/delete-bot";
+import httpResetBotToken from "./http/bot/reset-bot-token";
 import httpGetChallengeInfo from "./http/challenge/get-challenge-info";
 import httpRequestChallenge from "./http/challenge/request-challenge";
 import httpDeviceApprove from "./http/device/device-approve";
@@ -21,6 +23,7 @@ import httpDeleteFriendship from "./http/me/delete-friendship";
 import httpDenyChallenge from "./http/me/deny-challenge";
 import httpDenyFriendRequest from "./http/me/deny-friend-request";
 import httpGetAccountInfo from "./http/me/get-account-info";
+import httpGetBots from "./http/me/get-bots";
 import httpGetChallenges from "./http/me/get-challenges";
 import httpGetFriendRequests from "./http/me/get-friend-requests";
 import httpGetFriends from "./http/me/get-friends";
@@ -249,6 +252,49 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			detail: {
 				summary: "Remove a friend",
 				tags: ["Friends"],
+			},
+		},
+	)
+	.get("/me/bots", ({ request }) => httpGetBots.run(request.headers), {
+		headers: authHeadersSchema,
+		detail: {
+			summary: "Get your registered bots",
+			tags: ["Me"],
+		},
+	})
+	.post(
+		"/me/bots",
+		({ request, body }) => httpCreateBot.run(request.headers, body),
+		{
+			headers: authHeadersSchema,
+			body: httpCreateBot.bodyType,
+			detail: {
+				summary: "Register a new bot",
+				tags: ["Me"],
+			},
+		},
+	)
+	.delete(
+		"/me/bots/:bot_id",
+		({ request, params }) =>
+			httpDeleteBot.run(request.headers, params.bot_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Delete a bot",
+				tags: ["Me"],
+			},
+		},
+	)
+	.post(
+		"/me/bots/:bot_id/reset_token",
+		({ request, params }) =>
+			httpResetBotToken.run(request.headers, params.bot_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				summary: "Reset a bot's token",
+				tags: ["Me"],
 			},
 		},
 	)

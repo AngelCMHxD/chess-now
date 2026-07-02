@@ -10,8 +10,8 @@ import type {
 import type { Chess } from "chess.js";
 import { eq, or } from "drizzle-orm";
 import z from "zod";
+import type { Session } from "@/lib/auth-client";
 import { db, schemas, secondaryStorage } from "@/lib/database";
-import { Session } from "@/lib/auth-client";
 
 export const publicUserColumns = {
 	name: true,
@@ -20,6 +20,7 @@ export const publicUserColumns = {
 	image: true,
 	createdAt: true,
 	updatedAt: true,
+	botOwnerId: true,
 } as Record<keyof PublicUser, true>;
 
 export const subscribeEventsSchema = z.array(

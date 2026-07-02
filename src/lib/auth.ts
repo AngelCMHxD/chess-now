@@ -1,8 +1,14 @@
+import { apiKey } from "@better-auth/api-key";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { bearer, captcha, deviceAuthorization } from "better-auth/plugins";
+import {
+	anonymous,
+	bearer,
+	captcha,
+	deviceAuthorization,
+} from "better-auth/plugins";
 import { Resend } from "resend";
 import { Emails } from "@/emails/default";
 import { db, secondaryStorage } from "./database";
@@ -72,6 +78,12 @@ const privateEndpoints = [
 	"/device/token",
 	"/update-session",
 	"/update-user",
+	"/api-key/create",
+	"/api-key/update",
+	"/api-key/delete",
+	"/api-key/list",
+	"/sign-in/anonymous",
+	"/delete-anonymous-user",
 ];
 
 export const auth = betterAuth({
@@ -89,6 +101,16 @@ export const auth = betterAuth({
 				process.env.TURNSTILE_SECRET_KEY ||
 				"1x0000000000000000000000000000000AA",
 		}),
+		anonymous(),
+		apiKey([
+			{
+				configId: "bot-key",
+				defaultPrefix: "bot_",
+				enableSessionForAPIKeys: true,
+				storage: "secondary-storage",
+				fallbackToDatabase: true,
+			},
+		]),
 		nextCookies(),
 	],
 	session: {
@@ -168,6 +190,10 @@ export const auth = betterAuth({
 				required: true,
 				unique: true,
 				returned: true,
+			},
+			botOwnerId: {
+				type: "string",
+				required: false,
 			},
 		},
 		deleteUser: {
