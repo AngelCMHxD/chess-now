@@ -5,7 +5,11 @@ import {
 	NotFoundError,
 	UnauthorizedError,
 } from "@/api/errors";
-import { acceptChallenge, getChallengeInfo } from "@/api/helper";
+import {
+	acceptChallenge,
+	getChallengeInfo,
+	removePrivateUserFields,
+} from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 
@@ -43,7 +47,7 @@ export async function run(
 		challengeInfo.fromId,
 		{
 			challengeId: challenge.id,
-			acceptedBy: session.user.id,
+			acceptedBy: removePrivateUserFields(session.user),
 			match,
 		},
 	);

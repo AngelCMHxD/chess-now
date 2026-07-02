@@ -408,3 +408,14 @@ export async function getFriendships(userId: string): Promise<Friendship[]> {
 
 	return friends;
 }
+
+export function removePrivateUserFields(user: User): PublicUser {
+	return {
+		id: user.id,
+		username: user.username,
+		name: user.name,
+		image: user.image,
+		createdAt: user.createdAt,
+		updatedAt: user.updatedAt,
+	};
+}
