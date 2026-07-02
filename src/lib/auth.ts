@@ -22,6 +22,49 @@ function logIfExample(email: string) {
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function normalizeUsername(value: string) {
+	const normalized = value
+		.normalize("NFKD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase()
+		.replace(/[^a-z0-9]/g, "");
+
+	return normalized;
+}
+
+function randomEightDigitSuffix() {
+	return Math.floor(10_000_000 + Math.random() * 90_000_000).toString();
+}
+
+async function getAvailableUsername(preferredUsername?: string) {
+	const baseUsername = preferredUsername
+		? normalizeUsername(preferredUsername).slice(0, 30)
+		: "user";
+	const username = baseUsername || "user";
+
+	const exactMatch = await db.query.user.findFirst({
+		where: (user, { eq }) => eq(user.username, username),
+		columns: { id: true },
+	});
+
+	if (!exactMatch) return username;
+
+	for (let attempt = 0; attempt < 10; attempt++) {
+		const suffix = randomEightDigitSuffix();
+		const candidate = `${username.slice(0, Math.max(1, 30 - suffix.length))}${suffix}`;
+		const existingUser = await db.query.user.findFirst({
+			where: (user, { eq }) => eq(user.username, candidate),
+			columns: { id: true },
+		});
+
+		if (!existingUser) return candidate;
+	}
+
+	throw new APIError("BAD_REQUEST", {
+		message: "Unable to generate a unique username. Please try again.",
+	});
+}
+
 const privateEndpoints = [
 	"/device/code",
 	"/device/approve",
@@ -61,6 +104,37 @@ export const auth = betterAuth({
 	},
 	hooks: {
 		before: createAuthMiddleware(async (ctx) => {
+			if (ctx.path === "/sign-up/email") {
+				const body = ctx.body as { username?: unknown } | undefined;
+				const username = body?.username;
+
+				if (
+					typeof username !== "string" ||
+					!/^[a-z0-9]{3,30}$/.test(username)
+				) {
+					throw new APIError("BAD_REQUEST", {
+						message:
+							"Username is required and must be 3 to 30 characters using lowercase letters and numbers only.",
+					});
+				}
+
+				const existingUser = await db.query.user.findFirst({
+					where: (user, { eq }) => eq(user.username, username),
+					columns: { id: true },
+				});
+
+				if (existingUser) {
+					throw new APIError("BAD_REQUEST", {
+						message: "Username is already taken.",
+					});
+				}
+
+				ctx.body = {
+					...body,
+					username,
+				};
+			}
+
 			if (privateEndpoints.includes(ctx.path)) {
 				const isInternalCall =
 					ctx.headers?.get("x-internal-call") ===
@@ -83,6 +157,14 @@ export const auth = betterAuth({
 	}),
 	secondaryStorage,
 	user: {
+		additionalFields: {
+			username: {
+				type: "string",
+				required: true,
+				unique: true,
+				returned: true,
+			},
+		},
 		deleteUser: {
 			enabled: false,
 		},
@@ -119,6 +201,9 @@ export const auth = betterAuth({
 			disableSignUp,
 			clientId: process.env.DISCORD_CLIENT_ID as string,
 			clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+			mapProfileToUser: async (profile) => ({
+				username: await getAvailableUsername(profile.username),
+			}),
 		},
 		google: {
 			disableSignUp,
@@ -126,6 +211,9 @@ export const auth = betterAuth({
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
 			accessType: "offline",
 			prompt: "select_account consent",
+			mapProfileToUser: async (profile) => ({
+				username: await getAvailableUsername(profile.name),
+			}),
 		},
 	},
 	emailVerification: {

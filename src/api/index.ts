@@ -120,9 +120,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		},
 	})
 	.post(
-		"/challenge/request/:uid",
+		"/challenge/request/:username",
 		({ params, body, request }) =>
-			httpRequestChallenge.run(request.headers, params.uid, body),
+			httpRequestChallenge.run(request.headers, params.username, body),
 		{
 			headers: authHeadersSchema,
 			body: httpRequestChallenge.bodyType,
@@ -187,9 +187,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		},
 	})
 	.post(
-		"/me/friends/add/:uid",
+		"/me/friends/add/:username",
 		({ params, request }) =>
-			httpSendFriendRequest.run(request.headers, params.uid),
+			httpSendFriendRequest.run(request.headers, params.username),
 		{
 			headers: authHeadersSchema,
 			detail: {
@@ -260,9 +260,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		},
 	})
 	.get(
-		"/user/:user_id",
+		"/user/:username",
 		({ request, params }) =>
-			httpGetUserInfo.run(request.headers, params.user_id),
+			httpGetUserInfo.run(request.headers, params.username),
 		{
 			headers: authHeadersSchema,
 			detail: {
@@ -272,9 +272,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		},
 	)
 	.get(
-		"/user/:user_id/matches",
+		"/user/:username/matches",
 		({ request, params }) =>
-			httpGetUserMatches.run(request.headers, params.user_id),
+			httpGetUserMatches.run(request.headers, params.username),
 		{
 			headers: authHeadersSchema,
 			detail: {
@@ -284,9 +284,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		},
 	)
 	.get(
-		"/user/:user_id/friends",
+		"/user/:username/friends",
 		({ request, params }) =>
-			httpGetUserFriends.run(request.headers, params.user_id),
+			httpGetUserFriends.run(request.headers, params.username),
 		{
 			headers: authHeadersSchema,
 			detail: {

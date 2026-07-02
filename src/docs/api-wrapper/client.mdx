@@ -44,25 +44,25 @@ api.on("challenge:request", ({ payload }) => {
 
 Each return type links to its full definition on the Types page.
 
-| Method                                    | Returns                                                                                                        |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `getAccountInfo(token?)`                  | [`User`](/docs/api-wrapper/types#user)                                                                         |
-| `getMyChallenges(token?)`                 | [`Challenge[]`](/docs/api-wrapper/types#challenge)                                                             |
-| `getMyMatches(token?)`                    | [`Match[]`](/docs/api-wrapper/types#match)                                                                     |
-| `getChallenge(id, token?)`                | [`Challenge`](/docs/api-wrapper/types#challenge)                                                               |
-| `requestChallenge(uid, options?, token?)` | [`Challenge`](/docs/api-wrapper/types#challenge)                                                               |
-| `acceptChallenge(id, token?)`             | \{ challenge: [Challenge](/docs/api-wrapper/types#challenge), match: [Match](/docs/api-wrapper/types#match) \} |
-| `denyChallenge(id, token?)`               | \{ challenge: [Challenge](/docs/api-wrapper/types#challenge) \}                                                |
-| `getMatch(id, token?)`                    | [`Match`](/docs/api-wrapper/types#match)                                                                       |
-| `makeMove(id, san, token?)`               | [`Move`](/docs/api-wrapper/types#move)                                                                         |
-| `initDeviceAuth(scopes)`                  | [`DeviceAuthInitResponse`](/docs/api-wrapper/types#deviceauthinitresponse)                                     |
-| `getDeviceToken(deviceCode)`              | [`DeviceTokenResponse`](/docs/api-wrapper/types#devicetokenresponse)                                           |
-| `getFriends(token?)`                      | [`Friendship[]`](/docs/api-wrapper/types#user)                                                                 |
-| `getFriendRequests(token?)`               | [`FriendRequest[]`](/docs/api-wrapper/types#user)                                                              |
-| `sendFriendRequest(userId, token?)`       | [`FriendRequest`](/docs/api-wrapper/types#user)                                                                |
-| `acceptFriendRequest(id, token?)`         | [`Friendship`](/docs/api-wrapper/types#user)                                                                   |
-| `denyFriendRequest(id, token?)`           | [`FriendRequest`](/docs/api-wrapper/types#user)                                                                |
-| `removeFriend(friendshipId, token?)`      | [`Friendship`](/docs/api-wrapper/types#user)                                                                   |
+| Method                                         | Returns                                                                                                        |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `getAccountInfo(token?)`                       | [`User`](/docs/api-wrapper/types#user)                                                                         |
+| `getMyChallenges(token?)`                      | [`Challenge[]`](/docs/api-wrapper/types#challenge)                                                             |
+| `getMyMatches(token?)`                         | [`Match[]`](/docs/api-wrapper/types#match)                                                                     |
+| `getChallenge(id, token?)`                     | [`Challenge`](/docs/api-wrapper/types#challenge)                                                               |
+| `requestChallenge(username, options?, token?)` | [`Challenge`](/docs/api-wrapper/types#challenge)                                                               |
+| `acceptChallenge(id, token?)`                  | \{ challenge: [Challenge](/docs/api-wrapper/types#challenge), match: [Match](/docs/api-wrapper/types#match) \} |
+| `denyChallenge(id, token?)`                    | \{ challenge: [Challenge](/docs/api-wrapper/types#challenge) \}                                                |
+| `getMatch(id, token?)`                         | [`Match`](/docs/api-wrapper/types#match)                                                                       |
+| `makeMove(id, san, token?)`                    | [`Move`](/docs/api-wrapper/types#move)                                                                         |
+| `initDeviceAuth(scopes)`                       | [`DeviceAuthInitResponse`](/docs/api-wrapper/types#deviceauthinitresponse)                                     |
+| `getDeviceToken(deviceCode)`                   | [`DeviceTokenResponse`](/docs/api-wrapper/types#devicetokenresponse)                                           |
+| `getFriends(token?)`                           | [`Friendship[]`](/docs/api-wrapper/types#user)                                                                 |
+| `getFriendRequests(token?)`                    | [`FriendRequest[]`](/docs/api-wrapper/types#user)                                                              |
+| `sendFriendRequest(username, token?)`          | [`FriendRequest`](/docs/api-wrapper/types#user)                                                                |
+| `acceptFriendRequest(id, token?)`              | [`Friendship`](/docs/api-wrapper/types#user)                                                                   |
+| `denyFriendRequest(id, token?)`                | [`FriendRequest`](/docs/api-wrapper/types#user)                                                                |
+| `removeFriend(friendshipId, token?)`           | [`Friendship`](/docs/api-wrapper/types#user)                                                                   |
 
 ### WebSocket Events
 

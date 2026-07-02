@@ -14,6 +14,7 @@ import { db, schemas, secondaryStorage } from "@/lib/database";
 
 export const publicUserColumns = {
 	name: true,
+	username: true,
 	id: true,
 	image: true,
 	createdAt: true,
@@ -276,9 +277,22 @@ export async function getUserInfo(
 
 	if (!user || !publicUser) return user;
 
-	const { email, emailVerified, ...userWithoutEmail } = user;
+	const { id, name, username, image, createdAt, updatedAt } = user;
 
-	return userWithoutEmail;
+	return {
+		id,
+		name,
+		username,
+		image,
+		createdAt,
+		updatedAt,
+	};
+}
+
+export async function getUserByUsername(username: string) {
+	return await db.query.user.findFirst({
+		where: (user, { eq }) => eq(user.username, username),
+	});
 }
 
 export async function updateBoard(

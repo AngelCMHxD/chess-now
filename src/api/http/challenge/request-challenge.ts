@@ -1,7 +1,11 @@
 import type { ApiSuccessResponse, Challenge } from "@chess-now/api";
 import z from "zod";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
-import { challengeConfig, createChallenge, getUserInfo } from "@/api/helper";
+import {
+	challengeConfig,
+	createChallenge,
+	getUserByUsername,
+} from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 
@@ -9,7 +13,7 @@ export const bodyType = z.optional(challengeConfig);
 
 export async function run(
 	headers: Headers,
-	oponentId: string,
+	username: string,
 	options: z.infer<typeof bodyType>,
 ): Promise<ApiSuccessResponse<Challenge>> {
 	const session = await auth.api.getSession({
@@ -18,20 +22,20 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	const oponent = await getUserInfo(oponentId);
+	const oponent = await getUserByUsername(username);
 
 	if (!oponent) throw new NotFoundError("User Not Found");
 
 	const challenge = await createChallenge(
 		session.user.id,
-		oponentId,
+		oponent.id,
 		options,
 	);
 
 	publishToSubscriber(
-		`challenge:${oponentId}`,
+		`challenge:${oponent.id}`,
 		"challenge:request",
-		oponentId,
+		oponent.id,
 		{
 			challenge,
 		},

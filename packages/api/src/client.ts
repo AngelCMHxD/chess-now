@@ -150,11 +150,11 @@ export class ChessNowClient {
 	}
 
 	async sendFriendRequest(
-		userId: string,
+		username: string,
 		token?: string,
 	): Promise<FriendRequest> {
-		assert(nonEmptyStr, userId, "userId");
-		return this._fetch<FriendRequest>(`/me/friends/add/${userId}`, {
+		assert(nonEmptyStr, username, "username");
+		return this._fetch<FriendRequest>(`/me/friends/add/${username}`, {
 			method: "POST",
 			token,
 		});
@@ -208,12 +208,12 @@ export class ChessNowClient {
 	}
 
 	async requestChallenge(
-		uid: string,
+		username: string,
 		options?: ChallengeConfig,
 		token?: string,
 	): Promise<Challenge> {
-		assert(nonEmptyStr, uid, "uid");
-		return this._fetch<Challenge>(`/challenge/request/${uid}`, {
+		assert(nonEmptyStr, username, "username");
+		return this._fetch<Challenge>(`/challenge/request/${username}`, {
 			method: "POST",
 			body: options ? JSON.stringify(options) : undefined,
 			token,

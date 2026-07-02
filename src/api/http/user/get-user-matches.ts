@@ -1,11 +1,11 @@
 import type { ApiSuccessResponse, Match } from "@chess-now/api";
-import { UnauthorizedError } from "@/api/errors";
-import { getUserMatches } from "@/api/helper";
+import { NotFoundError, UnauthorizedError } from "@/api/errors";
+import { getUserByUsername, getUserMatches } from "@/api/helper";
 import { auth } from "@/lib/auth";
 
 export async function run(
 	headers: Headers,
-	userId: string,
+	username: string,
 ): Promise<ApiSuccessResponse<Match[]>> {
 	const session = await auth.api.getSession({
 		headers,
@@ -13,7 +13,10 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	const matches = await getUserMatches(userId);
+	const user = await getUserByUsername(username);
+	if (!user) throw new NotFoundError();
+
+	const matches = await getUserMatches(user.id);
 
 	return {
 		success: true,
