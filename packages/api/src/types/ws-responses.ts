@@ -1,4 +1,4 @@
-import type { WsPushEvent } from "./ws-events";
+import type { ServerMessage, WsPushEvent } from "./ws-events";
 
 export interface WSErrorPayload {
 	status: number;
@@ -48,7 +48,7 @@ export type ServerResponse<T extends WebSocketResponse["type"]> =
 	| ServerResponseError<T>;
 
 export type WebSocketEvent =
-	| WsPushEvent
+	| ServerMessage<WsPushEvent["event"]>
 	| ({ event: "response:subscribe" } & ServerResponse<"subscribe">)
 	| ({
 			event: "response:watch_device_auth";
