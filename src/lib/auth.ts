@@ -71,6 +71,7 @@ const privateEndpoints = [
 	"/device/deny",
 	"/device/token",
 	"/update-session",
+	"/update-user",
 ];
 
 export const auth = betterAuth({
@@ -137,19 +138,6 @@ export const auth = betterAuth({
 					...safeBody,
 					username,
 				};
-			}
-
-			if (ctx.path === "/update-user") {
-				const body = ctx.body as
-					| { image?: unknown; username?: unknown }
-					| undefined;
-
-				if (body?.image !== undefined || body?.username !== undefined) {
-					throw new APIError("BAD_REQUEST", {
-						message:
-							"Updating username or image is not allowed from this endpoint.",
-					});
-				}
 			}
 
 			if (privateEndpoints.includes(ctx.path)) {
