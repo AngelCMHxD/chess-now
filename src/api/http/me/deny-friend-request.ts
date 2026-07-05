@@ -1,14 +1,14 @@
 import type { ApiSuccessResponse, FriendRequest } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
-import { publicUserColumns } from "@/api/helper";
+import { getUserByUsername, publicUserColumns } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
 export async function run(
 	headers: Headers,
-	requestId: string,
+	username: string,
 ): Promise<ApiSuccessResponse<FriendRequest>> {
 	const session = await auth.api.getSession({
 		headers,
@@ -16,14 +16,25 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	if (Number.isNaN(Number(requestId)))
-		throw new NotFoundError("Friend request not found");
+	const otherUser = await getUserByUsername(username);
 
-	const requestIdNum = Number(requestId);
+	if (!otherUser) throw new NotFoundError("User not found");
 
 	const friendRequest = await db.query.friendRequests.findFirst({
-		where: (request, { eq, and }) =>
-			and(eq(request.id, requestIdNum), eq(request.status, "pending")),
+		where: (request, { eq, and, or }) =>
+			and(
+				or(
+					and(
+						eq(request.fromId, session.user.id),
+						eq(request.toId, otherUser.id),
+					),
+					and(
+						eq(request.fromId, otherUser.id),
+						eq(request.toId, session.user.id),
+					),
+				),
+				eq(request.status, "pending"),
+			),
 		with: {
 			from: {
 				columns: publicUserColumns,
@@ -44,7 +55,7 @@ export async function run(
 	await db
 		.update(schemas.friendRequests)
 		.set({ status: "denied" })
-		.where(eq(schemas.friendRequests.id, requestIdNum));
+		.where(eq(schemas.friendRequests.id, friendRequest.id));
 
 	friendRequest.status = "denied";
 

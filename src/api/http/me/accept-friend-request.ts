@@ -8,7 +8,7 @@ import { db, schemas } from "@/lib/database";
 
 export async function run(
 	headers: Headers,
-	requestId: string,
+	username: string,
 ): Promise<ApiSuccessResponse<Friendship>> {
 	const session = await auth.api.getSession({
 		headers,
@@ -16,14 +16,29 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	if (Number.isNaN(Number(requestId)))
-		throw new NotFoundError("Friend request not found");
-
-	const requestIdNum = Number(requestId);
-
 	const friendRequest = await db.query.friendRequests.findFirst({
-		where: (request, { eq, and }) =>
-			and(eq(request.id, requestIdNum), eq(request.status, "pending")),
+		where: (request, { eq, and, or }) =>
+			and(
+				or(
+					and(
+						eq(request.fromId, session.user.id),
+						eq(request.toId, username),
+					),
+					and(
+						eq(request.fromId, username),
+						eq(request.toId, session.user.id),
+					),
+				),
+				eq(request.status, "pending"),
+			),
+		with: {
+			from: {
+				columns: publicUserColumns,
+			},
+			to: {
+				columns: publicUserColumns,
+			},
+		},
 	});
 
 	if (!friendRequest) throw new NotFoundError("Friend request not found");
@@ -47,7 +62,7 @@ export async function run(
 		await tx
 			.update(schemas.friendRequests)
 			.set({ status: "accepted" })
-			.where(eq(schemas.friendRequests.id, requestIdNum));
+			.where(eq(schemas.friendRequests.id, friendRequest.id));
 
 		return await tx.query.friendships.findFirst({
 			where: (friendship, { eq }) =>

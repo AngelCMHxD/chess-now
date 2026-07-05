@@ -213,9 +213,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		},
 	)
 	.post(
-		"/me/friend-requests/:request_id/accept",
+		"/me/friend-requests/:username/accept",
 		({ request, params }) =>
-			httpAcceptFriendRequest.run(request.headers, params.request_id),
+			httpAcceptFriendRequest.run(request.headers, params.username),
 		{
 			headers: authHeadersSchema,
 			detail: {
@@ -225,9 +225,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		},
 	)
 	.post(
-		"/me/friend-requests/:request_id/deny",
+		"/me/friend-requests/:username/deny",
 		({ request, params }) =>
-			httpDenyFriendRequest.run(request.headers, params.request_id),
+			httpDenyFriendRequest.run(request.headers, params.username),
 		{
 			headers: authHeadersSchema,
 			detail: {
@@ -244,9 +244,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		},
 	})
 	.delete(
-		"/me/friends/:friendship_id",
+		"/me/friends/:username",
 		({ request, params }) =>
-			httpDeleteFriendship.run(request.headers, params.friendship_id),
+			httpDeleteFriendship.run(request.headers, params.username),
 		{
 			headers: authHeadersSchema,
 			detail: {

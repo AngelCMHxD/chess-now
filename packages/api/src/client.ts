@@ -161,12 +161,12 @@ export class ChessNowClient {
 	}
 
 	async acceptFriendRequest(
-		friendRequestId: string,
+		username: string,
 		token?: string,
 	): Promise<Friendship> {
-		assert(nonEmptyStr, friendRequestId, "friendRequestId");
+		assert(nonEmptyStr, username, "username");
 		return this._fetch<Friendship>(
-			`/me/friend-requests/${friendRequestId}/accept`,
+			`/me/friend-requests/${username}/accept`,
 			{
 				method: "POST",
 				token,
@@ -175,12 +175,12 @@ export class ChessNowClient {
 	}
 
 	async denyFriendRequest(
-		friendRequestId: string,
+		username: string,
 		token?: string,
 	): Promise<FriendRequest> {
-		assert(nonEmptyStr, friendRequestId, "friendRequestId");
+		assert(nonEmptyStr, username, "username");
 		return this._fetch<FriendRequest>(
-			`/me/friend-requests/${friendRequestId}/deny`,
+			`/me/friend-requests/${username}/deny`,
 			{
 				method: "POST",
 				token,
@@ -188,12 +188,9 @@ export class ChessNowClient {
 		);
 	}
 
-	async removeFriend(
-		friendshipId: string,
-		token?: string,
-	): Promise<Friendship> {
-		assert(nonEmptyStr, friendshipId, "friendshipId");
-		return this._fetch<Friendship>(`/me/friends/${friendshipId}`, {
+	async removeFriend(username: string, token?: string): Promise<Friendship> {
+		assert(nonEmptyStr, username, "username");
+		return this._fetch<Friendship>(`/me/friends/${username}`, {
 			method: "DELETE",
 			token,
 		});

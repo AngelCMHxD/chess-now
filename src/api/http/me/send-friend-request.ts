@@ -22,6 +22,28 @@ export async function run(
 	if (user.id === session.user.id)
 		throw new UnauthorizedError("Cannot send a friend request to yourself");
 
+	const existingRequest = await db.query.friendRequests.findFirst({
+		where: (request, { eq, and, or }) =>
+			and(
+				or(
+					and(
+						eq(request.fromId, session.user.id),
+						eq(request.toId, user.id),
+					),
+					and(
+						eq(request.fromId, user.id),
+						eq(request.toId, session.user.id),
+					),
+				),
+				eq(request.status, "pending"),
+			),
+	});
+
+	if (existingRequest)
+		throw new UnauthorizedError(
+			"There is a pending friend request already sent",
+		);
+
 	const request = (await db.transaction(async (tx) => {
 		const initialFriendRequest = (
 			await tx

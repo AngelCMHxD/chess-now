@@ -1,14 +1,14 @@
 import type { ApiSuccessResponse, Friendship } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
-import { publicUserColumns } from "@/api/helper";
+import { getUserByUsername, publicUserColumns } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
 export async function run(
 	headers: Headers,
-	friendshipId: string,
+	username: string,
 ): Promise<ApiSuccessResponse<Friendship>> {
 	const session = await auth.api.getSession({
 		headers,
@@ -16,13 +16,22 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	if (Number.isNaN(Number(friendshipId)))
-		throw new NotFoundError("Friendship not found");
+	const otherUser = await getUserByUsername(username);
 
-	const friendshipIdNum = Number(friendshipId);
+	if (!otherUser) throw new NotFoundError("User not found");
 
 	const friendship = await db.query.friendships.findFirst({
-		where: (request, { eq }) => eq(request.id, friendshipIdNum),
+		where: (request, { eq, or, and }) =>
+			or(
+				and(
+					eq(request.userAId, session.user.id),
+					eq(request.userBId, otherUser.id),
+				),
+				and(
+					eq(request.userAId, otherUser.id),
+					eq(request.userBId, session.user.id),
+				),
+			),
 		with: {
 			userA: {
 				columns: publicUserColumns,
@@ -35,24 +44,14 @@ export async function run(
 
 	if (!friendship) throw new NotFoundError("Friendship not found");
 
-	if (![friendship.userAId, friendship.userBId].includes(session.user.id))
-		throw new UnauthorizedError(
-			"Cannot delete a friendship that you are not involved in",
-		);
-
 	await db
 		.delete(schemas.friendships)
-		.where(eq(schemas.friendships.id, friendshipIdNum));
-
-	const otherUserId =
-		friendship.userAId === session.user.id
-			? friendship.userBId
-			: friendship.userAId;
+		.where(eq(schemas.friendships.id, friendship.id));
 
 	publishToSubscriber<"friend:removed">(
-		`friend:${otherUserId}`,
+		`friend:${otherUser.id}`,
 		"friend:removed",
-		otherUserId,
+		otherUser.id,
 		{ friendship },
 	);
 
