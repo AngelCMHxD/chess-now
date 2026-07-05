@@ -1,4 +1,4 @@
-import type { ApiSuccessResponse, Move } from "@chess-now/api";
+import type { ApiSuccessResponse, Match, Move } from "@chess-now/api";
 import { Scope } from "@chess-now/api";
 import { Chess, type Move as ChessMove } from "chess.js";
 import { eq } from "drizzle-orm";
@@ -26,7 +26,12 @@ export async function run(
 	headers: Headers,
 	matchId: string,
 	body: z.infer<typeof bodyType>,
-): Promise<ApiSuccessResponse<Move>> {
+): Promise<
+	ApiSuccessResponse<{
+		move: Move;
+		match: Match;
+	}>
+> {
 	const session = await auth.api.getSession({
 		headers,
 	});
@@ -149,7 +154,10 @@ export async function run(
 
 	return {
 		success: true,
-		data: moveInfo,
+		data: {
+			move: moveInfo,
+			match: matchAfterMove,
+		},
 	};
 }
 

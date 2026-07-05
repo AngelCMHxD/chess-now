@@ -251,14 +251,20 @@ export class ChessNowClient {
 		matchId: number,
 		moveSan: string,
 		token?: string,
-	): Promise<Move> {
+	): Promise<{
+		move: Move;
+		match: Match;
+	}> {
 		assert(positiveInt, matchId, "matchId");
 		assert(nonEmptyStr, moveSan, "moveSan");
-		return this._fetch<Move>(`/match/${matchId}/move`, {
-			method: "POST",
-			body: JSON.stringify({ move: moveSan }),
-			token,
-		});
+		return this._fetch<{ move: Move; match: Match }>(
+			`/match/${matchId}/move`,
+			{
+				method: "POST",
+				body: JSON.stringify({ move: moveSan }),
+				token,
+			},
+		);
 	}
 
 	async initDeviceAuth(scopes: ScopeType[]): Promise<DeviceAuthInitResponse> {
