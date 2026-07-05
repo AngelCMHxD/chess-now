@@ -6,8 +6,8 @@ export interface Move {
 		blackId: string;
 	};
 	turn: {
-		before: string;
-		after: string;
+		before: "b" | "w";
+		after: "b" | "w";
 	};
 	pgn: {
 		before: string;
