@@ -9,9 +9,11 @@ export async function run(headers: Headers): Promise<ApiSuccessResponse<User>> {
 
 	if (!session) throw new UnauthorizedError();
 
+	const { isAnonymous, ...user } = session.user;
+
 	return {
 		success: true,
-		data: session.user,
+		data: user,
 	};
 }
 
