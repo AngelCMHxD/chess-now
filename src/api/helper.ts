@@ -118,13 +118,13 @@ export const challengeConfig = z.object(
 		timeLimit: z.optional(
 			z
 				.number({
-					error: "'timeLimit' needs to be a number",
+					error: "'timeLimit' needs to be a number representing each player's time limit in minutes",
 				})
-				.min(0, {
-					error: "'timeLimit' needs to be a minimum of 30 seconds",
+				.min(1, {
+					error: "'timeLimit' needs to be a minimum of 1 minute",
 				})
-				.max(60 * 24, {
-					error: "'timeLimit' needs to be a maximum of 1440 seconds (24 hours)",
+				.max(60 * 12, {
+					error: "'timeLimit' needs to be a maximum of 720 minutes (12 hours)",
 				}),
 		),
 	},
