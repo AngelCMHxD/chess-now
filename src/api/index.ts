@@ -13,6 +13,7 @@ import httpGetChallengeInfo from "./http/challenge/get-challenge-info";
 import httpRequestChallenge from "./http/challenge/request-challenge";
 import httpDeviceApprove from "./http/device/device-approve";
 import httpDeviceDeny from "./http/device/device-deny";
+import httpDeviceInfo from "./http/device/device-info";
 import httpDeviceInit from "./http/device/device-init";
 import httpDeviceToken from "./http/device/device-token";
 import httpGetMatchInfo from "./http/match/get-match-info";
@@ -363,6 +364,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			detail: {
 				summary: "Make a move",
 				tags: ["Matches"],
+			},
+		},
+	)
+	.get(
+		"/device/:user_code",
+		({ request, params }) =>
+			httpDeviceInfo.run(request.headers, params.user_code),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				tags: ["Internal"],
 			},
 		},
 	)
