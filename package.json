@@ -11,6 +11,7 @@
 		"start:api": "bun src/api/index.ts",
 		"build": "next build",
 		"check": "bunx @biomejs/biome check --write",
+		"client:discord": "bun packages/discord/src/index.ts",
 		"auth:generate": "bunx auth@latest generate --output ./src/db/schema/auth-schema.ts",
 		"db:generate": "bunx drizzle-kit generate",
 		"db:migrate": "bunx drizzle-kit migrate",

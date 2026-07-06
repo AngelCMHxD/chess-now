@@ -1,0 +1,29 @@
+{
+	"name": "chess-fen2img",
+	"version": "1.0.2",
+	"type": "module",
+	"description": "Generate ChessBoards like chess.com & lichess through FEN, PGN & more",
+	"main": "src/index.ts",
+	"types": "src/index.ts",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AdibHoque/chess-fen2img.git"
+	},
+	"keywords": [
+		"Chess",
+		"GIF",
+		"PNG",
+		"JPG",
+		"Image"
+	],
+	"author": "Adib Hoque",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/AdibHoque/chess-fen2img/issues"
+	},
+	"homepage": "https://github.com/AdibHoque/chess-fen2img/blob/master/README.md/blob/master/README.md",
+	"dependencies": {
+		"@napi-rs/canvas": "^1.0.2",
+		"chess.js": "^0.10.2"
+	}
+}

@@ -1,0 +1,22 @@
+{
+	"name": "@chess-now/discord-bot",
+	"module": "src/index.ts",
+	"type": "module",
+	"private": true,
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"@sapphire/framework": "^5.5.0",
+		"@sapphire/pieces": "^4.4.1",
+		"@sapphire/plugin-hmr": "^3.0.2",
+		"@sapphire/plugin-subcommands": "^7.0.1",
+		"bson": "7.2.0",
+		"chess-fen2img": "file:./chess-fen2img",
+		"discord.js": "^14.26.4",
+		"mongoose": "^9.7.3"
+	}
+}
