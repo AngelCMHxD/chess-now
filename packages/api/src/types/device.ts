@@ -29,3 +29,10 @@ export interface DeviceTokenResponse {
 	expiresIn: number;
 	scope: ScopeType[];
 }
+
+export interface DeviceInfoResponse {
+	userCode: string;
+	expiresAt: Date;
+	scopes: ScopeType[];
+	clientId: string;
+}

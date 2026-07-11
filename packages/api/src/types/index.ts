@@ -5,6 +5,7 @@ export type {
 
 export {
 	type DeviceAuthInitResponse,
+	type DeviceInfoResponse,
 	type DeviceTokenResponse,
 	SCOPES,
 	Scope,

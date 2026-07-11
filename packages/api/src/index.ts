@@ -20,6 +20,7 @@ export type {
 	ChallengeRequestPayload,
 	ClientMessage,
 	DeviceAuthPayload,
+	DeviceInfoResponse,
 	FriendAcceptedPayload,
 	FriendDeniedPayload,
 	FriendRemovedPayload,
