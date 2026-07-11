@@ -1,6 +1,12 @@
 "use client";
+import type {
+	ApiSuccessResponse,
+	DeviceInfoResponse,
+	ScopeType,
+} from "@chess-now/api";
+import { CheckCircle2Icon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
@@ -14,10 +20,47 @@ import {
 import { Field } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 
+const scopesDescriptions: Record<ScopeType, string> = {
+	challenges: "Send and manage challenges",
+	bots: "Manage bots created under your account",
+	friends: "Send friend requests and manage your friend list",
+	matches: "Create new matches and play running matches",
+};
+
 export default function InputOTPForm() {
 	const code = useSearchParams().get("code") || "";
 	const [submittingApprove, setSubmittingApprove] = useState(false);
 	const [submittingDeny, setSubmittingDeny] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [scopes, setScopes] = useState<ScopeType[] | null>(null);
+
+	useEffect(() => {
+		const abortController = new AbortController();
+
+		const fetchData = async () => {
+			const abortController = new AbortController();
+			setLoading(true);
+
+			const response = (await fetch(
+				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/device/${code}`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+					credentials: "include",
+					signal: abortController.signal,
+				},
+			).then((res) =>
+				res.json(),
+			)) as ApiSuccessResponse<DeviceInfoResponse>;
+
+			setScopes(response.data.scopes);
+			setLoading(false);
+		};
+		fetchData();
+
+		return () => abortController.abort();
+	}, [code]);
 
 	const handleApprove = async () => {
 		setSubmittingApprove(true);
@@ -83,6 +126,18 @@ export default function InputOTPForm() {
 		});
 	};
 
+	if (loading || !scopes) {
+		return (
+			<div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
+				<div className="w-full max-w-md md:max-w-lg">
+					<div className="flex flex-col gap-6">
+						<Spinner />
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
 			<div className="w-full max-w-md md:max-w-lg">
@@ -95,8 +150,22 @@ export default function InputOTPForm() {
 						</CardHeader>
 						<CardContent>
 							Are you sure that you want to authenticate with this
-							application? This will give complete access to your
-							account.
+							application? This will give access to the following
+							scopes:
+							<div className="flex flex-col gap-2 p-2 pt-4">
+								{scopes.map((scope, index) => (
+									<div
+										key={index}
+										className="flex gap-1 items-center"
+									>
+										<CheckCircle2Icon
+											height="22"
+											width="22"
+										/>
+										<p>{scopesDescriptions[scope]}</p>
+									</div>
+								))}
+							</div>
 						</CardContent>
 						<CardFooter>
 							<Field>
