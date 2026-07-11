@@ -135,30 +135,3 @@ export default function InputOTPForm() {
 		</div>
 	);
 }
-<div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-	<div className="w-full max-w-sm md:max-w-xl">
-		<Card className="mx-auto max-w-md">
-			<CardHeader>
-				<CardTitle>Verify an external device/application</CardTitle>
-			</CardHeader>
-			<CardContent>
-				Are you sure that you want to authenticate with this
-				application? This will give complete access to your account as a
-				token will be given to the app.
-			</CardContent>
-			<CardFooter>
-				<Field>
-					<Button variant="secondary" className="w-full">
-						Deny
-					</Button>
-					<Button type="submit" className="w-full">
-						Approve
-					</Button>
-				</Field>
-			</CardFooter>
-		</Card>
-	</div>
-	<div className="flex justify-end max-w-full">
-		<ThemeSwitcher />
-	</div>
-</div>;
