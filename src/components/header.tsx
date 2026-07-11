@@ -1,4 +1,5 @@
-import { ChessPawnIcon, MenuIcon } from "lucide-react";
+import { MenuIcon } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -48,7 +49,13 @@ const Header = ({ className }: HeaderProps) => {
 		>
 			<div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
 				<a className="flex items-center gap-2" href="/">
-					<ChessPawnIcon />
+					<Image
+						alt="Chess Now! Icon"
+						width="8"
+						height="8"
+						src="/icon.svg"
+						className="h-8 w-8"
+					/>
 					<span className="font-bold text-xl">Chess Now!</span>
 				</a>
 
