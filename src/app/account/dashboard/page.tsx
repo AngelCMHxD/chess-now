@@ -22,7 +22,7 @@ export default function DashboardPage() {
 
 	React.useEffect(() => {
 		authClient.getSession().then((session) => {
-			setSession(session.data);
+			setSession(session.data as Session);
 			setLoading(false);
 		});
 	}, []);
