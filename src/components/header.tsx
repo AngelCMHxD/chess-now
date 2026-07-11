@@ -33,7 +33,7 @@ const navigationData: NavigationSection[] = [
 		href: "/docs",
 	},
 	{
-		title: "Why this proyect?",
+		title: "Why this project?",
 		href: "/about/why",
 	},
 ];

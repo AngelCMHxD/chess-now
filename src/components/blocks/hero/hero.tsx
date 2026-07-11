@@ -64,7 +64,7 @@ const HeroSection = () => {
 				</h1>
 
 				<p className="text-muted-foreground">
-					This proyect is an open-source API that allows you to
+					This project is an open-source API that allows you to
 					control chess games through it.
 					<br />
 					You can make any integration you can think of, without
