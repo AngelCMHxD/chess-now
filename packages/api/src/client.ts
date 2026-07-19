@@ -88,7 +88,12 @@ export class ChessNowClient {
 		this.wsUrl = wsUrl(this.baseUrl);
 	}
 
-	setDefaultToken(token: string): void {
+	setDefaultToken(token?: string): void {
+		if (!token) {
+			this.defaultToken = undefined;
+			return;
+		}
+
 		assert(nonEmptyStr, token, "token");
 		this.defaultToken = token;
 	}
