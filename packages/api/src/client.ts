@@ -332,13 +332,13 @@ export class ChessNowClient {
 
 		if (typeof tokenOrEvents === "string") {
 			token = tokenOrEvents;
-			events = eventsArg ?? ["challenge", "match"];
+			events = eventsArg ?? ["challenge", "match", "friend"];
 		} else if (Array.isArray(tokenOrEvents)) {
 			token = this.defaultToken as string;
 			events = tokenOrEvents;
 		} else {
 			token = this.defaultToken as string;
-			events = ["challenge", "match"];
+			events = ["challenge", "match", "friend"];
 		}
 
 		assert(nonEmptyStr, token, "token");
