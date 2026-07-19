@@ -128,12 +128,9 @@ export default function InputOTPForm() {
 
 	if (loading || !scopes) {
 		return (
-			<div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-				<div className="w-full max-w-md md:max-w-lg">
-					<div className="flex flex-col gap-6">
-						<Spinner />
-					</div>
-				</div>
+			<div className="flex flex-col gap-4 justify-center items-center w-full h-screen">
+				<Spinner />
+				<p>This might take a while...</p>
 			</div>
 		);
 	}
