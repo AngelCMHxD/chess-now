@@ -49,8 +49,9 @@ export default function MatchesPage() {
 
 	if (!matches) {
 		return (
-			<div className="flex justify-center items-center w-full h-screen">
+			<div className="flex flex-col gap-4 justify-center items-center w-full h-screen">
 				<Spinner />
+				<p>This might take a while...</p>
 			</div>
 		);
 	}
