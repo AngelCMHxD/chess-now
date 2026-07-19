@@ -4,6 +4,7 @@ import {
 	BookOpenIcon,
 	ChartColumnIcon,
 	MessageSquareHeartIcon,
+	UsersIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,6 +41,11 @@ const navMain = [
 		title: "Match History",
 		url: "/account/dashboard/matches",
 		icon: <ChartColumnIcon />,
+	},
+	{
+		title: "Friends",
+		url: "/account/dashboard/friends",
+		icon: <UsersIcon />,
 	},
 ];
 
