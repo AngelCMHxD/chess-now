@@ -1,6 +1,5 @@
 "use client";
-import type { Match } from "@chess-now/api";
-import type { User } from "better-auth/types";
+import type { Match, PublicUser } from "@chess-now/api";
 import { BellIcon, SearchXIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/dashboard-sidebar";
@@ -31,7 +30,7 @@ import { formatMiliseconds } from "@/lib/utils";
 
 export default function MatchesPage() {
 	const [matches, setMatches] = useState<
-		(Match & { blackPlayer: User; whitePlayer: User })[] | null
+		(Match & { blackPlayer: PublicUser; whitePlayer: PublicUser })[] | null
 	>(null);
 
 	useEffect(() => {
@@ -97,17 +96,17 @@ export default function MatchesPage() {
 						</div>
 					</div>
 				</header>
-				<div className="p-5">
-					<div className="min-h-screen flex-1 rounded-xl bg-muted/50 md:min-h-min pt-4">
+				<div className="p-5 h-full">
+					<div className="h-full flex-1 rounded-xl bg-muted/50 pt-4">
 						<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-							<div className="grid grid-cols-3 gap-4 w-full">
+							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
 								{matches.map((match) => (
 									<Card
 										size="default"
 										className="w-full overflow-hidden p-0"
 										key={match.id}
 									>
-										<div className="flex flex-col md:flex-row">
+										<div className="flex flex-col xl:flex-row h-full">
 											<div className="flex flex-col justify-between w-full">
 												<CardHeader>
 													<CardTitle className="pt-4">
@@ -166,7 +165,7 @@ export default function MatchesPage() {
 													</CardDescription>
 												</CardHeader>
 											</div>
-											<div className="w-1/2 aspect-square">
+											<div className="w-1/2 md:w-[80%] xl:w-1/2 aspect-square self-center xl:self-start xl:m-0 shrink-0">
 												<ThemedChessboard
 													options={{
 														allowDragging: false,
@@ -178,13 +177,13 @@ export default function MatchesPage() {
 									</Card>
 								))}
 							</div>
-							{matches && matches.length === 0 && (
-								<div className="w-full h-full flex flex-col justify-center items-center gap-1 pb-4">
-									<SearchXIcon />
-									<p>No matches found.</p>
-								</div>
-							)}
 						</div>
+						{matches && matches.length === 0 && (
+							<div className="w-full h-full flex flex-col justify-center items-center gap-1 pb-4">
+								<SearchXIcon />
+								<p>No matches found.</p>
+							</div>
+						)}
 					</div>
 				</div>
 			</SidebarInset>

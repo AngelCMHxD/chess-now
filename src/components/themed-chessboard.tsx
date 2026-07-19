@@ -18,41 +18,89 @@ export function ThemedChessboard({
 		<Chessboard
 			options={{
 				pieces: {
-					bP: () => (
-						<ChessPawnIcon className="stroke-foreground dark:stroke-background p-0.5" />
+					bP: (params) => (
+						<ChessPawnIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-foreground dark:stroke-background p-0.5"
+						/>
 					),
-					wP: () => (
-						<ChessPawnIcon className="stroke-background dark:stroke-foreground p-0.5" />
+					wP: (params) => (
+						<ChessPawnIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-background dark:stroke-foreground p-0.5"
+						/>
 					),
-					bR: () => (
-						<ChessRookIcon className="stroke-foreground dark:stroke-background p-0.5" />
+					bR: (params) => (
+						<ChessRookIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-foreground dark:stroke-background p-0.5"
+						/>
 					),
-					wR: () => (
-						<ChessRookIcon className="stroke-background dark:stroke-foreground p-0.5" />
+					wR: (params) => (
+						<ChessRookIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-background dark:stroke-foreground p-0.5"
+						/>
 					),
-					bN: () => (
-						<ChessKnightIcon className="stroke-foreground dark:stroke-background p-0.5" />
+					bN: (params) => (
+						<ChessKnightIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-foreground dark:stroke-background p-0.5"
+						/>
 					),
-					wN: () => (
-						<ChessKnightIcon className="stroke-background dark:stroke-foreground p-0.5" />
+					wN: (params) => (
+						<ChessKnightIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-background dark:stroke-foreground p-0.5"
+						/>
 					),
-					bB: () => (
-						<ChessBishopIcon className="stroke-foreground dark:stroke-background p-0.5" />
+					bB: (params) => (
+						<ChessBishopIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-foreground dark:stroke-background p-0.5"
+						/>
 					),
-					wB: () => (
-						<ChessBishopIcon className="stroke-background dark:stroke-foreground p-0.5" />
+					wB: (params) => (
+						<ChessBishopIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-background dark:stroke-foreground p-0.5"
+						/>
 					),
-					bQ: () => (
-						<ChessQueenIcon className="stroke-foreground dark:stroke-background p-0.5" />
+					bQ: (params) => (
+						<ChessQueenIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-foreground dark:stroke-background p-0.5"
+						/>
 					),
-					wQ: () => (
-						<ChessQueenIcon className="stroke-background dark:stroke-foreground p-0.5" />
+					wQ: (params) => (
+						<ChessQueenIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-background dark:stroke-foreground p-0.5"
+						/>
 					),
-					bK: () => (
-						<ChessKingIcon className="stroke-foreground dark:stroke-background p-0.5" />
+					bK: (params) => (
+						<ChessKingIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-foreground dark:stroke-background p-0.5"
+						/>
 					),
-					wK: () => (
-						<ChessKingIcon className="stroke-background dark:stroke-foreground p-0.5" />
+					wK: (params) => (
+						<ChessKingIcon
+							width={params?.svgStyle?.width}
+							height={params?.svgStyle?.height}
+							className="stroke-background dark:stroke-foreground p-0.5"
+						/>
 					),
 				},
 				darkSquareStyle: {
