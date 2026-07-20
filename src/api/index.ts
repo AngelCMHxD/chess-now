@@ -76,6 +76,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						name: "Device auth",
 						description: "Device authentication endpoints",
 					},
+					{
+						name: "Bots",
+						description: "Bot management endpoints",
+					},
 				],
 			},
 			exclude: {
@@ -260,7 +264,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		headers: authHeadersSchema,
 		detail: {
 			summary: "Get your registered bots",
-			tags: ["Me"],
+			tags: ["Bots"],
 		},
 	})
 	.post(
@@ -271,7 +275,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			body: httpCreateBot.bodyType,
 			detail: {
 				summary: "Register a new bot",
-				tags: ["Me"],
+				tags: ["Bots"],
 			},
 		},
 	)
@@ -283,7 +287,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: authHeadersSchema,
 			detail: {
 				summary: "Delete a bot",
-				tags: ["Me"],
+				tags: ["Bots"],
 			},
 		},
 	)
@@ -295,7 +299,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: authHeadersSchema,
 			detail: {
 				summary: "Reset a bot's token",
-				tags: ["Me"],
+				tags: ["Bots"],
 			},
 		},
 	)
