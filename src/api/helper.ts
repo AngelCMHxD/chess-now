@@ -74,7 +74,6 @@ export const challengeSchema = z.object({
 	createdAt: z.date(),
 	from: z.string(),
 	to: z.string(),
-	rules: z.array(z.enum(["noRematch", "noDraw"])),
 	challengerColor: z.enum(["white", "black", "random"]),
 	timeLimit: z.number().int(),
 	status: z.enum(["pending", "denied", "expired", "ongoing", "finished"]),
@@ -96,24 +95,12 @@ export const authHeadersSchema = z
 		path: ["authorization"],
 	});
 
-const challengeRules = ["noRematch", "noDraw"] as const;
-
 export const challengeConfig = z.object(
 	{
 		color: z.optional(
 			z.enum(["white", "black", "random"], {
 				error: "'color' needs to be one of: 'white', 'black' or 'random'",
 			}),
-		),
-		rules: z.optional(
-			z.array(
-				z.enum(challengeRules, {
-					error: `'rules' needs to be an array of valid rules inside: ${challengeRules.map((a) => `'${a}'`).join(", ")}`,
-				}),
-				{
-					error: "'rules' needs to be an array of valid rules",
-				},
-			),
 		),
 		timeLimit: z.optional(
 			z
@@ -144,7 +131,6 @@ export async function createChallenge(
 			.values({
 				fromId: challengerId,
 				toId: challengedId,
-				rules: config?.rules,
 				challengerColor: config?.color,
 			})
 			.returning()

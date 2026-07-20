@@ -9,8 +9,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 
-export const matchRules = pgEnum("match_rules", ["noRematch", "noDraw"]);
-
 export const startingColor = pgEnum("starting_color", [
 	"white",
 	"black",
@@ -73,7 +71,6 @@ export const challenges = pgTable("challenge", {
 	toId: varchar("to_id")
 		.references(() => user.id)
 		.notNull(),
-	rules: matchRules("rules").array().default([]).notNull(),
 	challengerColor: startingColor("challenger_color")
 		.default("random")
 		.notNull(),
