@@ -127,6 +127,14 @@ export const auth = betterAuth({
 	},
 	hooks: {
 		before: createAuthMiddleware(async (ctx) => {
+			const authHeader = ctx.headers?.get("Authorization");
+			if (authHeader?.startsWith("Bearer bot_")) {
+				ctx.headers?.set(
+					"x-api-key",
+					authHeader.replace("Bearer ", ""),
+				);
+			}
+
 			if (ctx.path === "/sign-up/email") {
 				const body = ctx.body as
 					| { username?: unknown; image?: unknown }
