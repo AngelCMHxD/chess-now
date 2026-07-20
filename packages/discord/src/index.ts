@@ -1,7 +1,12 @@
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ChessNowClient } from "@chess-now/api";
-import { container, SapphireClient } from "@sapphire/framework";
+import {
+	ApplicationCommandRegistries,
+	container,
+	RegisterBehavior,
+	SapphireClient,
+} from "@sapphire/framework";
 import { GatewayIntentBits } from "discord.js";
 import mongoose from "mongoose";
 
@@ -13,6 +18,10 @@ import {
 import { DiscordUserModel } from "./schemas/user";
 
 const baseUserDirectory = dirname(fileURLToPath(import.meta.url));
+
+ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(
+	RegisterBehavior.BulkOverwrite,
+);
 
 async function setupBot() {
 	const botToken = process.env.DISCORD_BOT_TOKEN;
