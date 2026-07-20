@@ -109,6 +109,9 @@ export const auth = betterAuth({
 				enableSessionForAPIKeys: true,
 				storage: "secondary-storage",
 				fallbackToDatabase: true,
+				rateLimit: {
+					enabled: false,
+				},
 			},
 		]),
 		nextCookies(),
