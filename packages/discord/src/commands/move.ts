@@ -21,12 +21,12 @@ export class MoveCommand extends Command {
 		registry.registerChatInputCommand((builder) =>
 			builder
 				.setName("move")
-				.setDescription("Play a SAN move in your active match")
+				.setDescription("Play a LAN/SAN move in your active match")
 				.addStringOption((option) =>
 					option
 						.setName("move")
 						.setDescription(
-							"The SAN move to play, e.g. Nf3 or exd5",
+							"The LAN/SAN move to play, e.g. Nf3 or e3e4",
 						)
 						.setRequired(true),
 				),
