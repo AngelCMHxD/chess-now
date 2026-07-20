@@ -1,8 +1,11 @@
 {
-	"name": "@chess-now/discord-bot",
+	"name": "@chess-now/discord",
 	"module": "src/index.ts",
 	"type": "module",
 	"private": true,
+	"scripts": {
+		"start": "bun src/index.ts"
+	},
 	"devDependencies": {
 		"@types/bun": "latest"
 	},
