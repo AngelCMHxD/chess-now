@@ -21,6 +21,7 @@ async function setupBot() {
 	}
 
 	container.chess = new ChessNowClient("http://localhost:8080");
+	container.subscriptions = [];
 	await container.chess.connect();
 	registerNotificationHandlers();
 	console.log("Connected to ChessNow API WebSocket");
