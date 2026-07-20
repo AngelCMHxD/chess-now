@@ -90,9 +90,6 @@ export class MoveCommand extends Command {
 						`Match #${result.match.id}`,
 						`vs. ${oponent?.name} (${oponent?.username})`,
 						`Status: ${result.match.status}`,
-						result.match.status === "active"
-							? "There was a move on your active match."
-							: "The match is no longer active. Your active match was cleared.",
 					].join("\n"),
 				)
 				.setColor("Blurple")

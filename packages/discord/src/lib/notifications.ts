@@ -159,16 +159,29 @@ export function registerNotificationHandlers() {
 	});
 
 	container.chess.on("match:board-move", async (event) => {
+		if (event.payload.match.status !== "active") return;
+
+		const isWhite = event.target === event.payload.match.whiteId;
+		const isBlack = event.target === event.payload.match.blackId;
+		const movedColor = event.payload.move.turn.before;
+		if (
+			(isWhite && movedColor === "w") ||
+			(isBlack && movedColor === "b")
+		) {
+			return;
+		}
+
 		await notifyByTargetUserId(
 			event.target,
 			new EmbedBuilder()
-				.setTitle("Match update")
+				.setTitle("Opponent move")
 				.setDescription(
 					[
 						`Match #${event.payload.match.id}`,
 						`${event.payload.match.whitePlayer?.name} (White) vs ${event.payload.match.blackPlayer?.name} (Black)`,
 						`Turn: ${event.payload.move.turn.after === "b" ? "Black" : "White"}`,
 						`Move: ${event.payload.move.lan}`,
+						`There was a move on your active match.`,
 					].join("\n"),
 				)
 				.setImage("attachment://board.png")
@@ -187,6 +200,16 @@ export function registerNotificationHandlers() {
 	});
 
 	container.chess.on("match:game_over", async (event) => {
+		await DiscordUserModel.updateOne(
+			{ userId: event.target },
+			{ $set: { activeMatchId: null } },
+		);
+
+		const userColor =
+			event.target === event.payload.match.whiteId ? "w" : "b";
+		const movedColor = event.payload.lastMove.turn.before;
+		if (userColor === movedColor) return;
+
 		await notifyByTargetUserId(
 			event.target,
 			new EmbedBuilder()
@@ -194,11 +217,24 @@ export function registerNotificationHandlers() {
 				.setDescription(
 					[
 						`Match #${event.payload.match.id}`,
+						`${event.payload.match.whitePlayer?.name} (White) vs ${event.payload.match.blackPlayer?.name} (Black)`,
+						`Final Move: ${event.payload.lastMove.lan}`,
 						`Result: ${event.payload.match.status.replace("_", " ").toUpperCase()}`,
+						`The match is no longer active. Your active match was cleared.`,
 					].join("\n"),
 				)
-				.setColor("DarkGreen")
+				.setImage("attachment://board.png")
+				.setColor("DarkRed")
 				.setTimestamp(),
+			[
+				new AttachmentBuilder(
+					await renderBoard(
+						event.payload.match.fen,
+						event.payload.match.blackId === event.target,
+					),
+					{ name: "board.png" },
+				),
+			],
 		);
 	});
 }
