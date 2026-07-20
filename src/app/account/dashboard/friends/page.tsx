@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 
-export default function MatchesPage() {
+export default function FriendsPage() {
 	const [friendships, setFriendships] = useState<Friendship[] | null>(null);
 	const [myId, setMyId] = useState<string>("");
 
