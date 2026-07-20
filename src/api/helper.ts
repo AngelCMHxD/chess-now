@@ -8,7 +8,7 @@ import type {
 	User,
 } from "@chess-now/api";
 import type { Chess } from "chess.js";
-import { eq, or } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import z from "zod";
 import type { Session } from "@/lib/auth-client";
 import { db, schemas, secondaryStorage } from "@/lib/database";
@@ -138,7 +138,7 @@ export async function createChallenge(
 	challengedId: string,
 	config?: ChallengeConfig,
 ): Promise<Challenge> {
-	return (
+	const inserted = (
 		await db
 			.insert(schemas.challenges)
 			.values({
@@ -149,18 +149,23 @@ export async function createChallenge(
 			})
 			.returning()
 	)[0];
+
+	return (await getChallengeInfo(inserted.id)) as Challenge;
 }
 
 export async function getChallenges(userId: string): Promise<Challenge[]> {
-	return await db
-		.select()
-		.from(schemas.challenges)
-		.where(
-			or(
-				eq(schemas.challenges.toId, userId),
-				eq(schemas.challenges.fromId, userId),
-			),
-		);
+	return await db.query.challenges.findMany({
+		where: (challenges, { eq, or }) =>
+			or(eq(challenges.toId, userId), eq(challenges.fromId, userId)),
+		with: {
+			from: {
+				columns: publicUserColumns,
+			},
+			to: {
+				columns: publicUserColumns,
+			},
+		},
+	});
 }
 
 export async function getChallengeInfo(
