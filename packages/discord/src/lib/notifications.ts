@@ -168,7 +168,7 @@ export function registerNotificationHandlers() {
 						`Match #${event.payload.match.id}`,
 						`${event.payload.match.whitePlayer?.name} (White) vs ${event.payload.match.blackPlayer?.name} (Black)`,
 						`Turn: ${event.payload.move.turn.after === "b" ? "Black" : "White"}`,
-						`Move: ${event.payload.move.san}`,
+						`Move: ${event.payload.move.lan}`,
 					].join("\n"),
 				)
 				.setImage("attachment://board.png")

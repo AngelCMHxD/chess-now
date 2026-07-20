@@ -84,7 +84,7 @@ export class MoveCommand extends Command {
 			const oponent = getOtherPlayer(result.match, discordUser.userId);
 
 			const embed = new EmbedBuilder()
-				.setTitle(`Move played: ${result.move.san}`)
+				.setTitle(`Move played: ${result.move.lan}`)
 				.setDescription(
 					[
 						`Match #${result.match.id}`,
