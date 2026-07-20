@@ -111,7 +111,7 @@ export async function run(
 	};
 
 	players.forEach((playerId) => {
-		publishToSubscriber(`match:${playerId}`, "match:board-move", playerId, {
+		publishToSubscriber(`match:${playerId}`, "match:board_move", playerId, {
 			match: matchAfterMove,
 			move: moveInfo,
 		});

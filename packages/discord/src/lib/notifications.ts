@@ -158,7 +158,7 @@ export function registerNotificationHandlers() {
 		);
 	});
 
-	container.chess.on("match:board-move", async (event) => {
+	container.chess.on("match:board_move", async (event) => {
 		if (event.payload.match.status !== "active") return;
 
 		const isWhite = event.target === event.payload.match.whiteId;

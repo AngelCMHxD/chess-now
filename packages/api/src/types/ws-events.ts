@@ -51,7 +51,7 @@ export interface FriendRemovedPayload {
 export type WsPushEvent =
 	| { event: "device_auth"; payload: DeviceAuthPayload }
 	| { event: "match:game_over"; payload: MatchGameOverPayload }
-	| { event: "match:board-move"; payload: MatchMovePayload }
+	| { event: "match:board_move"; payload: MatchMovePayload }
 	| { event: "challenge:request"; payload: ChallengeRequestPayload }
 	| { event: "challenge:accepted"; payload: ChallengeAcceptedPayload }
 	| { event: "challenge:denied"; payload: ChallengeDeniedPayload }
