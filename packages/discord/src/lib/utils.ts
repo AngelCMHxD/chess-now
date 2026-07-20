@@ -9,6 +9,7 @@ export async function renderBoard(fen: string, flipped = false) {
 		style: "neo",
 		light: "#EEEED2",
 		dark: "#769657",
+		notations: true,
 		flipped,
 	});
 

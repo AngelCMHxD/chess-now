@@ -114,7 +114,7 @@ export default class ChessImageGenerator {
 		ctx.fill();
 
 		const row = this.flipped ? (r: number) => r + 1 : (r: number) => 8 - r;
-		const col = this.flipped ? (c: number) => c : (c: number) => 7 - c;
+		const col = this.flipped ? (c: number) => 7 - c : (c: number) => c;
 
 		for (let i = 0; i < 8; i += 1) {
 			for (let j = 0; j < 8; j += 1) {
