@@ -2,6 +2,7 @@
 
 import {
 	BookOpenIcon,
+	BotIcon,
 	ChartColumnIcon,
 	MessageSquareHeartIcon,
 	UsersIcon,
@@ -46,6 +47,11 @@ const navMain = [
 		title: "Friends",
 		url: "/account/dashboard/friends",
 		icon: <UsersIcon />,
+	},
+	{
+		title: "Bots",
+		url: "/account/dashboard/bots",
+		icon: <BotIcon />,
 	},
 ];
 
