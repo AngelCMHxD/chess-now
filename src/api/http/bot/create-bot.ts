@@ -1,5 +1,5 @@
-import type { ApiKey } from "@better-auth/api-key";
 import {
+	type ApiKey,
 	type ApiSuccessResponse,
 	type PublicUser,
 	Scope,

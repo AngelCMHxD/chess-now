@@ -1,6 +1,7 @@
 import z from "zod";
 import { ChessNowError } from "./errors";
 import type {
+	ApiKey,
 	Challenge,
 	ChallengeConfig,
 	ClientMessage,
@@ -11,6 +12,7 @@ import type {
 	Friendship,
 	Match,
 	Move,
+	PublicUser,
 	ScopeType,
 	SubscribeEvents,
 	SubscribeMessage,
@@ -284,6 +286,41 @@ export class ChessNowClient {
 			method: "POST",
 			body: JSON.stringify({ deviceCode }),
 			auth: false,
+		});
+	}
+
+	async getMyBots(token?: string): Promise<PublicUser[]> {
+		return this._fetch<PublicUser[]>("/me/bots", {
+			token,
+		});
+	}
+
+	async deleteBot(botId: string, token?: string): Promise<void> {
+		assert(nonEmptyStr, botId, "botId");
+		await this._fetch<void>(`/me/bots/${botId}`, {
+			method: "DELETE",
+			token,
+		});
+	}
+
+	async registerBot(
+		botInfo: { name: string; username: string },
+		token?: string,
+	): Promise<{ bot: PublicUser; apiKey: ApiKey }> {
+		assert(nonEmptyStr, botInfo.name, "name");
+		assert(nonEmptyStr, botInfo.username, "username");
+		return this._fetch<{ bot: PublicUser; apiKey: ApiKey }>("/me/bots", {
+			method: "POST",
+			body: JSON.stringify(botInfo),
+			token,
+		});
+	}
+
+	async resetBotToken(botId: string, token?: string): Promise<ApiKey> {
+		assert(nonEmptyStr, botId, "botId");
+		return this._fetch<ApiKey>(`/me/bots/${botId}/reset_token`, {
+			method: "POST",
+			token,
 		});
 	}
 

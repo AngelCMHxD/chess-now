@@ -11,6 +11,7 @@ export {
 } from "./errors";
 export type {
 	ApiErrorResponse,
+	ApiKey,
 	ApiResponse,
 	ApiSuccessResponse,
 	Challenge,

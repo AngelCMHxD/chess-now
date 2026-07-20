@@ -1,5 +1,4 @@
-import type { ApiKey } from "@better-auth/api-key";
-import { type ApiSuccessResponse, Scope } from "@chess-now/api";
+import { type ApiKey, type ApiSuccessResponse, Scope } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { ForbiddenError, UnauthorizedError } from "@/api/errors";
 import { auth } from "@/lib/auth";
