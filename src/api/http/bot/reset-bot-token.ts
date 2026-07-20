@@ -27,12 +27,29 @@ export async function run(
 		.delete(schemas.apikey)
 		.where(eq(schemas.apikey.referenceId, bot.id));
 
+	const botSession = await db
+		.insert(schemas.session)
+		.values({
+			id: crypto.randomUUID(),
+			token: crypto.randomUUID(),
+			userId: bot.id,
+			expiresAt: new Date(Date.now() + 10000),
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		})
+		.returning();
+
 	const apiKey = await auth.api.createApiKey({
 		headers: {
 			"x-internal-call": process.env.INTERNAL_API_SECRET as string,
+			Authorization: `Bearer ${botSession[0].token}`,
 		},
 		body: { configId: "bot-key", userId: bot.id },
 	});
+
+	await db
+		.delete(schemas.session)
+		.where(eq(schemas.session.id, botSession[0].id));
 
 	return {
 		success: true,
