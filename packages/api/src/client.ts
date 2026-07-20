@@ -29,6 +29,16 @@ function wsUrl(baseUrl: string): string {
 	return `${protocol}://${host}/api/websocket`;
 }
 
+function parseDateReviver(_key: string, value: unknown): unknown {
+	if (typeof value === "string") {
+		const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+		if (isoDateRegex.test(value)) {
+			return new Date(value);
+		}
+	}
+	return value;
+}
+
 type Handler = (msg: WebSocketEvent) => void;
 
 function assert<T>(schema: z.ZodType<T>, value: unknown, label: string): void {
@@ -127,7 +137,8 @@ export class ChessNowClient {
 			headers,
 		});
 
-		const body = await res.json();
+		const text = await res.text();
+		const body = text ? JSON.parse(text, parseDateReviver) : {};
 
 		if (!res.ok) {
 			throw ChessNowError.fromResponse(res.status, body);
@@ -536,7 +547,7 @@ export class ChessNowClient {
 	private _handleMessage(data: string): void {
 		let parsed: Record<string, unknown>;
 		try {
-			parsed = JSON.parse(data);
+			parsed = JSON.parse(data, parseDateReviver);
 		} catch {
 			return;
 		}
