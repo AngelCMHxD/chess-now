@@ -291,25 +291,6 @@ export async function updateBoard(
 	return match;
 }
 
-export async function endMatch(
-	matchId: number,
-	chess: Chess,
-	endReason: Match["endReason"],
-	status: Match["status"],
-) {
-	await secondaryStorage.delete(`match_${matchId}`);
-
-	await db
-		.update(schemas.matches)
-		.set({
-			fen: chess.fen(),
-			pgn: chess.pgn(),
-			endReason,
-			status,
-		})
-		.where(eq(schemas.matches.id, matchId));
-}
-
 export async function getUserMatches(userId: string): Promise<Match[]> {
 	const matches = await db.query.matches.findMany({
 		where: (matches, { eq, or }) =>
