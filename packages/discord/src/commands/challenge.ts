@@ -52,13 +52,6 @@ export class ChallengeCommand extends Subcommand {
 									{ name: "White", value: "white" },
 									{ name: "Black", value: "black" },
 								),
-						)
-						.addIntegerOption((option) =>
-							option
-								.setName("time_limit")
-								.setDescription("Time limit in minutes")
-								.setMinValue(1)
-								.setMaxValue(720),
 						),
 				)
 				.addSubcommand((subcommand) =>
@@ -115,14 +108,11 @@ export class ChallengeCommand extends Subcommand {
 			const username = interaction.options.getString("username", true);
 			const color = (interaction.options.getString("color") ||
 				undefined) as "white" | "black" | "random" | undefined;
-			const timeLimit =
-				interaction.options.getInteger("time_limit") || undefined;
 
 			const challenge = await this.container.chess.requestChallenge(
 				username,
 				{
 					color,
-					timeLimit,
 				},
 				discordUser.accessToken,
 			);
@@ -133,7 +123,6 @@ export class ChallengeCommand extends Subcommand {
 					[
 						`Challenge #${challenge.id} sent to \`${challenge.to?.name} (${challenge.to?.username})\`.`,
 						`Your color: ${challenge.challengerColor}`,
-						`Time limit: ${challenge.timeLimit}m`,
 					].join("\n"),
 				)
 				.setColor("DarkGreen")

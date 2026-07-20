@@ -2,7 +2,6 @@ import type { PublicUser } from "./user";
 
 export interface ChallengeConfig {
 	color?: "white" | "black" | "random";
-	timeLimit?: number;
 }
 
 export interface Challenge {
@@ -13,7 +12,6 @@ export interface Challenge {
 	toId: string;
 	to?: PublicUser;
 	challengerColor: "white" | "black" | "random";
-	timeLimit: number;
 	status: "pending" | "denied" | "expired" | "ongoing" | "finished";
 	matchId: number | null;
 }

@@ -74,7 +74,6 @@ export const challenges = pgTable("challenge", {
 	challengerColor: startingColor("challenger_color")
 		.default("random")
 		.notNull(),
-	timeLimit: integer("time_limit").default(720).notNull(),
 	status: challengeStatus("status").default("pending").notNull(),
 	matchId: integer("matchId").references(() => matches.id),
 	createdAt: timestamp("created_at").defaultNow().notNull(),

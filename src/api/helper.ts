@@ -75,7 +75,6 @@ export const challengeSchema = z.object({
 	from: z.string(),
 	to: z.string(),
 	challengerColor: z.enum(["white", "black", "random"]),
-	timeLimit: z.number().int(),
 	status: z.enum(["pending", "denied", "expired", "ongoing", "finished"]),
 	matchId: z.number().int().nullable(),
 });
@@ -101,18 +100,6 @@ export const challengeConfig = z.object(
 			z.enum(["white", "black", "random"], {
 				error: "'color' needs to be one of: 'white', 'black' or 'random'",
 			}),
-		),
-		timeLimit: z.optional(
-			z
-				.number({
-					error: "'timeLimit' needs to be a number representing each player's time limit in minutes",
-				})
-				.min(1, {
-					error: "'timeLimit' needs to be a minimum of 1 minute",
-				})
-				.max(60 * 12, {
-					error: "'timeLimit' needs to be a maximum of 720 minutes (12 hours)",
-				}),
 		),
 	},
 	{

@@ -47,7 +47,6 @@ export function registerNotificationHandlers() {
 						`From: ${challenge.from?.name} (@${challenge.from?.username})`,
 						`Challenge #${challenge.id}`,
 						`Your Color: ${challengedColor}`,
-						`Time limit: ${challenge.timeLimit}m`,
 					].join("\n"),
 				)
 				.setColor("Blurple")
