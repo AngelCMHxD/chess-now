@@ -81,7 +81,9 @@ export async function run(
 		throw new UnprocessableContentError();
 	}
 
-	const matchAfterMove = await updateBoard(match.id, chess);
+	const matchAfterMove = (await updateBoard(match.id, chess)) as Match;
+	matchAfterMove.whitePlayer = match.whitePlayer;
+	matchAfterMove.blackPlayer = match.blackPlayer;
 
 	const pgnAfter = chess.pgn();
 	const turnAfter = chess.turn();
@@ -137,7 +139,9 @@ export async function run(
 				})
 				.where(eq(schemas.matches.id, mId))
 				.returning()
-		)[0];
+		)[0] as Match;
+		finalMatch.whitePlayer = match.whitePlayer;
+		finalMatch.blackPlayer = match.blackPlayer;
 
 		players.forEach((playerId) => {
 			publishToSubscriber(
