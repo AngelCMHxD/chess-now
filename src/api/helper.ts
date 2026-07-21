@@ -159,9 +159,7 @@ export async function getChallengeInfo(
 	return challenge;
 }
 
-export async function acceptChallenge(
-	challenge: typeof schemas.challenges.$inferSelect,
-): Promise<{
+export async function acceptChallenge(challenge: Challenge): Promise<{
 	match: Match;
 	challenge: Challenge;
 }> {
@@ -192,11 +190,19 @@ export async function acceptChallenge(
 				blackId: blackId,
 			})
 			.returning()
-	)[0];
+	)[0] as Match;
+
+	if (whiteId === challenge.fromId) {
+		match.whitePlayer = challenge.from;
+		match.blackPlayer = challenge.to;
+	} else {
+		match.whitePlayer = challenge.to;
+		match.blackPlayer = challenge.from;
+	}
 
 	await secondaryStorage.set(`match_${match.id}`, match);
 
-	challenge = (
+	const updatedChallenge = (
 		await db
 			.update(schemas.challenges)
 			.set({
@@ -205,11 +211,14 @@ export async function acceptChallenge(
 			})
 			.where(eq(schemas.challenges.id, challenge.id))
 			.returning()
-	)[0];
+	)[0] as Challenge;
+
+	updatedChallenge.from = challenge.from;
+	updatedChallenge.to = challenge.to;
 
 	return {
 		match,
-		challenge,
+		challenge: updatedChallenge,
 	};
 }
 
