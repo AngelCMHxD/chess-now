@@ -8,9 +8,9 @@ export interface Challenge {
 	id: number;
 	createdAt: Date;
 	fromId: string;
-	from?: User;
+	from: User;
 	toId: string;
-	to?: User;
+	to: User;
 	challengerColor: "white" | "black" | "random";
 	status: "pending" | "denied" | "expired" | "ongoing" | "finished";
 	matchId: number | null;

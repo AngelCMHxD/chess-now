@@ -267,7 +267,7 @@ export default function FriendsPage() {
 														<div className="pb-4">
 															<p>
 																Friend since:{" "}
-																{friendship.createdAt?.toLocaleString()}
+																{friendship.createdAt.toLocaleString()}
 															</p>
 														</div>
 													</CardDescription>

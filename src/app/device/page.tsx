@@ -45,7 +45,7 @@ export default function InputOTPForm() {
 			return;
 		}
 
-		redirect(`/device/approval?code=${response.data?.user_code}`);
+		redirect(`/device/approval?code=${response.data.user_code}`);
 	};
 
 	return (

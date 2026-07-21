@@ -121,7 +121,7 @@ export class ChallengeCommand extends Subcommand {
 				.setTitle("Challenge sent")
 				.setDescription(
 					[
-						`Challenge #${challenge.id} sent to \`${challenge.to?.name} (${challenge.to?.username})\`.`,
+						`Challenge #${challenge.id} sent to \`${challenge.to.name} (${challenge.to.username})\`.`,
 						`Your color: ${challenge.challengerColor}`,
 					].join("\n"),
 				)
@@ -179,7 +179,7 @@ export class ChallengeCommand extends Subcommand {
 									.slice(0, 10)
 									.map(
 										(challenge) =>
-											`#${challenge.id} - From: ${challenge.from?.name} (@${challenge.from?.username})`,
+											`#${challenge.id} - From: ${challenge.from.name} (@${challenge.from.username})`,
 									)
 									.join("\n")
 							: "No incoming challenges.",
@@ -192,7 +192,7 @@ export class ChallengeCommand extends Subcommand {
 									.slice(0, 10)
 									.map(
 										(challenge) =>
-											`#${challenge.id} - To: ${challenge.to?.name} (@${challenge.to?.username})`,
+											`#${challenge.id} - To: ${challenge.to.name} (@${challenge.to.username})`,
 									)
 									.join("\n")
 							: "No outgoing challenges.",

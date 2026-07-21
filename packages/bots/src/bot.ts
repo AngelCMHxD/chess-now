@@ -44,7 +44,7 @@ export class ChessBot {
 							challenge.id,
 						);
 						console.log(
-							`[Level ${this.level}] accepted pending challenge on startup from ${challenge.from?.username}, match ${match.id} started.`,
+							`[Level ${this.level}] accepted pending challenge on startup from ${challenge.from.username}, match ${match.id} started.`,
 						);
 					} catch (e) {
 						console.error(
@@ -75,7 +75,7 @@ export class ChessBot {
 					challenge.id,
 				);
 				console.log(
-					`[Level ${this.level}] accepted challenge from ${challenge.from?.username}, match ${match.id} started.`,
+					`[Level ${this.level}] accepted challenge from ${challenge.from.username}, match ${match.id} started.`,
 				);
 			} catch (e) {
 				console.error(

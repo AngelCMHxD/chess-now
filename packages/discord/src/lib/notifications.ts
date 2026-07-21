@@ -44,7 +44,7 @@ export function registerNotificationHandlers() {
 				.setTitle("New challenge received")
 				.setDescription(
 					[
-						`From: ${challenge.from?.name} (@${challenge.from?.username})`,
+						`From: ${challenge.from.name} (@${challenge.from.username})`,
 						`Challenge #${challenge.id}`,
 						`Your Color: ${challengedColor}`,
 					].join("\n"),
@@ -97,7 +97,7 @@ export function registerNotificationHandlers() {
 			new EmbedBuilder()
 				.setTitle("New friend request")
 				.setDescription(
-					`From: ${request.from?.name} (@${request.from?.username})`,
+					`From: ${request.from.name} (@${request.from.username})`,
 				)
 				.setColor("Blurple")
 				.setTimestamp(),
@@ -131,7 +131,7 @@ export function registerNotificationHandlers() {
 			new EmbedBuilder()
 				.setTitle("Friend request denied")
 				.setDescription(
-					`Request from ${request.to?.name} (@${request.to?.username}) was denied.`,
+					`Request from ${request.to.name} (@${request.to.username}) was denied.`,
 				)
 				.setColor("DarkOrange")
 				.setTimestamp(),

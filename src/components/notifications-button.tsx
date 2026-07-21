@@ -218,8 +218,8 @@ export function NotificationsButton() {
 											<span className="font-medium">
 												Challenge
 											</span>{" "}
-											from {item.data.from?.name} (@
-											{item.data.from?.username})
+											from {item.data.from.name} (@
+											{item.data.from.username})
 										</div>
 										<div className="flex gap-2 w-full justify-end">
 											<Button
@@ -248,8 +248,8 @@ export function NotificationsButton() {
 											<span className="font-medium">
 												Friend Request
 											</span>{" "}
-											from {item.data.from?.name} (@
-											{item.data.from?.username})
+											from {item.data.from.name} (@
+											{item.data.from.username})
 										</div>
 										<div className="flex gap-2 w-full justify-end">
 											<Button

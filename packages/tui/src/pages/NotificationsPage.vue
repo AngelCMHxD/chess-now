@@ -201,12 +201,12 @@ onKeyDown((key) => {
 				>
 					<Text
 						v-if="notification.type === 'challenge'"
-						:content="t`[Challenge] From: ${notification.data.from?.name ? `${notification.data.from.name} (@${notification.data.from.username})` : 'Unknown'}`"
+						:content="t`[Challenge] From: ${notification.data.from.name ? `${notification.data.from.name} (@${notification.data.from.username})` : 'Unknown'}`"
 						:color="yellow"
 					/>
 					<Text
 						v-else-if="notification.type === 'friend_request'"
-						:content="t`[Friend Request] From: ${notification.data.from?.name ? `${notification.data.from.name} (@${notification.data.from.username})` : 'Unknown'}`"
+						:content="t`[Friend Request] From: ${notification.data.from.name ? `${notification.data.from.name} (@${notification.data.from.username})` : 'Unknown'}`"
 						:color="cyan"
 					/>
 

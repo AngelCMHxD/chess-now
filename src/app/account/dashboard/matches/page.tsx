@@ -114,7 +114,7 @@ export default function MatchesPage() {
 														"active" ? (
 															<p>
 																Started at:{" "}
-																{match.createdAt?.toLocaleString()}
+																{match.createdAt.toLocaleString()}
 																<br />
 																Active
 															</p>
@@ -124,7 +124,7 @@ export default function MatchesPage() {
 																{formatMiliseconds(
 																	(match.finishedAt?.getTime() ||
 																		0) -
-																		match.createdAt?.getTime(),
+																		match.createdAt.getTime(),
 																)}
 																<br />
 																{match.endReason ===

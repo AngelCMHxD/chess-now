@@ -75,8 +75,8 @@ function activate(index?: number) {
 		if (friend) {
 			selectedFriendUsername.value =
 				friend.userAId === state.user?.id
-					? friend.userB?.username || ""
-					: friend.userA?.username || "";
+					? friend.userB.username || ""
+					: friend.userA.username || "";
 			showRemoveFriendPopup.value = true;
 		}
 	}
@@ -167,7 +167,7 @@ onKeyDown((key) => {
 						/>
 					</Box>
 					<Text
-						:content="t`${friend.userAId === state.user?.id ? friend.userB?.name : friend.userA?.name} (@${friend.userAId === state.user?.id ? friend.userB?.username : friend.userA?.username})`"
+						:content="t`${friend.userAId === state.user?.id ? friend.userB.name : friend.userA.name} (@${friend.userAId === state.user?.id ? friend.userB.username : friend.userA.username})`"
 					/>
 				</Box>
 				<Box
