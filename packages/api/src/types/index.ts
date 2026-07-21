@@ -25,7 +25,7 @@ export type {
 	Move,
 } from "./match";
 
-export type { FriendRequest, Friendship, PublicUser, User } from "./user";
+export type { FriendRequest, Friendship, User } from "./user";
 
 export type {
 	ChallengeAcceptedPayload,

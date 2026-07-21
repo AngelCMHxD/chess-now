@@ -2,15 +2,11 @@ export interface User {
 	id: string;
 	name: string;
 	username: string;
-	email: string;
-	emailVerified: boolean;
 	image?: string | null;
 	createdAt: Date;
 	updatedAt: Date;
 	botOwnerId?: string | null;
 }
-
-export type PublicUser = Omit<User, "email" | "emailVerified">;
 
 export interface FriendRequest {
 	id: number;
@@ -18,8 +14,8 @@ export interface FriendRequest {
 	fromId: string;
 	toId: string;
 	status: "pending" | "denied" | "accepted";
-	from: PublicUser;
-	to: PublicUser;
+	from: User;
+	to: User;
 }
 
 export interface Friendship {
@@ -27,6 +23,6 @@ export interface Friendship {
 	createdAt: Date;
 	userAId: string;
 	userBId: string;
-	userA: PublicUser;
-	userB: PublicUser;
+	userA: User;
+	userB: User;
 }

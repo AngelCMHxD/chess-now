@@ -1,4 +1,4 @@
-import type { ApiSuccessResponse, PublicUser } from "@chess-now/api";
+import type { ApiSuccessResponse, User } from "@chess-now/api";
 import { UnauthorizedError } from "@/api/errors";
 import { removePrivateUserFields } from "@/api/helper";
 import { auth } from "@/lib/auth";
@@ -6,7 +6,7 @@ import { db } from "@/lib/database";
 
 export async function run(
 	headers: Headers,
-): Promise<ApiSuccessResponse<PublicUser[]>> {
+): Promise<ApiSuccessResponse<User[]>> {
 	const session = await auth.api.getSession({
 		headers,
 	});

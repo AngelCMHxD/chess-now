@@ -1,4 +1,4 @@
-import type { PublicUser } from "./user";
+import type { User } from "./user";
 
 export interface ChallengeConfig {
 	color?: "white" | "black" | "random";
@@ -8,9 +8,9 @@ export interface Challenge {
 	id: number;
 	createdAt: Date;
 	fromId: string;
-	from?: PublicUser;
+	from?: User;
 	toId: string;
-	to?: PublicUser;
+	to?: User;
 	challengerColor: "white" | "black" | "random";
 	status: "pending" | "denied" | "expired" | "ongoing" | "finished";
 	matchId: number | null;

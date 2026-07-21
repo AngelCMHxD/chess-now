@@ -1,6 +1,6 @@
 import type { Challenge } from "./challenge";
 import type { Match, Move } from "./match";
-import type { FriendRequest, Friendship, PublicUser } from "./user";
+import type { FriendRequest, Friendship, User } from "./user";
 
 export interface DeviceAuthPayload {
 	action: "approved" | "denied" | "expired";
@@ -23,12 +23,12 @@ export interface ChallengeRequestPayload {
 
 export interface ChallengeDeniedPayload {
 	challengeId: number;
-	deniedBy: PublicUser;
+	deniedBy: User;
 }
 
 export interface ChallengeAcceptedPayload {
 	challengeId: number;
-	acceptedBy: PublicUser;
+	acceptedBy: User;
 	match: Match;
 }
 

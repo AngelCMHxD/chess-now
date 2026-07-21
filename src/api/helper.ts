@@ -4,7 +4,6 @@ import type {
 	FriendRequest,
 	Friendship,
 	Match,
-	PublicUser,
 	User,
 } from "@chess-now/api";
 import type { Chess } from "chess.js";
@@ -21,7 +20,7 @@ export const publicUserColumns = {
 	createdAt: true,
 	updatedAt: true,
 	botOwnerId: true,
-} as Record<keyof PublicUser, true>;
+} as Record<keyof User, true>;
 
 export const subscribeEventsSchema = z.array(
 	z.enum(["challenge", "match", "friend"]),
@@ -245,9 +244,13 @@ export async function getMatchInfo(
 }
 
 export async function getUserInfo(userId: string): Promise<User | undefined> {
-	return await db.query.user.findFirst({
+	const user = await db.query.user.findFirst({
 		where: (user, { eq }) => eq(user.id, userId),
 	});
+
+	if (!user) return;
+
+	return removePrivateUserFields(user);
 }
 
 export async function getUserByUsername(username: string) {
@@ -351,10 +354,10 @@ export async function getFriendships(userId: string): Promise<Friendship[]> {
 	return friends;
 }
 
-export function removePrivateUserFields(user: User): PublicUser {
+export function removePrivateUserFields(user: Session["user"]): User {
 	return Object.fromEntries(
 		Object.entries(user).filter(([key]) => key in publicUserColumns),
-	) as PublicUser;
+	) as unknown as User; // it worked without the cast before, don't know why it doesnt now
 }
 
 // only external auth sessions (like device auth) have scopes

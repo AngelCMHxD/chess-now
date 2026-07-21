@@ -1,8 +1,8 @@
 import {
 	type ApiKey,
 	type ApiSuccessResponse,
-	type PublicUser,
 	Scope,
+	type User,
 } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import z from "zod";
@@ -19,7 +19,7 @@ export const bodyType = z.object({
 export async function run(
 	headers: Headers,
 	body: z.infer<typeof bodyType>,
-): Promise<ApiSuccessResponse<{ bot: PublicUser; apiKey: ApiKey }>> {
+): Promise<ApiSuccessResponse<{ bot: User; apiKey: ApiKey }>> {
 	const session = await auth.api.getSession({
 		headers,
 	});

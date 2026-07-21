@@ -1,5 +1,5 @@
 "use client";
-import type { Match, PublicUser } from "@chess-now/api";
+import type { Match, User } from "@chess-now/api";
 import { SearchXIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/dashboard-sidebar";
@@ -30,7 +30,7 @@ import { formatMiliseconds } from "@/lib/utils";
 
 export default function MatchesPage() {
 	const [matches, setMatches] = useState<
-		(Match & { blackPlayer: PublicUser; whitePlayer: PublicUser })[] | null
+		(Match & { blackPlayer: User; whitePlayer: User })[] | null
 	>(null);
 
 	useEffect(() => {

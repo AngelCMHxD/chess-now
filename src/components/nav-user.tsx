@@ -115,7 +115,7 @@ export function NavUser({ user, loading }: { user?: User; loading: boolean }) {
 										{user.name}
 									</span>
 									<span className="truncate text-xs">
-										{user.email}
+										@{user.username}
 									</span>
 								</div>
 							</div>

@@ -1,5 +1,5 @@
 "use client";
-import type { PublicUser } from "@chess-now/api";
+import type { User } from "@chess-now/api";
 import {
 	CheckIcon,
 	CopyIcon,
@@ -63,7 +63,7 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function BotsPage() {
-	const [bots, setBots] = useState<PublicUser[] | null>(null);
+	const [bots, setBots] = useState<User[] | null>(null);
 
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 	const [createName, setCreateName] = useState("");

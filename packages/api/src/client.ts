@@ -12,7 +12,6 @@ import type {
 	Friendship,
 	Match,
 	Move,
-	PublicUser,
 	ScopeType,
 	SubscribeEvents,
 	SubscribeMessage,
@@ -301,8 +300,8 @@ export class ChessNowClient {
 		});
 	}
 
-	async getMyBots(token?: string): Promise<PublicUser[]> {
-		return this._fetch<PublicUser[]>("/me/bots", {
+	async getMyBots(token?: string): Promise<User[]> {
+		return this._fetch<User[]>("/me/bots", {
 			token,
 		});
 	}
@@ -318,10 +317,10 @@ export class ChessNowClient {
 	async registerBot(
 		botInfo: { name: string; username: string },
 		token?: string,
-	): Promise<{ bot: PublicUser; apiKey: ApiKey }> {
+	): Promise<{ bot: User; apiKey: ApiKey }> {
 		assert(nonEmptyStr, botInfo.name, "name");
 		assert(nonEmptyStr, botInfo.username, "username");
-		return this._fetch<{ bot: PublicUser; apiKey: ApiKey }>("/me/bots", {
+		return this._fetch<{ bot: User; apiKey: ApiKey }>("/me/bots", {
 			method: "POST",
 			body: JSON.stringify(botInfo),
 			token,

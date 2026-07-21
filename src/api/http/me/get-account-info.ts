@@ -1,5 +1,6 @@
 import type { ApiSuccessResponse, User } from "@chess-now/api";
 import { UnauthorizedError } from "@/api/errors";
+import { removePrivateUserFields } from "@/api/helper";
 import { auth } from "@/lib/auth";
 
 export async function run(headers: Headers): Promise<ApiSuccessResponse<User>> {
@@ -9,11 +10,9 @@ export async function run(headers: Headers): Promise<ApiSuccessResponse<User>> {
 
 	if (!session) throw new UnauthorizedError();
 
-	const { isAnonymous, ...user } = session.user;
-
 	return {
 		success: true,
-		data: user,
+		data: removePrivateUserFields(session.user),
 	};
 }
 

@@ -1,4 +1,4 @@
-import type { PublicUser } from "./user";
+import type { User } from "./user";
 
 export interface Move {
 	players: {
@@ -38,6 +38,6 @@ export interface Match {
 	fen: string;
 	pgn: string;
 	finishedAt: Date | null;
-	whitePlayer?: PublicUser;
-	blackPlayer?: PublicUser;
+	whitePlayer?: User;
+	blackPlayer?: User;
 }
