@@ -2,7 +2,7 @@
 
 A Discord bot/client for the `Chess Now!` API.
 
-To be fair, due to the nature of Discord, the experience can feel quite clunky. You need to share a server with the bot in order to receive notifications, as they are sent as direct messages.
+To be fair, due to the nature of Discord, the experience can feel quite clunky. You need to share a server with the bot in order to receive notifications, as they are sent as direct messages. The best experience I consider to be playing on the DMs of the bot, with only one match running at a time.
 
 If you want to try the overall project (chess-now), I would recommend trying other clients first, as they are way more user-friendly and don't feel nearly as clunky. Though that shouldn't turn you away from trying this one out.
 
