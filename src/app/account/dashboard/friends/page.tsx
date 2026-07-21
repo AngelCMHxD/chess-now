@@ -7,6 +7,17 @@ import { AppSidebar } from "@/components/dashboard-sidebar";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
 	Breadcrumb,
 	BreadcrumbItem,
 	BreadcrumbList,
@@ -46,6 +57,7 @@ export default function FriendsPage() {
 	const [addFriendPopOpen, setAddFriendPopOpen] = useState(false);
 	const [friendReqUsername, setFriendReqUsername] = useState("");
 	const [addLoading, setAddLoading] = useState(false);
+	const [buttonLoadingId, setButtonLoadingId] = useState<number | null>(null);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -94,6 +106,35 @@ export default function FriendsPage() {
 			toast.error("An error occurred while sending the request.");
 		} finally {
 			setAddLoading(false);
+		}
+	};
+
+	const handleDeleteFriend = async (
+		friendshipId: number,
+		username: string,
+	) => {
+		setButtonLoadingId(friendshipId);
+		try {
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/friends/${username}`,
+				{
+					method: "DELETE",
+					credentials: "include",
+				},
+			);
+			if (res.ok) {
+				toast.success("Friend removed");
+				setFriendships((prev) =>
+					prev ? prev.filter((f) => f.id !== friendshipId) : [],
+				);
+			} else {
+				const err = await res.json();
+				toast.error(err.message || "Failed to remove friend");
+			}
+		} catch (_error) {
+			toast.error("An error occurred while removing the friend");
+		} finally {
+			setButtonLoadingId(null);
 		}
 	};
 
@@ -232,12 +273,73 @@ export default function FriendsPage() {
 													</CardDescription>
 												</CardHeader>
 												<div className="w-1/5 flex items-center justify-center">
-													<Button
-														className="hover:bg-destructive"
-														size="icon"
-													>
-														<Trash2Icon />
-													</Button>
+													<AlertDialog>
+														<AlertDialogTrigger
+															asChild
+														>
+															<Button
+																variant="destructive"
+																size="icon"
+																disabled={
+																	buttonLoadingId ===
+																	friendship.id
+																}
+															>
+																{buttonLoadingId ===
+																friendship.id ? (
+																	<Spinner />
+																) : (
+																	<Trash2Icon />
+																)}
+															</Button>
+														</AlertDialogTrigger>
+														<AlertDialogContent>
+															<AlertDialogHeader>
+																<AlertDialogTitle>
+																	Are you
+																	sure?
+																</AlertDialogTitle>
+																<AlertDialogDescription>
+																	You are
+																	about to
+																	remove{" "}
+																	{friendship.userAId ===
+																	myId
+																		? friendship
+																				.userB
+																				.name
+																		: friendship
+																				.userA
+																				.name}{" "}
+																	from your
+																	friends list
+																</AlertDialogDescription>
+															</AlertDialogHeader>
+															<AlertDialogFooter>
+																<AlertDialogCancel>
+																	Cancel
+																</AlertDialogCancel>
+																<AlertDialogAction
+																	variant="destructive"
+																	onClick={() =>
+																		handleDeleteFriend(
+																			friendship.id,
+																			friendship.userAId ===
+																				myId
+																				? friendship
+																						.userB
+																						.username
+																				: friendship
+																						.userA
+																						.username,
+																		)
+																	}
+																>
+																	Remove
+																</AlertDialogAction>
+															</AlertDialogFooter>
+														</AlertDialogContent>
+													</AlertDialog>
 												</div>
 											</div>
 										</div>
