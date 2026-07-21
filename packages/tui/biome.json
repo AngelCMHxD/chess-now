@@ -1,0 +1,17 @@
+{
+	"root": false,
+	"extends": "//",
+	"linter": {
+		"rules": {
+			"correctness": {
+				"useHookAtTopLevel": "off"
+			},
+			"style": {
+				"useVueHyphenatedAttributes": "off"
+			},
+			"a11y": {
+				"noAutofocus": "off"
+			}
+		}
+	}
+}

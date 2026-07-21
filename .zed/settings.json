@@ -29,6 +29,14 @@
 				}
 			}
 		},
+		"Vue.js": {
+			"language_servers": ["biome", "!eslint", "..."],
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
+		},
 		"TypeScript": {
 			"language_servers": ["biome", "!eslint", "..."],
 			"formatter": {

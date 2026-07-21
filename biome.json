@@ -14,6 +14,13 @@
 		"indentStyle": "tab",
 		"indentWidth": 4
 	},
+	"html": {
+		"experimentalFullSupportEnabled": true,
+		"formatter": {
+			"enabled": true,
+			"indentStyle": "tab"
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {

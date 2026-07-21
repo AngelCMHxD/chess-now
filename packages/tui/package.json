@@ -1,0 +1,27 @@
+{
+	"name": "@chess-now/tui",
+	"module": "src/main.ts",
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@vitejs/plugin-vue": "^6.0.8",
+		"vite": "^8.1.5"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"start": "bun dist/main.js",
+		"compile": "bun run build && bun build --compile --outfile=dist/chess-now-tui dist/main.js"
+	},
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@opentui/core": "^0.4.4",
+		"chess.js": "^1.4.0",
+		"vue": "^3.5.40",
+		"vue-router": "^5.2.0",
+		"vue-termui": "^0.2.0"
+	}
+}
