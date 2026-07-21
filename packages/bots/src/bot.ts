@@ -54,6 +54,14 @@ export class ChessBot {
 					}
 				}
 			}
+
+			const friendRequests = await this.client.getFriendRequests();
+			for (const request of friendRequests) {
+				await this.client.acceptFriendRequest(request.from.username);
+				console.log(
+					`[Level ${this.level}] accepted friend request from ${request.from.username}.`,
+				);
+			}
 		} catch (e) {
 			console.error(`[Level ${this.level}] Error starting bot:`, e);
 		}
@@ -83,6 +91,21 @@ export class ChessBot {
 
 		this.client.on("challenge:accepted", (msg) => {
 			this.tryPlayMove(msg.payload.match);
+		});
+
+		this.client.on("friend:request", async (msg) => {
+			const request = msg.payload.request;
+			try {
+				await this.client.acceptFriendRequest(request.from.username);
+				console.log(
+					`[Level ${this.level}] accepted friend request from ${request.from.username}.`,
+				);
+			} catch (e) {
+				console.error(
+					`[Level ${this.level}] couldnt accept friend request:`,
+					e,
+				);
+			}
 		});
 	}
 
