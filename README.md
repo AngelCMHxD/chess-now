@@ -24,9 +24,12 @@ bun dev               # starts web + api concurrently
 
 This is a monorepo that contains other packages besides the main API.
 
-| Package                                                          | Path            | Description                                    |
-| ---------------------------------------------------------------- | --------------- | ---------------------------------------------- |
-| [`@chess-now/api`](https://www.npmjs.com/package/@chess-now/api) | `packages/api/` | TypeScript client for the HTTP + WebSocket API |
+| Package                                                          | Path                | Description                                    |
+| ---------------------------------------------------------------- | ------------------- | ---------------------------------------------- |
+| [`@chess-now/api`](https://www.npmjs.com/package/@chess-now/api) | `packages/api/`     | TypeScript client for the HTTP + WebSocket API |
+| `@chess-now/bots`                                                | `packages/bots/`    | Bots you can play against                      |
+| `@chess-now/discord`                                             | `packages/discord/` | Discord bot for the chess game                 |
+| `@chess-now/tui`                                                 | `packages/tui/`     | TypeScript terminal UI client                  |
 
 ## Documentation
 
