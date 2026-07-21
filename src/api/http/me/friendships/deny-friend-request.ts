@@ -1,7 +1,7 @@
 import {
-	Scope,
 	type ApiSuccessResponse,
 	type FriendRequest,
+	Scope,
 } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { ForbiddenError, NotFoundError, UnauthorizedError } from "@/api/errors";

@@ -1,7 +1,7 @@
 import {
-	Scope,
 	type ApiSuccessResponse,
 	type FriendRequest,
+	Scope,
 } from "@chess-now/api";
 import { ForbiddenError, NotFoundError, UnauthorizedError } from "@/api/errors";
 import { getUserByUsername, publicUserColumns } from "@/api/helper";
