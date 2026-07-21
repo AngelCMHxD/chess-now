@@ -1,7 +1,7 @@
 import type { ApiSuccessResponse, Friendship } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
-import { publicUserColumns } from "@/api/helper";
+import { getUserByUsername, publicUserColumns } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
@@ -16,16 +16,20 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
+	const otherUser = await getUserByUsername(username);
+
+	if (!otherUser) throw new NotFoundError("User not found");
+
 	const friendRequest = await db.query.friendRequests.findFirst({
 		where: (request, { eq, and, or }) =>
 			and(
 				or(
 					and(
 						eq(request.fromId, session.user.id),
-						eq(request.toId, username),
+						eq(request.toId, otherUser.id),
 					),
 					and(
-						eq(request.fromId, username),
+						eq(request.fromId, otherUser.id),
 						eq(request.toId, session.user.id),
 					),
 				),
