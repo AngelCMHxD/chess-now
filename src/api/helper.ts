@@ -226,9 +226,21 @@ export async function getMatchInfo(
 ): Promise<Match | undefined> {
 	const activeMatch = (await secondaryStorage.get(
 		`match_${matchId}`,
-	)) as typeof schemas.matches.$inferSelect;
+	)) as Match;
 
-	if (activeMatch) return activeMatch;
+	if (activeMatch) {
+		if (activeMatch.whitePlayer && activeMatch.blackPlayer) {
+			return activeMatch;
+		}
+
+		// just in case the match is not populated, load it from the database
+
+		activeMatch.whitePlayer = await getUserInfo(activeMatch.whiteId);
+		activeMatch.blackPlayer = await getUserInfo(activeMatch.blackId);
+
+		await secondaryStorage.set(`match_${matchId}`, activeMatch);
+		return activeMatch;
+	}
 
 	return await db.query.matches.findFirst({
 		where: (matches, { eq }) => eq(matches.id, matchId),
@@ -270,6 +282,7 @@ export async function updateBoard(
 	if (activeMatch) {
 		activeMatch.fen = chess.fen();
 		activeMatch.pgn = chess.pgn();
+
 		await secondaryStorage.set(`match_${matchId}`, activeMatch);
 		return activeMatch;
 	}
