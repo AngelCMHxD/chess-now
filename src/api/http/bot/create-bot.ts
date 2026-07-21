@@ -28,6 +28,11 @@ export async function run(
 	if (session.session.scopes && !session.session.scopes.includes(Scope.Bots))
 		throw new ForbiddenError();
 
+	if (session.user.botOwnerId)
+		throw new ForbiddenError(
+			"A bot account cannot create other bot accounts.",
+		);
+
 	const existingUser = await db.query.user.findFirst({
 		where: (user, { eq }) => eq(user.username, body.username),
 		columns: { id: true },
