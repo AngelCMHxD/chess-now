@@ -1,7 +1,6 @@
 "use client";
 import type { PublicUser } from "@chess-now/api";
 import {
-	BellIcon,
 	CheckIcon,
 	CopyIcon,
 	KeyRoundIcon,
@@ -11,6 +10,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/dashboard-sidebar";
+import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import {
 	AlertDialog,
@@ -224,13 +224,7 @@ export default function BotsPage() {
 						</Breadcrumb>
 					</div>
 					<div className="ms-auto me-5 flex gap-2">
-						<Button
-							variant="outline"
-							size="icon"
-							aria-label="Submit"
-						>
-							<BellIcon />
-						</Button>
+						<NotificationsButton />
 						<div className="flex justify-end max-w-full">
 							<ThemeSwitcher popupAlign="end" />
 						</div>

@@ -1,8 +1,9 @@
 "use client";
 import type { ApiSuccessResponse, Friendship, User } from "@chess-now/api";
-import { BellIcon, Trash2Icon, UserXIcon } from "lucide-react";
+import { Trash2Icon, UserXIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/dashboard-sidebar";
+import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import {
 	Breadcrumb,
@@ -91,13 +92,7 @@ export default function FriendsPage() {
 						</Breadcrumb>
 					</div>
 					<div className="ms-auto me-5 flex gap-2">
-						<Button
-							variant="outline"
-							size="icon"
-							aria-label="Submit"
-						>
-							<BellIcon />
-						</Button>
+						<NotificationsButton />
 						<div className="flex justify-end max-w-full">
 							<ThemeSwitcher popupAlign="end" />
 						</div>
