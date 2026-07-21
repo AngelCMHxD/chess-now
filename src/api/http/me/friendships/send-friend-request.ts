@@ -1,6 +1,6 @@
 import type { ApiSuccessResponse, FriendRequest } from "@chess-now/api";
 import { NotFoundError, UnauthorizedError } from "@/api/errors";
-import { getUserByUsername } from "@/api/helper";
+import { getUserByUsername, publicUserColumns } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
@@ -55,6 +55,14 @@ export async function run(
 		return await tx.query.friendRequests.findFirst({
 			where: (friendRequest, { eq }) =>
 				eq(friendRequest.id, initialFriendRequest.id),
+			with: {
+				from: {
+					columns: publicUserColumns,
+				},
+				to: {
+					columns: publicUserColumns,
+				},
+			},
 		});
 	})) as FriendRequest;
 
