@@ -192,11 +192,11 @@ export async function acceptChallenge(challenge: Challenge): Promise<{
 	)[0] as Match;
 
 	if (whiteId === challenge.fromId) {
-		match.whitePlayer = challenge.from;
-		match.blackPlayer = challenge.to;
+		match.whitePlayer = challenge.from as User;
+		match.blackPlayer = challenge.to as User;
 	} else {
-		match.whitePlayer = challenge.to;
-		match.blackPlayer = challenge.from;
+		match.whitePlayer = challenge.to as User;
+		match.blackPlayer = challenge.from as User;
 	}
 
 	await secondaryStorage.set(`match_${match.id}`, match);
@@ -235,8 +235,12 @@ export async function getMatchInfo(
 
 		// just in case the match is not populated, load it from the database
 
-		activeMatch.whitePlayer = await getUserInfo(activeMatch.whiteId);
-		activeMatch.blackPlayer = await getUserInfo(activeMatch.blackId);
+		activeMatch.whitePlayer = (await getUserInfo(
+			activeMatch.whiteId,
+		)) as User;
+		activeMatch.blackPlayer = (await getUserInfo(
+			activeMatch.blackId,
+		)) as User;
 
 		await secondaryStorage.set(`match_${matchId}`, activeMatch);
 		return activeMatch;
@@ -277,11 +281,23 @@ export async function updateBoard(
 ): Promise<Match> {
 	const activeMatch = (await secondaryStorage.get(
 		`match_${matchId}`,
-	)) as typeof schemas.matches.$inferSelect;
+	)) as Match;
 
 	if (activeMatch) {
 		activeMatch.fen = chess.fen();
 		activeMatch.pgn = chess.pgn();
+
+		if (!activeMatch.whitePlayer) {
+			activeMatch.whitePlayer = (await getUserInfo(
+				activeMatch.whiteId,
+			)) as User;
+		}
+
+		if (!activeMatch.blackPlayer) {
+			activeMatch.blackPlayer = (await getUserInfo(
+				activeMatch.blackId,
+			)) as User;
+		}
 
 		await secondaryStorage.set(`match_${matchId}`, activeMatch);
 		return activeMatch;
@@ -296,9 +312,19 @@ export async function updateBoard(
 			})
 			.where(eq(schemas.matches.id, matchId))
 			.returning()
-	)[0];
+	)[0] as Match;
 
-	if (match) await secondaryStorage.set(`match_${matchId}`, match);
+	if (match) {
+		if (!match.whitePlayer) {
+			match.whitePlayer = (await getUserInfo(match.whiteId)) as User;
+		}
+
+		if (!match.blackPlayer) {
+			match.blackPlayer = (await getUserInfo(match.blackId)) as User;
+		}
+
+		await secondaryStorage.set(`match_${matchId}`, match);
+	}
 
 	return match;
 }

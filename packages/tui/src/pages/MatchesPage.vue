@@ -210,7 +210,7 @@ onKeyDown((key) => {
 						/>
 					</Box>
 					<Text
-						:content="t`${bold(match.whitePlayer?.name || '')} vs. ${bold(match.blackPlayer?.name || '')}`"
+						:content="t`${bold(match.whitePlayer.name)} (@${match.whitePlayer.username}) vs. ${bold(match.blackPlayer.name)} (@${match.blackPlayer.username})`"
 					/>
 					<Box :visible="match.status === 'active'">
 						<Text
@@ -226,7 +226,7 @@ onKeyDown((key) => {
 						/>
 						<Text
 							:visible="match.status !== 'draw'"
-							:content="t`Winner: ${(match.status === 'white_won' ? match.whitePlayer?.name : match.blackPlayer?.name) || ''}`"
+							:content="t`Winner: ${match.status === 'white_won' ? match.whitePlayer.name : match.blackPlayer.name}`"
 						/>
 						<Text
 							:content="t`Lasted: ${formatMiliseconds((match.finishedAt?.getTime() || 0) - match.createdAt.getTime()) || 'Unknown duration'}`"

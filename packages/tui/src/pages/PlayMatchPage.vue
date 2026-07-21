@@ -142,7 +142,7 @@ onKeyDown((key) => {
 				alignItems="center"
 			>
 				<Text
-					:content="t`${bold(matchDetails.whitePlayer?.name || 'White')} @${matchDetails.whitePlayer?.username || 'white'} vs ${bold(matchDetails.blackPlayer?.name || 'Black')} @${matchDetails.blackPlayer?.username || 'black'}`"
+					:content="t`${bold(matchDetails.whitePlayer.name)} (@${matchDetails.whitePlayer.username}) vs. ${bold(matchDetails.blackPlayer.name)} (@${matchDetails.blackPlayer.username})`"
 				/>
 				<Box v-if="matchDetails.status !== 'active'" :marginTop="1">
 					<Text

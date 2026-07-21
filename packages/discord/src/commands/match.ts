@@ -93,7 +93,7 @@ export class MatchCommand extends Subcommand {
 								match,
 								discordUser.userId,
 							);
-							return `#${match.id} • vs. ${otherPlayer?.username} (${otherPlayer?.username})`;
+							return `#${match.id} • vs. ${otherPlayer.username} (${otherPlayer.username})`;
 						})
 						.join("\n"),
 				);
@@ -158,7 +158,7 @@ export class MatchCommand extends Subcommand {
 				.setDescription(
 					[
 						`Match #${match.id} is now your active match.`,
-						`Opponent: ${opponent?.name} (${opponent?.username})`,
+						`Opponent: ${opponent.name} (${opponent.username})`,
 					].join("\n"),
 				)
 				.setColor("DarkGreen")

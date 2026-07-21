@@ -88,7 +88,7 @@ export class MoveCommand extends Command {
 				.setDescription(
 					[
 						`Match #${result.match.id}`,
-						`vs. ${oponent?.name} (${oponent?.username})`,
+						`vs. ${oponent.name} (${oponent.username})`,
 						`Status: ${result.match.status}`,
 					].join("\n"),
 				)

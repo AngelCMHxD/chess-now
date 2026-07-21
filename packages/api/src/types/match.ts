@@ -38,6 +38,6 @@ export interface Match {
 	fen: string;
 	pgn: string;
 	finishedAt: Date | null;
-	whitePlayer?: User;
-	blackPlayer?: User;
+	whitePlayer: User;
+	blackPlayer: User;
 }

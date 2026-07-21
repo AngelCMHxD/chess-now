@@ -177,7 +177,7 @@ export function registerNotificationHandlers() {
 				.setDescription(
 					[
 						`Match #${event.payload.match.id}`,
-						`${event.payload.match.whitePlayer?.name} (White) vs ${event.payload.match.blackPlayer?.name} (Black)`,
+						`${event.payload.match.whitePlayer.name} (White) vs ${event.payload.match.blackPlayer.name} (Black)`,
 						`Turn: ${event.payload.move.turn.after === "b" ? "Black" : "White"}`,
 						`Move: ${event.payload.move.lan}`,
 						`There was a move on your active match.`,
@@ -216,7 +216,7 @@ export function registerNotificationHandlers() {
 				.setDescription(
 					[
 						`Match #${event.payload.match.id}`,
-						`${event.payload.match.whitePlayer?.name} (White) vs ${event.payload.match.blackPlayer?.name} (Black)`,
+						`${event.payload.match.whitePlayer.name} (White) vs ${event.payload.match.blackPlayer.name} (Black)`,
 						`Final Move: ${event.payload.lastMove.lan}`,
 						`Result: ${event.payload.match.status.replace("_", " ").toUpperCase()}`,
 						`The match is no longer active. Your active match was cleared.`,
