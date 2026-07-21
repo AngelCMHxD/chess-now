@@ -6,6 +6,10 @@ To be fair, due to the nature of Discord, the experience can feel quite clunky. 
 
 If you want to try the overall project (chess-now), I would recommend trying other clients first, as they are way more user-friendly and don't feel nearly as clunky. Though that shouldn't turn you away from trying this one out.
 
+## AI Disclaimer:
+
+AI was used to assist the creation of this bot. Mostly to create the notification handler.
+
 ## Setup
 
 ```bash
