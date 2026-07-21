@@ -1,6 +1,10 @@
-import type { ApiSuccessResponse, FriendRequest } from "@chess-now/api";
+import {
+	Scope,
+	type ApiSuccessResponse,
+	type FriendRequest,
+} from "@chess-now/api";
 import { eq } from "drizzle-orm";
-import { NotFoundError, UnauthorizedError } from "@/api/errors";
+import { ForbiddenError, NotFoundError, UnauthorizedError } from "@/api/errors";
 import { getUserByUsername, publicUserColumns } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
@@ -15,6 +19,12 @@ export async function run(
 	});
 
 	if (!session) throw new UnauthorizedError();
+
+	if (
+		session.session.scopes &&
+		!session.session.scopes.includes(Scope.Friends)
+	)
+		throw new ForbiddenError();
 
 	const otherUser = await getUserByUsername(username);
 

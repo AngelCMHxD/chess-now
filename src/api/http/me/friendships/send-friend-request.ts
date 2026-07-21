@@ -1,5 +1,9 @@
-import type { ApiSuccessResponse, FriendRequest } from "@chess-now/api";
-import { NotFoundError, UnauthorizedError } from "@/api/errors";
+import {
+	Scope,
+	type ApiSuccessResponse,
+	type FriendRequest,
+} from "@chess-now/api";
+import { ForbiddenError, NotFoundError, UnauthorizedError } from "@/api/errors";
 import { getUserByUsername, publicUserColumns } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
@@ -14,6 +18,12 @@ export async function run(
 	});
 
 	if (!session) throw new UnauthorizedError();
+
+	if (
+		session.session.scopes &&
+		!session.session.scopes.includes(Scope.Friends)
+	)
+		throw new ForbiddenError();
 
 	const user = await getUserByUsername(username);
 
