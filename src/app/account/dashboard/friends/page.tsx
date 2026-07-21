@@ -1,7 +1,8 @@
 "use client";
 import type { ApiSuccessResponse, Friendship, User } from "@chess-now/api";
-import { Trash2Icon, UserXIcon } from "lucide-react";
+import { PlusIcon, Trash2Icon, UserXIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -19,6 +20,17 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
 	SidebarInset,
@@ -30,6 +42,10 @@ import { Spinner } from "@/components/ui/spinner";
 export default function FriendsPage() {
 	const [friendships, setFriendships] = useState<Friendship[] | null>(null);
 	const [myId, setMyId] = useState<string>("");
+
+	const [addFriendPopOpen, setAddFriendPopOpen] = useState(false);
+	const [friendReqUsername, setFriendReqUsername] = useState("");
+	const [addLoading, setAddLoading] = useState(false);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -53,6 +69,33 @@ export default function FriendsPage() {
 		}
 		fetchData();
 	}, []);
+
+	const handleAddFriend = async (e: React.SubmitEvent) => {
+		e.preventDefault();
+		if (!friendReqUsername.trim()) return;
+		setAddLoading(true);
+		try {
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/friends/add/${friendReqUsername.trim()}`,
+				{
+					method: "POST",
+					credentials: "include",
+				},
+			);
+			if (res.ok) {
+				toast.success("Friend request sent!");
+				setAddFriendPopOpen(false);
+				setFriendReqUsername("");
+			} else {
+				const err = await res.json();
+				toast.error(err.message || "Failed to send friend request");
+			}
+		} catch (_error) {
+			toast.error("An error occurred while sending the request.");
+		} finally {
+			setAddLoading(false);
+		}
+	};
 
 	if (!friendships) {
 		return (
@@ -101,6 +144,68 @@ export default function FriendsPage() {
 				<div className="p-5 h-full">
 					<div className="h-full flex-1 rounded-xl bg-muted/50 pt-4">
 						<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+							<div className="flex justify-between items-center mb-4">
+								<h2 className="text-xl font-bold tracking-tight">
+									Your Friends
+								</h2>
+
+								<Dialog
+									open={addFriendPopOpen}
+									onOpenChange={setAddFriendPopOpen}
+								>
+									<DialogTrigger asChild>
+										<Button>
+											<PlusIcon className="mr-2 h-4 w-4" />{" "}
+											Add Friend
+										</Button>
+									</DialogTrigger>
+									<DialogContent>
+										<DialogHeader>
+											<DialogTitle>
+												Send Friend Request
+											</DialogTitle>
+											<DialogDescription>
+												Enter the username of the person
+												you want to add as a friend.
+											</DialogDescription>
+										</DialogHeader>
+										<form onSubmit={handleAddFriend}>
+											<div className="grid gap-4 py-4">
+												<div className="grid gap-2">
+													<Label htmlFor="username">
+														Username
+													</Label>
+													<Input
+														id="username"
+														value={
+															friendReqUsername
+														}
+														onChange={(e) =>
+															setFriendReqUsername(
+																e.target.value,
+															)
+														}
+														required
+														placeholder="username"
+													/>
+												</div>
+											</div>
+											<DialogFooter>
+												<Button
+													type="submit"
+													disabled={addLoading}
+												>
+													{addLoading ? (
+														<Spinner className="mr-2 h-4 w-4" />
+													) : null}
+													Send Request
+												</Button>
+											</DialogFooter>
+										</form>
+									</DialogContent>
+								</Dialog>
+							</div>
+
 							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 w-full">
 								{friendships.map((friendship) => (
 									<Card
@@ -114,8 +219,8 @@ export default function FriendsPage() {
 													<CardTitle className="pt-4">
 														{friendship.userAId ===
 														myId
-															? friendship.userBId
-															: friendship.userAId}
+															? `${friendship.userB.name} (@${friendship.userB.username})`
+															: `${friendship.userA.name} (@${friendship.userA.username})`}
 													</CardTitle>
 													<CardDescription>
 														<div className="pb-4">
