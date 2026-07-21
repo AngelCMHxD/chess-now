@@ -23,6 +23,7 @@ const route = useRoute();
 const matchId = Number(route.params.id);
 
 const yellow = fg("yellow");
+const hoverYellow = fg("#FFFF99");
 const red = fg("red");
 
 const chess = new Chess();
@@ -175,7 +176,7 @@ onKeyDown((key) => {
 
 			<Box :marginTop="1">
 				<Text
-					:content="t`${goToMatchListHovered ? underline(yellow('[Go to Match List]')) : yellow('[Go to Match List]')}`"
+					:content="t`${goToMatchListHovered ? underline(hoverYellow('[Go to Match List]')) : yellow('[Go to Match List]')}`"
 					@mouseOver="() => goToMatchListHovered = true"
 					@mouseOut="() => goToMatchListHovered = false"
 					@mouseDown="() => goToMatchList()"
