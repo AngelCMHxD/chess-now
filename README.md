@@ -2,6 +2,14 @@
 
 Real-time chess API with challenges, matches, and authentication.
 
+## AI Disclaimer
+
+It was used mainly during the development of some packages. If the package was made with AI assistance, you can find the specific details in the package's README.md, if you can't find it there, it means that no AI was used.
+
+It was also used to help with some CSS styling in the frontend, as I'm not really good with UI :/
+
+None of the backend API was made with generative AI, which is the main focus of this project.
+
 ## Stack
 
 | Layer    | Tech                                                                                      |
