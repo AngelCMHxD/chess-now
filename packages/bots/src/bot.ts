@@ -1,5 +1,5 @@
 import { ChessNowClient, type Match, type User } from "@chess-now/api";
-import { ai } from "js-chess-engine";
+import { ai, status } from "js-chess-engine";
 
 export class ChessBot {
 	private client: ChessNowClient;
@@ -110,7 +110,8 @@ export class ChessBot {
 	}
 
 	private async tryPlayMove(match: Match) {
-		if (match.status !== "active") return;
+		const chess = status(match.fen);
+		if (match.status !== "active" || chess.isFinished) return;
 		if (!this.user) return;
 
 		const botColor = match.whiteId === this.user.id ? "w" : "b";
