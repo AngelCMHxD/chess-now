@@ -21,6 +21,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Pawn"
+							loading="eager"
 						/>
 					),
 					wP: (params) => (
@@ -33,6 +34,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Pawn"
+							loading="eager"
 						/>
 					),
 					bR: (params) => (
@@ -45,6 +47,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Rook"
+							loading="eager"
 						/>
 					),
 					wR: (params) => (
@@ -57,6 +60,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Rook"
+							loading="eager"
 						/>
 					),
 					bN: (params) => (
@@ -69,6 +73,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Knight"
+							loading="eager"
 						/>
 					),
 					wN: (params) => (
@@ -81,6 +86,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Knight"
+							loading="eager"
 						/>
 					),
 					bB: (params) => (
@@ -93,6 +99,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Bishop"
+							loading="eager"
 						/>
 					),
 					wB: (params) => (
@@ -105,6 +112,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Bishop"
+							loading="eager"
 						/>
 					),
 					bQ: (params) => (
@@ -117,6 +125,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Queen"
+							loading="eager"
 						/>
 					),
 					wQ: (params) => (
@@ -129,6 +138,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Queen"
+							loading="eager"
 						/>
 					),
 					bK: (params) => (
@@ -141,6 +151,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black King"
+							loading="eager"
 						/>
 					),
 					wK: (params) => (
@@ -153,6 +164,7 @@ export function ThemedChessboard({
 								height: params?.svgStyle?.height,
 							}}
 							alt="White King"
+							loading="eager"
 						/>
 					),
 				},
