@@ -42,21 +42,8 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { formatMiliseconds } from "@/lib/utils";
 
-function parseDateReviver(_key: string, value: unknown): unknown {
-	if (typeof value === "string") {
-		const isoDateRegex =
-			/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
-		if (isoDateRegex.test(value)) {
-			return new Date(value);
-		}
-	}
-	return value;
-}
-
 export default function MatchesPage() {
-	const [matches, setMatches] = useState<
-		(Match & { blackPlayer: User; whitePlayer: User })[] | null
-	>(null);
+	const [matches, setMatches] = useState<Match[] | null>(null);
 
 	const [user, setUser] = useState<User | null>(null);
 
