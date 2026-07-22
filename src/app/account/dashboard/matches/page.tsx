@@ -6,6 +6,18 @@ import { AppSidebar } from "@/components/dashboard-sidebar";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { ThemedChessboard } from "@/components/themed-chessboard";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -44,16 +56,29 @@ export default function MatchesPage() {
 		(Match & { blackPlayer: User; whitePlayer: User })[] | null
 	>(null);
 
+	const [user, setUser] = useState<User | null>(null);
+
 	useEffect(() => {
 		async function fetchData() {
-			const res = await fetch(
+			const matchesRes = await fetch(
 				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/matches`,
 				{
 					credentials: "include",
 				},
 			);
-			const result = JSON.parse(await res.text(), parseDateReviver);
+			const result = JSON.parse(
+				await matchesRes.text(),
+				parseDateReviver,
+			);
 
+			const userRes = await fetch(
+				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me`,
+				{
+					credentials: "include",
+				},
+			).then((res) => res.json());
+
+			setUser(userRes.data);
 			setMatches(result.data);
 		}
 		fetchData();
@@ -117,9 +142,11 @@ export default function MatchesPage() {
 											<div className="flex flex-col justify-between w-full">
 												<CardHeader>
 													<CardTitle className="pt-4">
-														{match.whitePlayer.name}{" "}
-														vs{" "}
-														{match.blackPlayer.name}
+														vs.{" "}
+														{user?.id ===
+														match.whitePlayer.id
+															? `${match.blackPlayer.name} (@${match.blackPlayer.username})`
+															: `${match.whitePlayer.name} (@${match.whitePlayer.username})`}
 													</CardTitle>
 													<CardDescription>
 														{match.status ===
@@ -141,16 +168,22 @@ export default function MatchesPage() {
 																<br />
 																{match.endReason ===
 																"checkmate"
-																	? `Winner: ${
-																			match.status ===
-																			"white_won"
-																				? match
-																						.whitePlayer
-																						.name
-																				: match
-																						.blackPlayer
-																						.name
-																		}`
+																	? `Winner: ${(() => {
+																			const winner =
+																				match.status ===
+																				"white_won"
+																					? match.whitePlayer
+																					: match.blackPlayer;
+
+																			if (
+																				winner.id ===
+																				user?.id
+																			) {
+																				return "You";
+																			}
+
+																			return winner.name;
+																		})()}`
 																	: `Draw: ${(() => {
 																			switch (
 																				match.endReason
@@ -178,6 +211,11 @@ export default function MatchesPage() {
 														allowDragging: false,
 														position: match.fen,
 														showNotation: false,
+														boardOrientation:
+															match.whitePlayer
+																.id === user?.id
+																? "white"
+																: "black",
 													}}
 												/>
 											</div>
