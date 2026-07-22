@@ -8,13 +8,14 @@ Real-time chess API with challenges, matches, and authentication.
 
 ## Stack
 
-| Layer    | Tech                                                                                      |
-| -------- | ----------------------------------------------------------------------------------------- |
-| Frontend | Next.js, Tailwind CSS, shadcn/ui                                                          |
-| Backend  | Elysia with Bun                                                                           |
-| Database | PostgreSQL with Drizzle ORM. Redis or in-memory as secondary DB.                          |
-| Auth     | Better Auth (email/password, social, device)                                              |
-| Docs     | [Fumadocs](https://github.com/fuma-nama/fumadocs) with OpenAPI and TypeScript integration |
+| Layer         | Tech                                                                                      |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| Frontend      | Next.js, Tailwind CSS, shadcn/ui                                                          |
+| Backend       | Elysia with Bun                                                                           |
+| Database      | PostgreSQL with Drizzle ORM. Redis or in-memory as secondary DB.                          |
+| Auth          | Better Auth (email/password, social, device)                                              |
+| Docs          | [Fumadocs](https://github.com/fuma-nama/fumadocs) with OpenAPI and TypeScript integration |
+| Reverse Proxy | [Caddy](https://caddyserver.com) in prod, Next.js in dev (Look at `next.config.ts`)       |
 
 ## Getting Started
 
