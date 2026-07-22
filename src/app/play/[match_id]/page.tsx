@@ -192,8 +192,9 @@ export default function PlayMatchPage({
 
 	if (loading) {
 		return (
-			<div className="flex h-screen w-full items-center justify-center">
+			<div className="flex flex-col gap-4 justify-center items-center w-full h-screen">
 				<Spinner />
+				<p>This might take a while...</p>
 			</div>
 		);
 	}
