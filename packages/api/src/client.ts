@@ -159,6 +159,26 @@ export class ChessNowClient {
 		return this._fetch<Match[]>("/me/matches", { token });
 	}
 
+	async getUserInfo(username: string, token?: string): Promise<User> {
+		assert(nonEmptyStr, username, "username");
+		return this._fetch<User>(`/user/${username}`, { token });
+	}
+
+	async getUserMatches(username: string, token?: string): Promise<Match[]> {
+		assert(nonEmptyStr, username, "username");
+		return this._fetch<Match[]>(`/user/${username}/matches`, { token });
+	}
+
+	async getUserFriends(
+		username: string,
+		token?: string,
+	): Promise<Friendship[]> {
+		assert(nonEmptyStr, username, "username");
+		return this._fetch<Friendship[]>(`/user/${username}/friends`, {
+			token,
+		});
+	}
+
 	async getFriends(token?: string): Promise<Friendship[]> {
 		return this._fetch<Friendship[]>("/me/friends", { token });
 	}
