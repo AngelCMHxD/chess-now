@@ -1,12 +1,28 @@
 "use client";
 import type { Match, User } from "@chess-now/api";
 import { SearchXIcon } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { ThemedChessboard } from "@/components/themed-chessboard";
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -17,20 +33,6 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
 	SidebarInset,
@@ -57,6 +59,35 @@ export default function MatchesPage() {
 	>(null);
 
 	const [user, setUser] = useState<User | null>(null);
+
+	const [sendChallengeOpen, setSendChallengeOpen] = useState(false);
+	const [challengeUsername, setChallengeUsername] = useState("");
+	const [sendingChallenge, setSendingChallenge] = useState(false);
+
+	async function handleSendChallenge() {
+		if (!challengeUsername.trim()) return;
+		setSendingChallenge(true);
+		try {
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/challenge/request/${challengeUsername.trim()}`,
+				{
+					method: "POST",
+					credentials: "include",
+				},
+			);
+			if (!res.ok) {
+				const data = await res.json().catch(() => ({}));
+				throw new Error(data.message || "Failed to send challenge");
+			}
+			toast.success(`Challenge sent to ${challengeUsername}`);
+			setSendChallengeOpen(false);
+			setChallengeUsername("");
+		} catch (error) {
+			toast.error((error as Error).message);
+		} finally {
+			setSendingChallenge(false);
+		}
+	}
 
 	useEffect(() => {
 		async function fetchData() {
@@ -130,12 +161,66 @@ export default function MatchesPage() {
 				</header>
 				<div className="p-5 h-full">
 					<div className="h-full flex-1 rounded-xl bg-muted/50 pt-4">
+						<div className="flex items-center justify-between px-4 pb-4">
+							<h2 className="text-lg font-semibold">
+								Your Matches
+							</h2>
+							<Dialog
+								open={sendChallengeOpen}
+								onOpenChange={setSendChallengeOpen}
+							>
+								<DialogTrigger asChild>
+									<Button>Send Challenge</Button>
+								</DialogTrigger>
+								<DialogContent>
+									<DialogHeader>
+										<DialogTitle>
+											Send Challenge
+										</DialogTitle>
+										<DialogDescription>
+											Enter the username of the player you
+											want to send a challenge to
+										</DialogDescription>
+									</DialogHeader>
+									<div className="flex gap-2">
+										<Input
+											value={challengeUsername}
+											onChange={(e) =>
+												setChallengeUsername(
+													e.target.value,
+												)
+											}
+											placeholder="Username"
+											onKeyDown={(e) =>
+												e.key === "Enter" &&
+												handleSendChallenge()
+											}
+										/>
+									</div>
+									<DialogFooter>
+										<Button
+											onClick={handleSendChallenge}
+											disabled={
+												!challengeUsername ||
+												sendingChallenge
+											}
+										>
+											{sendingChallenge ? (
+												<Spinner />
+											) : (
+												"Send"
+											)}
+										</Button>
+									</DialogFooter>
+								</DialogContent>
+							</Dialog>
+						</div>
 						<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
 							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
 								{matches.map((match) => (
 									<Card
 										size="default"
-										className="w-full overflow-hidden p-0"
+										className="w-full overflow-hidden p-0 gap-0"
 										key={match.id}
 									>
 										<div className="flex flex-col xl:flex-row h-full">
@@ -220,6 +305,15 @@ export default function MatchesPage() {
 												/>
 											</div>
 										</div>
+										<CardFooter>
+											<Button asChild>
+												<Link
+													href={`/play/${match.id}`}
+												>
+													Go to Match
+												</Link>
+											</Button>
+										</CardFooter>
 									</Card>
 								))}
 							</div>
