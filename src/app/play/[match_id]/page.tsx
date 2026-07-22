@@ -292,8 +292,8 @@ function PlayerRow({
 			>
 				<span
 					className={cn(
-						"size-4 rounded-full",
-						color === "w" ? "bg-white" : "bg-black",
+						"size-4 rounded-full border-2",
+						color === "w" ? "bg-[#F8F8F8]" : "bg-[#333130]",
 					)}
 				/>
 				<div>
@@ -362,8 +362,8 @@ function CapturedPieces({
 									className={cn(
 										"size-5 p-0.5",
 										color === "w"
-											? "stroke-foreground dark:stroke-background"
-											: "stroke-background dark:stroke-foreground",
+											? "stroke-[#333130]"
+											: "stroke-[#F8F8F8]",
 									)}
 								/>
 								<span className="text-xs font-bold">

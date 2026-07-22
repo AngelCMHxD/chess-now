@@ -1,12 +1,5 @@
 "use client";
-import {
-	ChessBishopIcon,
-	ChessKingIcon,
-	ChessKnightIcon,
-	ChessPawnIcon,
-	ChessQueenIcon,
-	ChessRookIcon,
-} from "lucide-react";
+import Image from "next/image";
 import { Chessboard } from "react-chessboard";
 
 export function ThemedChessboard({
@@ -19,95 +12,155 @@ export function ThemedChessboard({
 			options={{
 				pieces: {
 					bP: (params) => (
-						<ChessPawnIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-foreground dark:stroke-background p-0.5"
+						<Image
+							src="/pieces/caliente/BlackPawn.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="Black Pawn"
 						/>
 					),
 					wP: (params) => (
-						<ChessPawnIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-background dark:stroke-foreground p-0.5"
+						<Image
+							src="/pieces/caliente/WhitePawn.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="White Pawn"
 						/>
 					),
 					bR: (params) => (
-						<ChessRookIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-foreground dark:stroke-background p-0.5"
+						<Image
+							src="/pieces/caliente/BlackRook.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="Black Rook"
 						/>
 					),
 					wR: (params) => (
-						<ChessRookIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-background dark:stroke-foreground p-0.5"
+						<Image
+							src="/pieces/caliente/WhiteRook.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="White Rook"
 						/>
 					),
 					bN: (params) => (
-						<ChessKnightIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-foreground dark:stroke-background p-0.5"
+						<Image
+							src="/pieces/caliente/BlackKnight.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="Black Knight"
 						/>
 					),
 					wN: (params) => (
-						<ChessKnightIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-background dark:stroke-foreground p-0.5"
+						<Image
+							src="/pieces/caliente/WhiteKnight.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="White Knight"
 						/>
 					),
 					bB: (params) => (
-						<ChessBishopIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-foreground dark:stroke-background p-0.5"
+						<Image
+							src="/pieces/caliente/BlackBishop.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="Black Bishop"
 						/>
 					),
 					wB: (params) => (
-						<ChessBishopIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-background dark:stroke-foreground p-0.5"
+						<Image
+							src="/pieces/caliente/WhiteBishop.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="White Bishop"
 						/>
 					),
 					bQ: (params) => (
-						<ChessQueenIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-foreground dark:stroke-background p-0.5"
+						<Image
+							src="/pieces/caliente/BlackQueen.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="Black Queen"
 						/>
 					),
 					wQ: (params) => (
-						<ChessQueenIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-background dark:stroke-foreground p-0.5"
+						<Image
+							src="/pieces/caliente/WhiteQueen.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="White Queen"
 						/>
 					),
 					bK: (params) => (
-						<ChessKingIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-foreground dark:stroke-background p-0.5"
+						<Image
+							src="/pieces/caliente/BlackKing.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="Black King"
 						/>
 					),
 					wK: (params) => (
-						<ChessKingIcon
-							width={params?.svgStyle?.width}
-							height={params?.svgStyle?.height}
-							className="stroke-background dark:stroke-foreground p-0.5"
+						<Image
+							src="/pieces/caliente/WhiteKing.svg"
+							width={256}
+							height={256}
+							style={{
+								width: params?.svgStyle?.width,
+								height: params?.svgStyle?.height,
+							}}
+							alt="White King"
 						/>
 					),
 				},
 				darkSquareStyle: {
-					backgroundColor: "var(--chart-5)",
+					backgroundColor: "var(--chess-square-dark)",
 				},
 				lightSquareStyle: {
-					backgroundColor: "var(--chart-3)",
+					backgroundColor: "var(--chess-square-light)",
 				},
 				...options,
 			}}
