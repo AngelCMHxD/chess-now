@@ -1,9 +1,11 @@
 "use client";
 import type { Match, User } from "@chess-now/api";
+import { ChessNowClient } from "@chess-now/api";
 import { SearchXIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { removePrivateUserFields } from "@/api/helper";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -40,32 +42,24 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
+import { authClient } from "@/lib/auth-client";
 import { formatMiliseconds } from "@/lib/utils";
 
 export default function MatchesPage() {
 	const [matches, setMatches] = useState<Match[] | null>(null);
 
 	const [user, setUser] = useState<User | null>(null);
+	const [client, setClient] = useState<ChessNowClient | null>(null);
 
 	const [sendChallengeOpen, setSendChallengeOpen] = useState(false);
 	const [challengeUsername, setChallengeUsername] = useState("");
 	const [sendingChallenge, setSendingChallenge] = useState(false);
 
 	async function handleSendChallenge() {
-		if (!challengeUsername.trim()) return;
+		if (!challengeUsername.trim() || !client) return;
 		setSendingChallenge(true);
 		try {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/challenge/request/${challengeUsername.trim()}`,
-				{
-					method: "POST",
-					credentials: "include",
-				},
-			);
-			if (!res.ok) {
-				const data = await res.json().catch(() => ({}));
-				throw new Error(data.message || "Failed to send challenge");
-			}
+			await client.requestChallenge(challengeUsername.trim());
 			toast.success(`Challenge sent to ${challengeUsername}`);
 			setSendChallengeOpen(false);
 			setChallengeUsername("");
@@ -77,30 +71,70 @@ export default function MatchesPage() {
 	}
 
 	useEffect(() => {
+		if (client) return;
+
 		async function fetchData() {
-			const matchesRes = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/matches`,
-				{
-					credentials: "include",
-				},
-			);
-			const result = JSON.parse(
-				await matchesRes.text(),
-				parseDateReviver,
-			);
+			try {
+				const sessionRes = await authClient.getSession();
+				const token = sessionRes.data?.session.token;
+				if (!token || !sessionRes.data?.user) return;
 
-			const userRes = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me`,
-				{
-					credentials: "include",
-				},
-			).then((res) => res.json());
+				const newClient = new ChessNowClient(
+					process.env.NEXT_PUBLIC_BASE_URL as string,
+				);
+				newClient.setDefaultToken(token);
+				setClient(newClient);
 
-			setUser(userRes.data);
-			setMatches(result.data);
+				const matchesResult = await newClient.getMyMatches(token);
+
+				setUser(removePrivateUserFields(sessionRes.data?.user));
+				setMatches(matchesResult as Match[]);
+
+				await newClient.connect();
+				newClient.subscribe(["challenge", "match"]);
+
+				newClient.on("challenge:accepted", (event) => {
+					setMatches((prev) => {
+						if (!prev) return [event.payload.match];
+						return [event.payload.match, ...prev];
+					});
+				});
+
+				newClient.on("match:board_move", (event) => {
+					setMatches((prev) => {
+						if (!prev) return null;
+
+						const newMatches: Match[] = [];
+						prev.forEach((m) => {
+							if (m.id === event.payload.match.id)
+								newMatches.push(event.payload.match);
+							else newMatches.push(m);
+						});
+
+						return newMatches;
+					});
+				});
+
+				newClient.on("match:game_over", (event) => {
+					setMatches((prev) => {
+						if (!prev) return null;
+
+						const newMatches: Match[] = [];
+						prev.forEach((m) => {
+							if (m.id === event.payload.match.id)
+								newMatches.push(event.payload.match);
+							else newMatches.push(m);
+						});
+
+						return newMatches;
+					});
+				});
+			} catch (error) {
+				console.error(error);
+			}
 		}
 		fetchData();
-	}, []);
+	}, [client]);
 
 	if (!matches) {
 		return (
