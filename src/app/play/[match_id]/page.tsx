@@ -3,14 +3,7 @@
 import type { Match, User } from "@chess-now/api";
 import { ChessNowClient } from "@chess-now/api";
 import { Chess } from "chess.js";
-import {
-	ChessBishopIcon,
-	ChessKingIcon,
-	ChessKnightIcon,
-	ChessPawnIcon,
-	ChessQueenIcon,
-	ChessRookIcon,
-} from "lucide-react";
+import Image from "next/image";
 import { use, useEffect, useMemo, useState } from "react";
 import { ThemedChessboard } from "@/components/themed-chessboard";
 import { Badge } from "@/components/ui/badge";
@@ -323,18 +316,6 @@ function CapturedPieces({
 	captured: string[];
 	color: "w" | "b";
 }) {
-	const lucideIconMap: Record<
-		string,
-		React.ComponentType<{ className?: string }>
-	> = {
-		p: ChessPawnIcon,
-		n: ChessKnightIcon,
-		b: ChessBishopIcon,
-		r: ChessRookIcon,
-		q: ChessQueenIcon,
-		k: ChessKingIcon,
-	};
-
 	const nameMap: Record<string, string> = {
 		p: "Pawn",
 		n: "Knight",
@@ -352,19 +333,20 @@ function CapturedPieces({
 	return (
 		<div className="flex gap-1">
 			{Object.keys(piecesCaptured).map((piece) => {
-				const Icon = lucideIconMap[piece];
+				const pieceName = nameMap[piece];
+				const pieceColorPrefix = color === "w" ? "White" : "Black";
+				const imgSrc = `/pieces/caliente/${pieceColorPrefix}${pieceName}.svg`;
 
 				return (
 					<Tooltip key={piece}>
 						<TooltipTrigger asChild>
 							<div className="flex items-center gap-1 rounded border bg-muted p-1 pr-2">
-								<Icon
-									className={cn(
-										"size-5 p-0.5",
-										color === "w"
-											? "stroke-[#333130]"
-											: "stroke-[#F8F8F8]",
-									)}
+								<Image
+									src={imgSrc}
+									alt={`${pieceColorPrefix} ${pieceName}`}
+									width={20}
+									height={20}
+									className="size-5"
 								/>
 								<span className="text-xs font-bold">
 									x{piecesCaptured[piece]}
