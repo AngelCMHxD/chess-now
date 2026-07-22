@@ -7,7 +7,7 @@ export async function proxy(request: NextRequest) {
 		headers: await headers(),
 	});
 
-	if (request.nextUrl.pathname === "/account") {
+	if (["/account", "/play"].includes(request.nextUrl.pathname)) {
 		return NextResponse.redirect(
 			new URL("/account/dashboard", request.url),
 		);
@@ -40,5 +40,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/account/:path*", "/device"],
+	matcher: ["/account/:path*", "/device", "/play"],
 };
