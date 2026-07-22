@@ -57,6 +57,7 @@ export class ChessBot {
 
 			const friendRequests = await this.client.getFriendRequests();
 			for (const request of friendRequests) {
+				if (request.status !== "pending") continue;
 				await this.client.acceptFriendRequest(request.from.username);
 				console.log(
 					`[Level ${this.level}] accepted friend request from ${request.from.username}.`,
