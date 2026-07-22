@@ -465,7 +465,9 @@ function CapturedPieces({
 		<div className="flex gap-1">
 			{Object.keys(piecesCaptured).map((piece) => {
 				const pieceName = nameMap[piece];
-				const pieceColorPrefix = color === "w" ? "White" : "Black";
+
+				// the captured pieces are from the opponent
+				const pieceColorPrefix = color === "w" ? "Black" : "White";
 				const imgSrc = `/pieces/caliente/${pieceColorPrefix}${pieceName}.svg`;
 
 				return (
