@@ -14,7 +14,7 @@ import {
 import { getMatchInfo, updateBoard } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
-import { db, schemas } from "@/lib/database";
+import { db, schemas, secondaryStorage } from "@/lib/database";
 
 export const bodyType = z.object({
 	move: z.string({
@@ -130,12 +130,17 @@ export async function run(
 			endReason = "insufficient-material";
 		else if (chess.isDrawByFiftyMoves()) endReason = "50-moves";
 
+		await secondaryStorage.delete(`match_${mId}`);
+
 		const finalMatch = (
 			await db
 				.update(schemas.matches)
 				.set({
 					status,
 					endReason,
+					finishedAt: new Date(),
+					fen: moveInfo.fen.after,
+					pgn: moveInfo.pgn.after,
 				})
 				.where(eq(schemas.matches.id, mId))
 				.returning()
