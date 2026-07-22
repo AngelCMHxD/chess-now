@@ -423,6 +423,7 @@ function CapturedPieces({
 									width={20}
 									height={20}
 									className="size-5"
+									loading="eager"
 								/>
 								<span className="text-xs font-bold">
 									x{piecesCaptured[piece]}
