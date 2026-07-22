@@ -6,9 +6,9 @@ import { type DiscordUser, DiscordUserModel } from "../schemas/user";
 
 export async function renderBoard(fen: string, flipped = false) {
 	const chessImageGenerator = new ChessImageGenerator({
-		style: "neo",
-		light: "#EEEED2",
-		dark: "#769657",
+		style: "caliente",
+		light: "#B4B49C",
+		dark: "#4A6335",
 		notations: true,
 		flipped,
 	});

@@ -14,7 +14,7 @@ export const defaultDark = "rgb(181, 136, 99)";
 
 export const defaultHighlight = "rgba(235, 97, 80, 0.8)";
 
-export const defaultStyle = "merida" as const;
+export const defaultStyle = "caliente" as const;
 
 export const filePaths = {
 	wp: "WhitePawn",
@@ -31,11 +31,4 @@ export const filePaths = {
 	bk: "BlackKing",
 } as const;
 
-export type PieceStyle =
-	| "neo"
-	| "glass"
-	| "wood"
-	| "game_room"
-	| "merida"
-	| "alpha"
-	| "cheq";
+export type PieceStyle = "caliente";
