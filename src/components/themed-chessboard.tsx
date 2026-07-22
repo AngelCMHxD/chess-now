@@ -2,6 +2,14 @@
 import Image from "next/image";
 import { Chessboard } from "react-chessboard";
 
+const commonStyle = {
+	width: 256,
+	height: 256,
+	loading: "eager",
+	draggable: false,
+	className: "select-none",
+} as const;
+
 export function ThemedChessboard({
 	options,
 }: {
@@ -14,157 +22,134 @@ export function ThemedChessboard({
 					bP: (params) => (
 						<Image
 							src="/pieces/caliente/BlackPawn.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Pawn"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					wP: (params) => (
 						<Image
 							src="/pieces/caliente/WhitePawn.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Pawn"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					bR: (params) => (
 						<Image
 							src="/pieces/caliente/BlackRook.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Rook"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					wR: (params) => (
 						<Image
 							src="/pieces/caliente/WhiteRook.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Rook"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					bN: (params) => (
 						<Image
 							src="/pieces/caliente/BlackKnight.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Knight"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					wN: (params) => (
 						<Image
 							src="/pieces/caliente/WhiteKnight.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Knight"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					bB: (params) => (
 						<Image
 							src="/pieces/caliente/BlackBishop.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Bishop"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					wB: (params) => (
 						<Image
 							src="/pieces/caliente/WhiteBishop.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Bishop"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					bQ: (params) => (
 						<Image
 							src="/pieces/caliente/BlackQueen.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black Queen"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					wQ: (params) => (
 						<Image
 							src="/pieces/caliente/WhiteQueen.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="White Queen"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					bK: (params) => (
 						<Image
 							src="/pieces/caliente/BlackKing.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="Black King"
-							loading="eager"
+							{...commonStyle}
 						/>
 					),
 					wK: (params) => (
 						<Image
 							src="/pieces/caliente/WhiteKing.svg"
-							width={256}
-							height={256}
 							style={{
 								width: params?.svgStyle?.width,
 								height: params?.svgStyle?.height,
 							}}
 							alt="White King"
-							loading="eager"
+							unselectable="on"
+							{...commonStyle}
 						/>
 					),
 				},
