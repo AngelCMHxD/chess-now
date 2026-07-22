@@ -177,6 +177,7 @@ export default function MatchesPage() {
 													options={{
 														allowDragging: false,
 														position: match.fen,
+														showNotation: false,
 													}}
 												/>
 											</div>
