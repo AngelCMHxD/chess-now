@@ -1,4 +1,5 @@
 import {
+	anonymousClient,
 	deviceAuthorizationClient,
 	inferAdditionalFields,
 } from "better-auth/client/plugins";
@@ -9,6 +10,7 @@ export const authClient = createAuthClient({
 	plugins: [
 		inferAdditionalFields<typeof auth>(),
 		deviceAuthorizationClient(),
+		anonymousClient(),
 	],
 	baseURL: process.env.NEXT_PUBLIC_BASE_URL,
 	basePath: process.env.BETTER_AUTH_PATH,
