@@ -74,6 +74,9 @@ export class ChessBot {
 				const { match } = await this.client.acceptChallenge(
 					challenge.id,
 				);
+
+				this.tryPlayMove(match);
+
 				console.log(
 					`[Level ${this.level}] accepted challenge from ${challenge.from.username}, match ${match.id} started.`,
 				);
