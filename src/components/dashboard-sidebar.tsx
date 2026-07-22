@@ -3,8 +3,8 @@
 import {
 	BookOpenIcon,
 	BotIcon,
-	ChartColumnIcon,
 	MessageSquareHeartIcon,
+	TrophyIcon,
 	UsersIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -39,9 +39,9 @@ import {
 
 const navMain = [
 	{
-		title: "Match History",
+		title: "Matches",
 		url: "/account/dashboard/matches",
-		icon: <ChartColumnIcon />,
+		icon: <TrophyIcon />,
 	},
 	{
 		title: "Friends",
