@@ -95,6 +95,10 @@ export default function MatchesPage() {
 				newClient.on("challenge:accepted", (event) => {
 					setMatches((prev) => {
 						if (!prev) return [event.payload.match];
+
+						if (prev.some((m) => m.id === event.payload.match.id))
+							return prev;
+
 						return [event.payload.match, ...prev];
 					});
 				});
