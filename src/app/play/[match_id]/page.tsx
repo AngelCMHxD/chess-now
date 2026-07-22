@@ -4,9 +4,19 @@ import type { Match, User } from "@chess-now/api";
 import { ChessNowClient } from "@chess-now/api";
 import { Chess } from "chess.js";
 import Image from "next/image";
+import Link from "next/link";
 import { use, useEffect, useMemo, useState } from "react";
 import type { PieceDropHandlerArgs } from "react-chessboard";
 import { ThemedChessboard } from "@/components/themed-chessboard";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import {
 	Breadcrumb,
@@ -185,6 +195,51 @@ export default function PlayMatchPage({
 			<div className="flex h-screen w-full items-center justify-center">
 				<Spinner />
 			</div>
+		);
+	}
+
+	if (!match || !user) {
+		return (
+			<AlertDialog defaultOpen={true}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Match Not Found</AlertDialogTitle>
+						<AlertDialogDescription>
+							Couldn't find the match. It may not exist or be an
+							error on our side :C
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<Link href="/account/dashboard">
+							<AlertDialogAction>
+								Return to Dashboard
+							</AlertDialogAction>
+						</Link>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		);
+	}
+
+	if (user.id !== match.whiteId && user.id !== match.blackId) {
+		return (
+			<AlertDialog defaultOpen={true}>
+				<AlertDialogContent className="sm:max-w-[425px]">
+					<AlertDialogHeader>
+						<AlertDialogTitle>Access Denied</AlertDialogTitle>
+						<AlertDialogDescription>
+							You are not a player in this match.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<Link href="/account/dashboard">
+							<AlertDialogAction>
+								Return to Dashboard
+							</AlertDialogAction>
+						</Link>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		);
 	}
 
