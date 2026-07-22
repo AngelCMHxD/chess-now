@@ -5,7 +5,6 @@ import { SearchXIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { removePrivateUserFields } from "@/api/helper";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -87,7 +86,7 @@ export default function MatchesPage() {
 
 				const matchesResult = await newClient.getMyMatches(token);
 
-				setUser(removePrivateUserFields(sessionRes.data?.user));
+				setUser(sessionRes.data?.user as unknown as User);
 				setMatches(matchesResult as Match[]);
 
 				await newClient.connect();
