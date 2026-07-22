@@ -5,6 +5,7 @@ import { ChessNowClient } from "@chess-now/api";
 import { Chess } from "chess.js";
 import Image from "next/image";
 import { use, useEffect, useMemo, useState } from "react";
+import type { PieceDropHandlerArgs } from "react-chessboard";
 import { ThemedChessboard } from "@/components/themed-chessboard";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -42,45 +43,56 @@ export default function PlayMatchPage({
 	const [user, setUser] = useState<User | null>(null);
 	const [match, setMatch] = useState<Match | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [client, setClient] = useState<ChessNowClient | null>(null);
 
 	useEffect(() => {
+		if (client) return;
+
 		async function init() {
 			try {
 				const sessionRes = await authClient.getSession();
 				const token = sessionRes.data?.session.token;
 				if (!token) return;
 
-				const client = new ChessNowClient(
+				const newClient = new ChessNowClient(
 					process.env.NEXT_PUBLIC_BASE_URL as string,
 				);
+				newClient.setDefaultToken(token);
+				setClient(newClient);
 
 				const [userData, matchData] = await Promise.all([
-					client.getAccountInfo(token),
-					client.getMatch(Number(match_id), token),
+					newClient.getAccountInfo(token),
+					newClient.getMatch(Number(match_id), token),
 				]);
 
 				setUser(userData);
 				setMatch(matchData);
 
-				await client.connect();
-				client.subscribe(token, ["match"]);
+				await newClient.connect();
+				newClient.subscribe(token, ["match"]);
 
 				const currentMatchId = Number(match_id);
 
-				client.on("match:board_move", (event) => {
+				newClient.on("match:board_move", (event) => {
 					if (event.payload.match.id === currentMatchId) {
 						setMatch(event.payload.match);
 					}
 				});
 
-				client.on("match:game_over", (event) => {
-					if (event.payload.match.id === currentMatchId && match) {
-						setMatch({
-							...match,
-							endReason: event.payload.match.endReason,
-							finishedAt: event.payload.match.finishedAt,
-							status: event.payload.match.status,
-						});
+				newClient.on("match:game_over", (event) => {
+					if (event.payload.match.id === currentMatchId) {
+						setMatch((prev) =>
+							prev
+								? {
+										...prev,
+										endReason:
+											event.payload.match.endReason,
+										finishedAt:
+											event.payload.match.finishedAt,
+										status: event.payload.match.status,
+									}
+								: prev,
+						);
 					}
 				});
 			} catch (error) {
@@ -91,7 +103,7 @@ export default function PlayMatchPage({
 		}
 
 		init();
-	}, [match_id, match]);
+	}, [match_id, client]);
 
 	const gameInfo = useMemo(() => {
 		if (!match) return null;
@@ -123,6 +135,50 @@ export default function PlayMatchPage({
 
 		return { turn, moves, capturedByWhite, capturedByBlack };
 	}, [match]);
+
+	function onPieceDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs) {
+		if (!targetSquare || !match) {
+			return false;
+		}
+
+		const chessGame = new Chess();
+		chessGame.loadPgn(match.pgn);
+
+		try {
+			const move = chessGame.move({
+				from: sourceSquare,
+				to: targetSquare,
+				promotion: "q",
+			});
+
+			setMatch({
+				...match,
+				fen: chessGame.fen(),
+				pgn: chessGame.pgn(),
+			});
+
+			try {
+				async function sendMove() {
+					if (!client || !match) return false;
+					const { match: updatedMatch } = await client.makeMove(
+						match.id,
+						move.lan,
+					);
+
+					if (chessGame.isGameOver()) return;
+					setMatch(updatedMatch);
+				}
+
+				sendMove();
+			} catch {
+				return false;
+			}
+
+			return true;
+		} catch {
+			return false;
+		}
+	}
 
 	if (loading) {
 		return (
@@ -180,6 +236,26 @@ export default function PlayMatchPage({
 										: "black",
 								boardStyle: {
 									borderRadius: "10px",
+								},
+								onPieceDrop,
+								canDragPiece: ({ piece }) => {
+									if (!match) return false;
+
+									if (match.status !== "active") return false;
+
+									const playerColor =
+										user?.id === match.whitePlayer.id
+											? "w"
+											: "b";
+
+									if (piece.pieceType[0] !== playerColor)
+										return false;
+
+									const chessGame = new Chess(match.fen);
+									if (chessGame.turn() !== playerColor)
+										return false;
+
+									return true;
 								},
 							}}
 						/>
