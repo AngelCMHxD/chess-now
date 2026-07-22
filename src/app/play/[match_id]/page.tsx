@@ -79,7 +79,7 @@ export default function PlayMatchPage({
 				setMatch(matchData);
 
 				await newClient.connect();
-				newClient.subscribe(token, ["match"]);
+				newClient.subscribe(["match"]);
 
 				const currentMatchId = Number(match_id);
 
