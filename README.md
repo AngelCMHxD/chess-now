@@ -20,7 +20,7 @@ Real-time chess API with challenges, matches, and authentication.
 
 ```bash
 bun install
-cp .env.template .env # fill in environment variables
+cp .env.template .env # remember to fill in environment variables
 bun dev               # starts web + api concurrently
 ```
 
