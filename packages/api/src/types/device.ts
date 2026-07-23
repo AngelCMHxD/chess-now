@@ -1,4 +1,5 @@
 export const Scope = {
+	Account: "account",
 	Challenges: "challenges",
 	Matches: "matches",
 	Friends: "friends",
@@ -6,6 +7,7 @@ export const Scope = {
 } as const;
 
 export const SCOPES = [
+	Scope.Account,
 	Scope.Challenges,
 	Scope.Matches,
 	Scope.Friends,

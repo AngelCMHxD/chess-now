@@ -1,12 +1,18 @@
 import {
 	type ApiSuccessResponse,
+	Scope,
 	type User,
 	updateAccountInfoSchema,
 } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import type z from "zod";
-import { APIError, BadRequestError, UnauthorizedError } from "@/api/errors";
-import { removePrivateUserFields } from "@/api/helper";
+import {
+	APIError,
+	BadRequestError,
+	ForbiddenError,
+	UnauthorizedError,
+} from "@/api/errors";
+import { hasScope, removePrivateUserFields } from "@/api/helper";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
@@ -19,6 +25,7 @@ export async function run(
 	});
 
 	if (!session) throw new UnauthorizedError();
+	if (!hasScope(session, Scope.Account)) throw new ForbiddenError();
 
 	if (!body.name && !body.username) {
 		throw new BadRequestError("Missing name or username");

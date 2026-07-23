@@ -21,6 +21,7 @@ import { Field } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 
 const scopesDescriptions: Record<ScopeType, string> = {
+	account: "Update your profile info",
 	challenges: "Send and manage challenges",
 	bots: "Manage bots created under your account",
 	friends: "Send friend requests and manage your friend list",
