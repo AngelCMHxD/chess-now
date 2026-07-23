@@ -1,6 +1,14 @@
 "use client";
-import type { ApiSuccessResponse, Friendship, User } from "@chess-now/api";
-import { Trash2Icon, UserSearchIcon, UserXIcon } from "lucide-react";
+import type { Friendship, User } from "@chess-now/api";
+import { ChessNowClient } from "@chess-now/api";
+import {
+	SendIcon,
+	Trash2Icon,
+	UserIcon,
+	UserSearchIcon,
+	UserXIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -50,71 +58,107 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { authClient } from "@/lib/auth-client";
 
 export default function FriendsPage() {
 	const [friendships, setFriendships] = useState<Friendship[] | null>(null);
 	const [myId, setMyId] = useState<string>("");
 
-	const [addFriendPopOpen, setAddFriendPopOpen] = useState(false);
-	const [friendReqUsername, setFriendReqUsername] = useState("");
 	const [buttonLoadingId, setButtonLoadingId] = useState<number | null>(null);
-	const router = useRouter();
+	const [challengeLoadingId, setChallengeLoadingId] = useState<number | null>(
+		null,
+	);
+	const [client, setClient] = useState<ChessNowClient | null>(null);
 
 	useEffect(() => {
-		async function fetchData() {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/friends`,
-				{
-					credentials: "include",
-				},
-			);
-			const result = await res.json();
-			setFriendships(result.data);
+		let activeClient: ChessNowClient | null = null;
 
-			const idRes = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me`,
-				{
-					credentials: "include",
-				},
-			);
-			const idResult = (await idRes.json()) as ApiSuccessResponse<User>;
-			setMyId(idResult.data.id);
+		async function fetchData() {
+			try {
+				const sessionRes = await authClient.getSession();
+				const token = sessionRes.data?.session.token;
+				if (!token || !sessionRes.data?.user) return;
+
+				activeClient = new ChessNowClient(
+					process.env.NEXT_PUBLIC_BASE_URL as string,
+				);
+				activeClient.setDefaultToken(token);
+				setClient(activeClient);
+
+				const friendsResult = await activeClient.getFriends(token);
+				setFriendships(friendsResult);
+				setMyId(sessionRes.data.user.id);
+
+				await activeClient.connect();
+				activeClient.subscribe(["friend"]);
+
+				activeClient.on("friend:accepted", (event) => {
+					setFriendships((prev) => {
+						if (!prev) return [event.payload.friendship];
+						if (prev.some((f) => f.id === event.payload.friendship.id)) return prev;
+						return [...prev, event.payload.friendship];
+					});
+				});
+
+				activeClient.on("friend:removed", (event) => {
+					setFriendships((prev) => {
+						if (!prev) return null;
+						return prev.filter((f) => f.id !== event.payload.friendship.id);
+					});
+				});
+			} catch (_error) {
+				toast.error("Failed to load friends");
+			}
 		}
 		fetchData();
-	}, []);
 
-	const handleSearchUser = async (e: React.SubmitEvent) => {
-		e.preventDefault();
-		if (!friendReqUsername.trim()) return;
-		router.push(`/users/${friendReqUsername.trim()}`);
-	};
+		return () => {
+			if (activeClient) {
+				activeClient.disconnect();
+			}
+		};
+	}, []);
 
 	const handleDeleteFriend = async (
 		friendshipId: number,
 		username: string,
 	) => {
+		if (!client) return;
 		setButtonLoadingId(friendshipId);
 		try {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/friends/${username}`,
-				{
-					method: "DELETE",
-					credentials: "include",
-				},
+			await client.removeFriend(username);
+			toast.success("Friend removed");
+			setFriendships((prev) =>
+				prev ? prev.filter((f) => f.id !== friendshipId) : [],
 			);
-			if (res.ok) {
-				toast.success("Friend removed");
-				setFriendships((prev) =>
-					prev ? prev.filter((f) => f.id !== friendshipId) : [],
-				);
-			} else {
-				const err = await res.json();
-				toast.error(err.message || "Failed to remove friend");
-			}
-		} catch (_error) {
-			toast.error("An error occurred while removing the friend");
+		} catch (error: unknown) {
+			toast.error(
+				(error as { message?: string }).message ||
+					"Failed to remove friend",
+			);
 		} finally {
 			setButtonLoadingId(null);
+		}
+	};
+
+	const handleChallenge = async (friendshipId: number, username: string) => {
+		if (!client) return;
+		setChallengeLoadingId(friendshipId);
+		try {
+			await client.requestChallenge(username);
+			toast.success("Challenge sent!");
+		} catch (error: unknown) {
+			toast.error(
+				(error as { message?: string }).message ||
+					"Failed to send challenge",
+			);
+		} finally {
+			setChallengeLoadingId(null);
 		}
 	};
 
@@ -170,155 +214,120 @@ export default function FriendsPage() {
 									Your Friends
 								</h2>
 
-								<Dialog
-									open={addFriendPopOpen}
-									onOpenChange={setAddFriendPopOpen}
-								>
-									<DialogTrigger asChild>
-										<Button>
-											<UserSearchIcon className="mr-2 h-4 w-4" />{" "}
-											Search User
-										</Button>
-									</DialogTrigger>
-									<DialogContent>
-										<DialogHeader>
-											<DialogTitle>
-												Search User
-											</DialogTitle>
-											<DialogDescription>
-												Enter the username of the person
-												you want to find.
-											</DialogDescription>
-										</DialogHeader>
-										<form onSubmit={handleSearchUser}>
-											<div className="grid gap-4 py-4">
-												<div className="grid gap-2">
-													<Label htmlFor="username">
-														Username
-													</Label>
-													<Input
-														id="username"
-														value={
-															friendReqUsername
-														}
-														onChange={(e) =>
-															setFriendReqUsername(
-																e.target.value,
-															)
-														}
-														required
-														placeholder="username"
-													/>
-												</div>
-											</div>
-											<DialogFooter>
-												<Button type="submit">
-													Search
-												</Button>
-											</DialogFooter>
-										</form>
-									</DialogContent>
-								</Dialog>
+								<SearchUserDialog />
 							</div>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 w-full">
-								{friendships.map((friendship) => (
-									<Card
-										size="default"
-										className="w-full overflow-hidden p-0"
-										key={friendship.id}
-									>
-										<div className="flex flex-col xl:flex-row h-full">
-											<div className="flex flex-row justify-between w-full">
-												<CardHeader className="w-3/4">
-													<CardTitle className="pt-4">
-														{friendship.userAId ===
-														myId
-															? `${friendship.userB.name} (@${friendship.userB.username})`
-															: `${friendship.userA.name} (@${friendship.userA.username})`}
-													</CardTitle>
-													<CardDescription>
-														<div className="pb-4">
-															<p>
-																Friend since:{" "}
-																{friendship.createdAt.toLocaleString()}
-															</p>
-														</div>
-													</CardDescription>
-												</CardHeader>
-												<div className="w-1/5 flex items-center justify-center">
-													<AlertDialog>
-														<AlertDialogTrigger
-															asChild
-														>
-															<Button
-																variant="destructive"
-																size="icon"
-																disabled={
-																	buttonLoadingId ===
-																	friendship.id
-																}
+								{friendships.map((friendship) => {
+									const otherUser =
+										friendship.userAId === myId
+											? friendship.userB
+											: friendship.userA;
+
+									return (
+										<Card
+											size="default"
+											className="w-full overflow-hidden p-0"
+											key={friendship.id}
+										>
+											<div className="flex flex-col xl:flex-row h-full">
+												<div className="flex flex-row justify-between w-full">
+													<CardHeader className="flex-1">
+														<CardTitle className="pt-4">
+															{`${otherUser.name} (@${otherUser.username})`}
+														</CardTitle>
+														<CardDescription>
+															<div className="pb-4">
+																<p>
+																	Friend
+																	since:
+																	<br />
+																	{new Date(
+																		friendship.createdAt,
+																	).toLocaleDateString()}
+																</p>
+															</div>
+														</CardDescription>
+													</CardHeader>
+													<div className="shrink-0 flex items-center justify-end gap-2 pr-6">
+														<Tooltip>
+															<TooltipTrigger
+																asChild
 															>
-																{buttonLoadingId ===
-																friendship.id ? (
-																	<Spinner />
-																) : (
-																	<Trash2Icon />
-																)}
-															</Button>
-														</AlertDialogTrigger>
-														<AlertDialogContent>
-															<AlertDialogHeader>
-																<AlertDialogTitle>
-																	Are you
-																	sure?
-																</AlertDialogTitle>
-																<AlertDialogDescription>
-																	You are
-																	about to
-																	remove{" "}
-																	{friendship.userAId ===
-																	myId
-																		? friendship
-																				.userB
-																				.name
-																		: friendship
-																				.userA
-																				.name}{" "}
-																	from your
-																	friends list
-																</AlertDialogDescription>
-															</AlertDialogHeader>
-															<AlertDialogFooter>
-																<AlertDialogCancel>
-																	Cancel
-																</AlertDialogCancel>
-																<AlertDialogAction
-																	variant="destructive"
+																<Button
+																	variant="outline"
+																	size="icon"
+																	asChild
+																>
+																	<Link
+																		href={`/users/${otherUser.username}`}
+																	>
+																		<UserIcon />
+																	</Link>
+																</Button>
+															</TooltipTrigger>
+															<TooltipContent>
+																<p>
+																	View Profile
+																</p>
+															</TooltipContent>
+														</Tooltip>
+
+														<Tooltip>
+															<TooltipTrigger
+																asChild
+															>
+																<Button
+																	variant="outline"
+																	size="icon"
+																	disabled={
+																		challengeLoadingId ===
+																		friendship.id
+																	}
 																	onClick={() =>
-																		handleDeleteFriend(
+																		handleChallenge(
 																			friendship.id,
-																			friendship.userAId ===
-																				myId
-																				? friendship
-																						.userB
-																						.username
-																				: friendship
-																						.userA
-																						.username,
+																			otherUser.username,
 																		)
 																	}
 																>
-																	Remove
-																</AlertDialogAction>
-															</AlertDialogFooter>
-														</AlertDialogContent>
-													</AlertDialog>
+																	{challengeLoadingId ===
+																	friendship.id ? (
+																		<Spinner />
+																	) : (
+																		<SendIcon />
+																	)}
+																</Button>
+															</TooltipTrigger>
+															<TooltipContent>
+																<p>
+																	Send
+																	Challenge
+																</p>
+															</TooltipContent>
+														</Tooltip>
+
+														<RemoveFriendDialog
+															otherUser={
+																otherUser
+															}
+															isLoading={
+																buttonLoadingId ===
+																friendship.id
+															}
+															onRemove={() =>
+																handleDeleteFriend(
+																	friendship.id,
+																	otherUser.username,
+																)
+															}
+														/>
+													</div>
 												</div>
 											</div>
-										</div>
-									</Card>
-								))}
+										</Card>
+									);
+								})}
 							</div>
 						</div>
 						{friendships && friendships.length === 0 && (
@@ -335,5 +344,98 @@ export default function FriendsPage() {
 				</div>
 			</SidebarInset>
 		</SidebarProvider>
+	);
+}
+
+function SearchUserDialog() {
+	const [open, setOpen] = useState(false);
+	const [username, setUsername] = useState("");
+	const router = useRouter();
+
+	const handleSearch = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!username.trim()) return;
+		router.push(`/users/${username.trim()}`);
+	};
+
+	return (
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
+				<Button>
+					<UserSearchIcon className="mr-2 h-4 w-4" /> Search User
+				</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Search User</DialogTitle>
+					<DialogDescription>
+						Enter the username of the person you want to find.
+					</DialogDescription>
+				</DialogHeader>
+				<form onSubmit={handleSearch}>
+					<div className="grid gap-4 py-4">
+						<div className="grid gap-2">
+							<Label htmlFor="username">Username</Label>
+							<Input
+								id="username"
+								value={username}
+								onChange={(e) => setUsername(e.target.value)}
+								required
+								placeholder="username"
+							/>
+						</div>
+					</div>
+					<DialogFooter>
+						<Button type="submit">Search</Button>
+					</DialogFooter>
+				</form>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+function RemoveFriendDialog({
+	otherUser,
+	isLoading,
+	onRemove,
+}: {
+	otherUser: User;
+	isLoading: boolean;
+	onRemove: () => void;
+}) {
+	return (
+		<AlertDialog>
+			<Tooltip>
+				<AlertDialogTrigger asChild>
+					<TooltipTrigger asChild>
+						<Button
+							variant="destructive"
+							size="icon"
+							disabled={isLoading}
+						>
+							{isLoading ? <Spinner /> : <Trash2Icon />}
+						</Button>
+					</TooltipTrigger>
+				</AlertDialogTrigger>
+				<TooltipContent>
+					<p>Remove Friend</p>
+				</TooltipContent>
+			</Tooltip>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+					<AlertDialogDescription>
+						You are about to remove {otherUser.name} from your
+						friends list
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction variant="destructive" onClick={onRemove}>
+						Remove
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
 	);
 }
