@@ -100,7 +100,12 @@ export default function FriendsPage() {
 				activeClient.on("friend:accepted", (event) => {
 					setFriendships((prev) => {
 						if (!prev) return [event.payload.friendship];
-						if (prev.some((f) => f.id === event.payload.friendship.id)) return prev;
+						if (
+							prev.some(
+								(f) => f.id === event.payload.friendship.id,
+							)
+						)
+							return prev;
 						return [...prev, event.payload.friendship];
 					});
 				});
@@ -108,7 +113,9 @@ export default function FriendsPage() {
 				activeClient.on("friend:removed", (event) => {
 					setFriendships((prev) => {
 						if (!prev) return null;
-						return prev.filter((f) => f.id !== event.payload.friendship.id);
+						return prev.filter(
+							(f) => f.id !== event.payload.friendship.id,
+						);
 					});
 				});
 			} catch (_error) {
