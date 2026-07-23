@@ -16,6 +16,7 @@ import { MatchCard } from "@/components/match-card";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -32,6 +33,11 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
 
 export default function UserProfilePage({
@@ -225,9 +231,27 @@ export default function UserProfilePage({
 													<span className="text-muted-foreground text-sm">
 														Name
 													</span>
-													<span className="font-medium">
-														{searchedUser.name}
-													</span>
+													<div className="flex gap-2">
+														<span className="font-medium">
+															{searchedUser.name}
+														</span>
+														{searchedUser.botOwnerId && (
+															<Tooltip>
+																<TooltipTrigger
+																	asChild
+																>
+																	<Badge variant="outline">
+																		Bot
+																	</Badge>
+																</TooltipTrigger>
+																<TooltipContent>
+																	{/*i didn't know what to put here lol*/}
+																	This is a
+																	bot account
+																</TooltipContent>
+															</Tooltip>
+														)}
+													</div>
 												</div>
 												<div className="flex justify-between items-center">
 													<span className="text-muted-foreground text-sm">
