@@ -1,9 +1,16 @@
 "use client";
-import type { Friendship, Match, User } from "@chess-now/api";
+import type { FriendRequest, Friendship, Match, User } from "@chess-now/api";
 import { ChessNowClient } from "@chess-now/api";
-import { SearchXIcon, UsersIcon } from "lucide-react";
+import {
+	CheckCircle2Icon,
+	PlusIcon,
+	SearchXIcon,
+	Trash2Icon,
+	UsersIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { MatchCard } from "@/components/match-card";
 import { NotificationsButton } from "@/components/notifications-button";
@@ -16,6 +23,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -34,6 +42,10 @@ export default function UserProfilePage({
 	const { username } = use(params);
 	const [matches, setMatches] = useState<Match[] | null>(null);
 	const [friends, setFriends] = useState<Friendship[] | null>(null);
+	const [searchedUser, setSearchedUser] = useState<User | null>(null);
+	const [friendRequests, setFriendRequests] = useState<
+		FriendRequest[] | null
+	>(null);
 	const [user, setUser] = useState<User | null>(null);
 	const [client, setClient] = useState<ChessNowClient | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -50,19 +62,25 @@ export default function UserProfilePage({
 					return;
 				}
 
+				setUser(sessionRes.data?.user as User);
+
 				const newClient = new ChessNowClient(
 					process.env.NEXT_PUBLIC_BASE_URL as string,
 				);
 				newClient.setDefaultToken(token);
 				setClient(newClient);
 
-				const [info, userMatches, userFriends] = await Promise.all([
-					newClient.getUserInfo(username),
-					newClient.getUserMatches(username),
-					newClient.getUserFriends(username),
-				]);
+				const [info, userMatches, userFriends, friendRequests] =
+					await Promise.all([
+						newClient.getUserInfo(username),
+						newClient.getUserMatches(username),
+						newClient.getUserFriends(username),
+						newClient.getFriendRequests(),
+					]);
 
-				setUser(info);
+				setFriendRequests(friendRequests ?? null);
+
+				setSearchedUser(info);
 				setMatches(userMatches);
 				setFriends(userFriends);
 			} catch (err) {
@@ -80,7 +98,7 @@ export default function UserProfilePage({
 		);
 	}
 
-	if (!matches || !user || !friends) {
+	if (!matches || !searchedUser || !friends) {
 		return (
 			<div className="flex flex-col gap-4 justify-center items-center w-full h-screen">
 				<Spinner />
@@ -95,10 +113,39 @@ export default function UserProfilePage({
 	let draws = 0;
 	let losses = 0;
 
+	const sendFriendRequest = async () => {
+		try {
+			const request = await client?.sendFriendRequest(username);
+			if (!request) return;
+			toast.success(`Friend request sent to ${username}`);
+			setFriendRequests((prev) =>
+				prev === null ? [request] : [...prev, request],
+			);
+		} catch (err) {
+			toast.error(
+				`Failed to send friend request: ${(err as Error).message}`,
+			);
+		}
+	};
+
+	const removeFriend = async () => {
+		try {
+			const oldFriendship = await client?.removeFriend(username);
+			toast.success(`Removed friend: ${username}`);
+			setFriends(
+				(prev) =>
+					prev?.filter((f) => f.id !== oldFriendship?.id) || null,
+			);
+		} catch (err) {
+			toast.error(`Failed to remove friend: ${(err as Error).message}`);
+		}
+	};
+
 	for (const m of finishedMatches) {
 		if (
-			(m.status === "white_won" && m.whitePlayer.id === user.id) ||
-			(m.status === "black_won" && m.blackPlayer.id === user.id)
+			(m.status === "white_won" &&
+				m.whitePlayer.id === searchedUser.id) ||
+			(m.status === "black_won" && m.blackPlayer.id === searchedUser.id)
 		) {
 			wins++;
 		} else if (m.status === "draw") {
@@ -144,7 +191,8 @@ export default function UserProfilePage({
 								<BreadcrumbSeparator />
 								<BreadcrumbItem>
 									<BreadcrumbPage>
-										{user.name} (@{user.username})
+										{searchedUser.name} (@
+										{searchedUser.username})
 									</BreadcrumbPage>
 								</BreadcrumbItem>
 							</BreadcrumbList>
@@ -161,7 +209,7 @@ export default function UserProfilePage({
 					<div className="flex flex-col gap-6 max-w-7xl mx-auto">
 						<div>
 							<h2 className="text-2xl font-bold mb-4">
-								{user.name}'s Profile
+								{searchedUser.name}'s Profile
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<Card>
@@ -170,34 +218,46 @@ export default function UserProfilePage({
 											Profile Info
 										</CardTitle>
 									</CardHeader>
-									<CardContent>
-										<div className="flex flex-col gap-3">
-											<div className="flex justify-between items-center">
-												<span className="text-muted-foreground text-sm">
-													Name
-												</span>
-												<span className="font-medium">
-													{user.name}
-												</span>
+									<CardContent className="h-full">
+										<div className="flex flex-col gap-3 h-full justify-between">
+											<div className="flex flex-col gap-3">
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground text-sm">
+														Name
+													</span>
+													<span className="font-medium">
+														{searchedUser.name}
+													</span>
+												</div>
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground text-sm">
+														Username
+													</span>
+													<span className="font-medium">
+														@{searchedUser.username}
+													</span>
+												</div>
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground text-sm">
+														Joined
+													</span>
+													<span className="font-medium">
+														{new Date(
+															searchedUser.createdAt,
+														).toLocaleDateString()}
+													</span>
+												</div>
 											</div>
-											<div className="flex justify-between items-center">
-												<span className="text-muted-foreground text-sm">
-													Username
-												</span>
-												<span className="font-medium">
-													@{user.username}
-												</span>
-											</div>
-											<div className="flex justify-between items-center">
-												<span className="text-muted-foreground text-sm">
-													Joined
-												</span>
-												<span className="font-medium">
-													{new Date(
-														user.createdAt,
-													).toLocaleDateString()}
-												</span>
-											</div>
+											<FriendRequestButton
+												user={user}
+												searchedUser={searchedUser}
+												friendRequests={friendRequests}
+												friends={friends}
+												onSendFriendRequest={
+													sendFriendRequest
+												}
+												onRemoveFriend={removeFriend}
+											/>
 										</div>
 									</CardContent>
 								</Card>
@@ -270,7 +330,7 @@ export default function UserProfilePage({
 										<MatchCard
 											key={match.id}
 											match={match}
-											user={user}
+											user={searchedUser}
 										/>
 									))}
 								</div>
@@ -292,7 +352,8 @@ export default function UserProfilePage({
 								<div className="flex flex-col gap-2">
 									{friends.map((friendship) => {
 										const friend =
-											friendship.userA.id === user.id
+											friendship.userA.id ===
+											searchedUser.id
 												? friendship.userB
 												: friendship.userA;
 										return (
@@ -332,5 +393,59 @@ export default function UserProfilePage({
 				</div>
 			</SidebarInset>
 		</SidebarProvider>
+	);
+}
+
+function FriendRequestButton({
+	user,
+	searchedUser,
+	friendRequests,
+	friends,
+	onSendFriendRequest,
+	onRemoveFriend,
+}: {
+	user: User | null;
+	searchedUser: User | null;
+	friendRequests: FriendRequest[] | null;
+	friends: Friendship[] | null;
+	onSendFriendRequest: () => void;
+	onRemoveFriend: () => void;
+}) {
+	if (!user || !searchedUser || !friendRequests || !friends) return null;
+	if (searchedUser.id === user.id) return null;
+
+	if (
+		friends.some(
+			(friendship) =>
+				friendship.userAId === user.id ||
+				friendship.userBId === user.id,
+		)
+	) {
+		return (
+			<Button variant="destructive" onClick={onRemoveFriend}>
+				<Trash2Icon className="h-4 w-4" /> Remove Friend
+			</Button>
+		);
+	}
+
+	const hasPendingRequest = friendRequests.some(
+		(request) =>
+			request.toId === searchedUser.id &&
+			request.fromId === user.id &&
+			request.status === "pending",
+	);
+
+	if (hasPendingRequest) {
+		return (
+			<Button disabled>
+				<CheckCircle2Icon className="h-4 w-4" /> Pending Friend Request
+			</Button>
+		);
+	}
+
+	return (
+		<Button onClick={onSendFriendRequest}>
+			<PlusIcon className="h-4 w-4" /> Add Friend
+		</Button>
 	);
 }
