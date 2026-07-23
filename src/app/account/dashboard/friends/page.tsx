@@ -1,6 +1,7 @@
 "use client";
 import type { ApiSuccessResponse, Friendship, User } from "@chess-now/api";
-import { PlusIcon, Trash2Icon, UserXIcon } from "lucide-react";
+import { Trash2Icon, UserSearchIcon, UserXIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/dashboard-sidebar";
@@ -56,8 +57,8 @@ export default function FriendsPage() {
 
 	const [addFriendPopOpen, setAddFriendPopOpen] = useState(false);
 	const [friendReqUsername, setFriendReqUsername] = useState("");
-	const [addLoading, setAddLoading] = useState(false);
 	const [buttonLoadingId, setButtonLoadingId] = useState<number | null>(null);
+	const router = useRouter();
 
 	useEffect(() => {
 		async function fetchData() {
@@ -82,31 +83,10 @@ export default function FriendsPage() {
 		fetchData();
 	}, []);
 
-	const handleAddFriend = async (e: React.SubmitEvent) => {
+	const handleSearchUser = async (e: React.SubmitEvent) => {
 		e.preventDefault();
 		if (!friendReqUsername.trim()) return;
-		setAddLoading(true);
-		try {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/friends/add/${friendReqUsername.trim()}`,
-				{
-					method: "POST",
-					credentials: "include",
-				},
-			);
-			if (res.ok) {
-				toast.success("Friend request sent!");
-				setAddFriendPopOpen(false);
-				setFriendReqUsername("");
-			} else {
-				const err = await res.json();
-				toast.error(err.message || "Failed to send friend request");
-			}
-		} catch (_error) {
-			toast.error("An error occurred while sending the request.");
-		} finally {
-			setAddLoading(false);
-		}
+		router.push(`/users/${friendReqUsername.trim()}`);
 	};
 
 	const handleDeleteFriend = async (
@@ -196,21 +176,21 @@ export default function FriendsPage() {
 								>
 									<DialogTrigger asChild>
 										<Button>
-											<PlusIcon className="mr-2 h-4 w-4" />{" "}
-											Add Friend
+											<UserSearchIcon className="mr-2 h-4 w-4" />{" "}
+											Search User
 										</Button>
 									</DialogTrigger>
 									<DialogContent>
 										<DialogHeader>
 											<DialogTitle>
-												Send Friend Request
+												Search User
 											</DialogTitle>
 											<DialogDescription>
 												Enter the username of the person
-												you want to add as a friend.
+												you want to find.
 											</DialogDescription>
 										</DialogHeader>
-										<form onSubmit={handleAddFriend}>
+										<form onSubmit={handleSearchUser}>
 											<div className="grid gap-4 py-4">
 												<div className="grid gap-2">
 													<Label htmlFor="username">
@@ -232,14 +212,8 @@ export default function FriendsPage() {
 												</div>
 											</div>
 											<DialogFooter>
-												<Button
-													type="submit"
-													disabled={addLoading}
-												>
-													{addLoading ? (
-														<Spinner className="mr-2 h-4 w-4" />
-													) : null}
-													Send Request
+												<Button type="submit">
+													Search
 												</Button>
 											</DialogFooter>
 										</form>
