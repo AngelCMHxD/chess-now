@@ -1,5 +1,6 @@
 "use client";
 import type { User } from "@chess-now/api";
+import { ChessNowClient } from "@chess-now/api";
 import {
 	CheckIcon,
 	CopyIcon,
@@ -61,6 +62,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { authClient } from "@/lib/auth-client";
 
 export default function BotsPage() {
 	const [bots, setBots] = useState<User[] | null>(null);
@@ -78,51 +80,56 @@ export default function BotsPage() {
 	const [hasCopied, setHasCopied] = useState(false);
 	const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
+	const [client, setClient] = useState<ChessNowClient | null>(null);
+
 	useEffect(() => {
+		let activeClient: ChessNowClient | null = null;
+
 		const fetchBots = async () => {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/bots`,
-				{
-					credentials: "include",
-				},
-			);
-			const result = await res.json();
-			setBots(result.data);
+			try {
+				const sessionRes = await authClient.getSession();
+				const token = sessionRes.data?.session.token;
+				if (!token || !sessionRes.data?.user) return;
+
+				activeClient = new ChessNowClient(
+					process.env.NEXT_PUBLIC_BASE_URL as string,
+				);
+				activeClient.setDefaultToken(token);
+				setClient(activeClient);
+
+				const botsResult = await activeClient.getMyBots(token);
+				setBots(botsResult);
+			} catch (error) {
+				console.error(error);
+			}
 		};
 		fetchBots();
+
+		return () => {
+			if (activeClient) {
+				activeClient.disconnect();
+			}
+		};
 	}, []);
 
 	const handleCreateBot = async (e: React.SubmitEvent) => {
 		e.preventDefault();
-		if (!createName || !createUsername) return;
+		if (!createName || !createUsername || !client) return;
 		setIsCreating(true);
 		try {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/bots`,
-				{
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						name: createName,
-						username: createUsername,
-					}),
-					credentials: "include",
-				},
-			);
-			const result = await res.json();
-			if (result.success) {
-				setBots((prev) =>
-					prev ? [...prev, result.data.bot] : [result.data.bot],
-				);
-				setIsCreateOpen(false);
-				setCreateName("");
-				setCreateUsername("");
-				setTokenDialog({
-					open: true,
-					token: result.data.apiKey.key,
-					botName: result.data.bot.name,
-				});
-			}
+			const result = await client.registerBot({
+				name: createName,
+				username: createUsername,
+			});
+			setBots((prev) => (prev ? [...prev, result.bot] : [result.bot]));
+			setIsCreateOpen(false);
+			setCreateName("");
+			setCreateUsername("");
+			setTokenDialog({
+				open: true,
+				token: result.apiKey.key,
+				botName: result.bot.name,
+			});
 		} catch (error) {
 			console.error(error);
 		} finally {
@@ -131,21 +138,11 @@ export default function BotsPage() {
 	};
 
 	const handleDeleteBot = async (botId: string) => {
+		if (!client) return;
 		setActionLoadingId(botId);
 		try {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/bots/${botId}`,
-				{
-					method: "DELETE",
-					credentials: "include",
-				},
-			);
-			const result = await res.json();
-			if (result.success) {
-				setBots((prev) =>
-					prev ? prev.filter((b) => b.id !== botId) : [],
-				);
-			}
+			await client.deleteBot(botId);
+			setBots((prev) => (prev ? prev.filter((b) => b.id !== botId) : []));
 		} catch (error) {
 			console.error(error);
 		} finally {
@@ -154,23 +151,15 @@ export default function BotsPage() {
 	};
 
 	const handleResetToken = async (botId: string, botName: string) => {
+		if (!client) return;
 		setActionLoadingId(botId);
 		try {
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/bots/${botId}/reset_token`,
-				{
-					method: "POST",
-					credentials: "include",
-				},
-			);
-			const result = await res.json();
-			if (result.success) {
-				setTokenDialog({
-					open: true,
-					token: result.data.key,
-					botName,
-				});
-			}
+			const apiKey = await client.resetBotToken(botId);
+			setTokenDialog({
+				open: true,
+				token: apiKey.key,
+				botName,
+			});
 		} catch (error) {
 			console.error(error);
 		} finally {
