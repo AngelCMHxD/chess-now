@@ -61,7 +61,7 @@ export default function MatchesPage() {
 	}
 
 	useEffect(() => {
-		if (client) return;
+		let activeClient: ChessNowClient | null = null;
 
 		async function fetchData() {
 			try {
@@ -69,21 +69,21 @@ export default function MatchesPage() {
 				const token = sessionRes.data?.session.token;
 				if (!token || !sessionRes.data?.user) return;
 
-				const newClient = new ChessNowClient(
+				activeClient = new ChessNowClient(
 					process.env.NEXT_PUBLIC_BASE_URL as string,
 				);
-				newClient.setDefaultToken(token);
-				setClient(newClient);
+				activeClient.setDefaultToken(token);
+				setClient(activeClient);
 
-				const matchesResult = await newClient.getMyMatches(token);
+				const matchesResult = await activeClient.getMyMatches(token);
 
 				setUser(sessionRes.data?.user as unknown as User);
 				setMatches(matchesResult as Match[]);
 
-				await newClient.connect();
-				newClient.subscribe(["challenge", "match"]);
+				await activeClient.connect();
+				activeClient.subscribe(["challenge", "match"]);
 
-				newClient.on("challenge:accepted", (event) => {
+				activeClient.on("challenge:accepted", (event) => {
 					setMatches((prev) => {
 						if (!prev) return [event.payload.match];
 
@@ -94,7 +94,7 @@ export default function MatchesPage() {
 					});
 				});
 
-				newClient.on("match:board_move", (event) => {
+				activeClient.on("match:board_move", (event) => {
 					setMatches((prev) => {
 						if (!prev) return null;
 
@@ -109,7 +109,7 @@ export default function MatchesPage() {
 					});
 				});
 
-				newClient.on("match:game_over", (event) => {
+				activeClient.on("match:game_over", (event) => {
 					setMatches((prev) => {
 						if (!prev) return null;
 
@@ -128,7 +128,13 @@ export default function MatchesPage() {
 			}
 		}
 		fetchData();
-	}, [client]);
+
+		return () => {
+			if (activeClient) {
+				activeClient.disconnect();
+			}
+		};
+	}, []);
 
 	if (!matches) {
 		return (

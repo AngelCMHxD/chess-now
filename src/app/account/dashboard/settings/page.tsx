@@ -71,13 +71,13 @@ export default function SettingsPage() {
 				const token = sessionRes.data?.session.token;
 				if (!token) return;
 
-				const newClient = new ChessNowClient(
+				const activeClient = new ChessNowClient(
 					process.env.NEXT_PUBLIC_BASE_URL as string,
 				);
-				newClient.setDefaultToken(token);
-				setClient(newClient);
+				activeClient.setDefaultToken(token);
+				setClient(activeClient);
 
-				const accInfo = await newClient.getAccountInfo();
+				const accInfo = await activeClient.getAccountInfo();
 				setUser(accInfo);
 				setName(accInfo.name);
 				setUsername(accInfo.username);
