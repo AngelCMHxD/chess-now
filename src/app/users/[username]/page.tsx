@@ -57,9 +57,9 @@ export default function UserProfilePage({
 				setClient(newClient);
 
 				const [info, userMatches, userFriends] = await Promise.all([
-					newClient.getUserInfo(username, token),
-					newClient.getUserMatches(username, token),
-					newClient.getUserFriends(username, token),
+					newClient.getUserInfo(username),
+					newClient.getUserMatches(username),
+					newClient.getUserFriends(username),
 				]);
 
 				setUser(info);
