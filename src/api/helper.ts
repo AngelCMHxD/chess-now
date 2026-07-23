@@ -362,7 +362,8 @@ export async function getFriendRequests(
 	userId: string,
 ): Promise<FriendRequest[]> {
 	const requests = await db.query.friendRequests.findMany({
-		where: (requests, { eq }) => eq(requests.toId, userId),
+		where: (requests, { eq, or }) =>
+			or(eq(requests.toId, userId), eq(requests.fromId, userId)),
 		with: {
 			from: {
 				columns: publicUserColumns,
