@@ -5,7 +5,7 @@ import {
 } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { ForbiddenError, NotFoundError, UnauthorizedError } from "@/api/errors";
-import { getUserByUsername, publicUserColumns } from "@/api/helper";
+import { getUserByUsername, hasScope, publicUserColumns } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
@@ -20,11 +20,7 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	if (
-		session.session.scopes &&
-		!session.session.scopes.includes(Scope.Friends)
-	)
-		throw new ForbiddenError();
+	if (!hasScope(session, Scope.Friends)) throw new ForbiddenError();
 
 	const otherUser = await getUserByUsername(username);
 

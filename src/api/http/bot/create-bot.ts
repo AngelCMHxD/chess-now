@@ -7,7 +7,7 @@ import {
 import { eq } from "drizzle-orm";
 import z from "zod";
 import { ConflictError, ForbiddenError, UnauthorizedError } from "@/api/errors";
-import { removePrivateUserFields } from "@/api/helper";
+import { hasScope, removePrivateUserFields } from "@/api/helper";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
@@ -25,8 +25,7 @@ export async function run(
 	});
 
 	if (!session) throw new UnauthorizedError();
-	if (session.session.scopes && !session.session.scopes.includes(Scope.Bots))
-		throw new ForbiddenError();
+	if (!hasScope(session, Scope.Bots)) throw new ForbiddenError();
 
 	if (session.user.botOwnerId)
 		throw new ForbiddenError(

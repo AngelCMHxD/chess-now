@@ -10,6 +10,7 @@ import {
 	challengeConfig,
 	createChallenge,
 	getUserByUsername,
+	hasScope,
 } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
@@ -27,11 +28,7 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	if (
-		session.session.scopes &&
-		!session.session.scopes.includes(Scope.Challenges)
-	)
-		throw new ForbiddenError();
+	if (!hasScope(session, Scope.Challenges)) throw new ForbiddenError();
 
 	const oponent = await getUserByUsername(username);
 

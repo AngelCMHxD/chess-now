@@ -404,3 +404,8 @@ export function removePrivateUserFields(user: Session["user"]): User {
 export function isExternalAuth(session: Session) {
 	return (session?.session?.scopes?.length ?? 0) > 0;
 }
+
+export function hasScope(session: Session, scope: string) {
+	if (!isExternalAuth(session)) return true;
+	return session.session?.scopes?.includes(scope) ?? false;
+}

@@ -11,7 +11,7 @@ import {
 	UnauthorizedError,
 	UnprocessableContentError,
 } from "@/api/errors";
-import { getMatchInfo, updateBoard } from "@/api/helper";
+import { getMatchInfo, hasScope, updateBoard } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas, secondaryStorage } from "@/lib/database";
@@ -38,11 +38,7 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	if (
-		session.session.scopes &&
-		!session.session.scopes.includes(Scope.Matches)
-	)
-		throw new ForbiddenError();
+	if (!hasScope(session, Scope.Matches)) throw new ForbiddenError();
 
 	const mId = parseInt(matchId, 10);
 

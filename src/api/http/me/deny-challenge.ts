@@ -7,7 +7,11 @@ import {
 	NotFoundError,
 	UnauthorizedError,
 } from "@/api/errors";
-import { getChallengeInfo, removePrivateUserFields } from "@/api/helper";
+import {
+	getChallengeInfo,
+	hasScope,
+	removePrivateUserFields,
+} from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
@@ -22,11 +26,7 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	if (
-		session.session.scopes &&
-		!session.session.scopes.includes(Scope.Challenges)
-	)
-		throw new ForbiddenError();
+	if (!hasScope(session, Scope.Challenges)) throw new ForbiddenError();
 
 	const cId = parseInt(challengeId, 10);
 

@@ -9,6 +9,7 @@ import {
 import {
 	acceptChallenge,
 	getChallengeInfo,
+	hasScope,
 	removePrivateUserFields,
 } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
@@ -24,11 +25,7 @@ export async function run(
 
 	if (!session) throw new UnauthorizedError();
 
-	if (
-		session.session.scopes &&
-		!session.session.scopes.includes(Scope.Challenges)
-	)
-		throw new ForbiddenError();
+	if (!hasScope(session, Scope.Challenges)) throw new ForbiddenError();
 
 	const cId = parseInt(challengeId, 10);
 

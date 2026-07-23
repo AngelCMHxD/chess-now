@@ -1,6 +1,7 @@
 import { type ApiSuccessResponse, Scope } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { ForbiddenError, UnauthorizedError } from "@/api/errors";
+import { hasScope } from "@/api/helper";
 import { auth } from "@/lib/auth";
 import { db, schemas, secondaryStorage } from "@/lib/database";
 
@@ -13,8 +14,7 @@ export async function run(
 	});
 
 	if (!session) throw new UnauthorizedError();
-	if (session.session.scopes && !session.session.scopes.includes(Scope.Bots))
-		throw new ForbiddenError();
+	if (!hasScope(session, Scope.Bots)) throw new ForbiddenError();
 
 	if (session.user.botOwnerId)
 		throw new ForbiddenError(
