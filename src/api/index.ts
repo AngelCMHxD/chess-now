@@ -30,6 +30,7 @@ import httpGetBots from "./http/me/get-bots";
 import httpGetChallenges from "./http/me/get-challenges";
 import httpGetFriends from "./http/me/get-friends";
 import httpGetMatches from "./http/me/get-matches";
+import httpUpdateAccountInfo from "./http/me/update-account-info";
 import httpGetUserFriends from "./http/user/get-user-friends";
 import httpGetUserInfo from "./http/user/get-user-info";
 import httpGetUserMatches from "./http/user/get-user-matches";
@@ -310,6 +311,18 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			tags: ["Me"],
 		},
 	})
+	.put(
+		"/me",
+		({ request, body }) => httpUpdateAccountInfo.run(request.headers, body),
+		{
+			headers: authHeadersSchema,
+			body: httpUpdateAccountInfo.bodyType,
+			detail: {
+				summary: "Update your account info",
+				tags: ["Me"],
+			},
+		},
+	)
 	.get(
 		"/user/:username",
 		({ request, params }) =>

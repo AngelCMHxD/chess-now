@@ -69,6 +69,11 @@ const eventsSchema = z.optional(
 	z.array(eventSchema).min(1, "at least one event is required"),
 );
 
+export const updateAccountInfoSchema = z.object({
+	name: z.string().optional(),
+	username: z.string().optional(),
+});
+
 export class ChessNowClient {
 	/** @internal */
 	private baseUrl: string;
@@ -149,6 +154,19 @@ export class ChessNowClient {
 
 	async getAccountInfo(token?: string): Promise<User> {
 		return this._fetch<User>("/me", { token });
+	}
+
+	async updateAccountInfo(
+		data: z.infer<typeof updateAccountInfoSchema>,
+		token?: string,
+	): Promise<User> {
+		assert(updateAccountInfoSchema, data, "data");
+
+		return this._fetch<User>("/me", {
+			method: "PUT",
+			body: JSON.stringify(data),
+			token,
+		});
 	}
 
 	async getMyChallenges(token?: string): Promise<Challenge[]> {

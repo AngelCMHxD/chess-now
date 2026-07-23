@@ -1,4 +1,4 @@
-export { ChessNowClient } from "./client";
+export { ChessNowClient, updateAccountInfoSchema } from "./client";
 export type { ErrorPayload } from "./errors";
 export {
 	BadRequestError,
