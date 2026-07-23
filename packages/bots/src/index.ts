@@ -19,6 +19,12 @@ async function main() {
 		bot.start();
 	}
 
+	if (process.env.BOT_TOKEN_STOCKFISH) {
+		const bot = new ChessBot(process.env.BOT_TOKEN_STOCKFISH, 15, true);
+		bots.push(bot);
+		bot.start();
+	}
+
 	if (bots.length === 0) {
 		console.error(
 			"no bots started. provide any of the following environment variables:",

@@ -1,25 +1,29 @@
 import { ChessNowClient, type Match, type User } from "@chess-now/api";
+import { Stockfish } from "@se-oss/stockfish";
 import { ai, status } from "js-chess-engine";
 
 export class ChessBot {
 	private client: ChessNowClient;
 	private user: User | null = null;
+	private stockfish: Stockfish | null = null;
 
 	constructor(
 		token: string,
 		private level: number,
+		isStockfish: boolean = false,
 	) {
 		this.client = new ChessNowClient("http://localhost:3000");
 		this.client.setDefaultToken(token);
+		if (isStockfish) {
+			this.stockfish = new Stockfish();
+		}
 	}
 
 	async start() {
 		try {
 			const user = await this.client.getAccountInfo();
 			this.user = user;
-			console.log(
-				`[Level ${this.level}] connected as ${this.user.name} (@${this.user.username})`,
-			);
+			this.log(`connected as ${this.user.name} (@${this.user.username})`);
 
 			this.setupHandlers();
 
@@ -46,12 +50,12 @@ export class ChessBot {
 
 						this.tryPlayMove(match);
 
-						console.log(
-							`[Level ${this.level}] accepted pending challenge on startup from ${challenge.from.username}, match ${match.id} started.`,
+						this.log(
+							`accepted pending challenge on startup from ${challenge.from.username}, match ${match.id} started.`,
 						);
 					} catch (e) {
-						console.error(
-							`[Level ${this.level}] couldnt accept pending challenge on startup:`,
+						this.log(
+							`couldnt accept pending challenge on startup:`,
 							e,
 						);
 					}
@@ -62,12 +66,12 @@ export class ChessBot {
 			for (const request of friendRequests) {
 				if (request.status !== "pending") continue;
 				await this.client.acceptFriendRequest(request.from.username);
-				console.log(
-					`[Level ${this.level}] accepted friend request from ${request.from.username}.`,
+				this.log(
+					`accepted friend request from ${request.from.username}.`,
 				);
 			}
 		} catch (e) {
-			console.error(`[Level ${this.level}] Error starting bot:`, e);
+			this.log(`Error starting bot:`, e);
 		}
 	}
 
@@ -81,14 +85,11 @@ export class ChessBot {
 
 				this.tryPlayMove(match);
 
-				console.log(
-					`[Level ${this.level}] accepted challenge from ${challenge.from.username}, match ${match.id} started.`,
+				this.log(
+					`accepted challenge from ${challenge.from.username}, match ${match.id} started.`,
 				);
 			} catch (e) {
-				console.error(
-					`[Level ${this.level}] couldnt accept challenge:`,
-					e,
-				);
+				this.log(`couldnt accept challenge:`, e);
 			}
 		});
 
@@ -104,16 +105,39 @@ export class ChessBot {
 			const request = msg.payload.request;
 			try {
 				await this.client.acceptFriendRequest(request.from.username);
-				console.log(
-					`[Level ${this.level}] accepted friend request from ${request.from.username}.`,
+				this.log(
+					`accepted friend request from ${request.from.username}.`,
 				);
 			} catch (e) {
-				console.error(
-					`[Level ${this.level}] couldnt accept friend request:`,
-					e,
-				);
+				this.log(`couldnt accept friend request:`, e);
 			}
 		});
+	}
+
+	private async tryPlayStockfishMove(
+		match: Match,
+	): Promise<string | undefined> {
+		if (!this.stockfish) return;
+		await this.stockfish.waitReady();
+
+		const analysis = await this.stockfish.analyze(match.fen, this.level);
+
+		return analysis.bestmove;
+	}
+
+	private tryPlayJsChessEngineMove(match: Match): string | undefined {
+		const result = ai(match.fen, { level: this.level, play: false });
+		if (!result.move) {
+			this.log(`no move returned for match ${match.id}`);
+			return;
+		}
+
+		// js-chess-engine returns move like {"E2": "E4"} or {"E7": "E8Q"}
+		const moveEntry = Object.entries(result.move)[0];
+		if (!moveEntry) return;
+
+		const [from, to] = moveEntry;
+		return `${from.toLowerCase()}${to.toLowerCase()}`;
 	}
 
 	private async tryPlayMove(match: Match) {
@@ -127,29 +151,27 @@ export class ChessBot {
 		if (botColor !== turnChar) return;
 
 		try {
-			const result = ai(match.fen, { level: this.level, play: false });
-			if (!result.move) {
-				console.log(
-					`[Level ${this.level}] no move returned for match ${match.id}`,
-				);
-				return;
+			let move: string | undefined;
+			if (this.stockfish) {
+				move = await this.tryPlayStockfishMove(match);
+			} else {
+				move = this.tryPlayJsChessEngineMove(match);
 			}
+			if (!move) return;
 
-			// js-chess-engine returns move like {"E2": "E4"} or {"E7": "E8Q"}
-			const moveEntry = Object.entries(result.move)[0];
-			if (!moveEntry) return;
-			const [from, to] = moveEntry;
-			const moveLan = `${from.toLowerCase()}${to.toLowerCase()}`;
-
-			console.log(
-				`[Level ${this.level}] moved ${moveLan} on match ${match.id}`,
-			);
-			await this.client.makeMove(match.id, moveLan);
+			this.log(`moved ${move} on match ${match.id}`);
+			await this.client.makeMove(match.id, move);
 		} catch (e) {
-			console.error(
-				`[Level ${this.level}] Error moving on match ${match.id}:`,
-				e,
-			);
+			this.log(`Error moving on match ${match.id}:`, e);
+		}
+	}
+
+	// biome-ignore lint/suspicious/noExplicitAny: i mean, console.log uses any anyways
+	private log(...message: any) {
+		if (this.stockfish) {
+			console.log(`[Stockfish]`, ...message);
+		} else {
+			console.log(`[Level ${this.level}]`, ...message);
 		}
 	}
 }
