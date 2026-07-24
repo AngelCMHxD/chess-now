@@ -54,7 +54,15 @@ Each return type links to its full definition on the Types page.
 | `acceptChallenge(id, token?)`                  | \{ challenge: [Challenge](/docs/api-wrapper/types#challenge), match: [Match](/docs/api-wrapper/types#match) \} |
 | `denyChallenge(id, token?)`                    | \{ challenge: [Challenge](/docs/api-wrapper/types#challenge) \}                                                |
 | `getMatch(id, token?)`                         | [`Match`](/docs/api-wrapper/types#match)                                                                       |
-| `makeMove(id, san, token?)`                    | [`Move`](/docs/api-wrapper/types#move)                                                                         |
+| `makeMove(id, san, token?)`                    | \{ move: [Move](/docs/api-wrapper/types#move), match: [Match](/docs/api-wrapper/types#match) \}                |
+| `updateAccountInfo(data, token?)`              | [`User`](/docs/api-wrapper/types#user)                                                                         |
+| `getUserInfo(username, token?)`                | [`User`](/docs/api-wrapper/types#user)                                                                         |
+| `getUserMatches(username, token?)`             | [`Match[]`](/docs/api-wrapper/types#match)                                                                     |
+| `getUserFriends(username, token?)`             | [`Friendship[]`](/docs/api-wrapper/types#user)                                                                 |
+| `getMyBots(token?)`                            | [`User[]`](/docs/api-wrapper/types#user)                                                                       |
+| `deleteBot(botId, token?)`                     | `void`                                                                                                         |
+| `registerBot(botInfo, token?)`                 | \{ bot: [User](/docs/api-wrapper/types#user), apiKey: [ApiKey](/docs/api-wrapper/types#apikey) \}              |
+| `resetBotToken(botId, token?)`                 | [`ApiKey`](/docs/api-wrapper/types#apikey)                                                                     |
 | `initDeviceAuth(scopes)`                       | [`DeviceAuthInitResponse`](/docs/api-wrapper/types#deviceauthinitresponse)                                     |
 | `getDeviceToken(deviceCode)`                   | [`DeviceTokenResponse`](/docs/api-wrapper/types#devicetokenresponse)                                           |
 | `getFriends(token?)`                           | [`Friendship[]`](/docs/api-wrapper/types#user)                                                                 |
