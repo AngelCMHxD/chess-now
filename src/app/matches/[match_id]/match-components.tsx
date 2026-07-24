@@ -117,7 +117,11 @@ export function MatchDetailsCard({
 							color="w"
 							gameInfo={gameInfo}
 							isUser={user?.id === match.whiteId}
-							ratingDiff={match.whiteRatingDiff}
+							ratingDiff={
+								match.whiteRatingDiff
+									? Math.round(match.whiteRatingDiff)
+									: null
+							}
 						/>
 						<Separator />
 						<PlayerRow
@@ -125,7 +129,11 @@ export function MatchDetailsCard({
 							color="b"
 							gameInfo={gameInfo}
 							isUser={user?.id === match.blackId}
-							ratingDiff={match.blackRatingDiff}
+							ratingDiff={
+								match.blackRatingDiff
+									? Math.round(match.blackRatingDiff)
+									: null
+							}
 						/>
 					</div>
 

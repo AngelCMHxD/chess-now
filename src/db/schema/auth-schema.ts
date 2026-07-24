@@ -3,6 +3,7 @@ import {
 	boolean,
 	index,
 	integer,
+	numeric,
 	pgTable,
 	text,
 	timestamp,
@@ -21,9 +22,21 @@ export const user = pgTable("user", {
 	isAnonymous: boolean("is_anonymous").default(false),
 	username: text("username").notNull().unique(),
 	botOwnerId: text("bot_owner_id"),
-	rating: integer("rating").default(1500).notNull(),
-	rd: integer("rd").default(350).notNull(),
-	vol: integer("vol").default(0.06).notNull(),
+	rating: numeric({
+		mode: "number",
+	})
+		.default(1500)
+		.notNull(),
+	rd: numeric({
+		mode: "number",
+	})
+		.default(350)
+		.notNull(),
+	vol: numeric({
+		mode: "number",
+	})
+		.default(0.06)
+		.notNull(),
 });
 
 export const session = pgTable(
