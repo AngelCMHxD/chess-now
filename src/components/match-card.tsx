@@ -49,9 +49,7 @@ export function MatchCard({
 											new Date(match.createdAt).getTime(),
 									)}
 									<br />
-									{match.endReason === "checkmate" ||
-									match.endReason === "resignation" ||
-									match.endReason === "timeout"
+									{match.endReason === "checkmate"
 										? `Winner: ${(() => {
 												const winner =
 													match.status === "white_won"
