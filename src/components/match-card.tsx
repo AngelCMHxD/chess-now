@@ -18,6 +18,28 @@ export function MatchCard({
 	match: Match;
 	user: User | null;
 }) {
+	let ratingDiff: number | null = null;
+	if (match.status !== "active" && user) {
+		if (user.id === match.whitePlayer.id) {
+			ratingDiff = match.whiteRatingDiff;
+		} else if (user.id === match.blackPlayer.id) {
+			ratingDiff = match.blackRatingDiff;
+		}
+	}
+
+	let ratingDiffColor = "font-bold";
+	let ratingDiffText = "0";
+
+	if (ratingDiff !== null) {
+		if (ratingDiff > 0) {
+			ratingDiffColor = "text-emerald-500/80 font-bold";
+			ratingDiffText = `+${ratingDiff}`;
+		} else if (ratingDiff < 0) {
+			ratingDiffColor = "text-rose-500/80 font-bold";
+			ratingDiffText = `${ratingDiff}`;
+		}
+	}
+
 	return (
 		<Card size="default" className="w-full overflow-hidden p-0 gap-0">
 			<div className="flex flex-col xl:flex-row h-full">
@@ -76,6 +98,15 @@ export function MatchCard({
 														return "Unknown";
 												}
 											})()}`}
+									{ratingDiff !== null && (
+										<>
+											<br />
+											ELO Diff:{" "}
+											<span className={ratingDiffColor}>
+												{ratingDiffText}
+											</span>
+										</>
+									)}
 								</p>
 							)}
 						</CardDescription>

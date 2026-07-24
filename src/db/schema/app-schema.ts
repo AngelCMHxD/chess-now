@@ -95,6 +95,8 @@ export const matches = pgTable("match", {
 	pgn: varchar("pgn").default("").notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	finishedAt: timestamp("finished_at"),
+	whiteRatingDiff: integer("white_rating_diff"),
+	blackRatingDiff: integer("black_rating_diff"),
 });
 
 export const matchRelations = relations(matches, ({ one }) => ({

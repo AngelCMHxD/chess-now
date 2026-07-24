@@ -376,6 +376,7 @@ function MatchDetailsCard({
 							color="w"
 							gameInfo={gameInfo}
 							isUser={user?.id === match.whiteId}
+							ratingDiff={match.whiteRatingDiff}
 						/>
 						<Separator />
 						<PlayerRow
@@ -383,6 +384,7 @@ function MatchDetailsCard({
 							color="b"
 							gameInfo={gameInfo}
 							isUser={user?.id === match.blackId}
+							ratingDiff={match.blackRatingDiff}
 						/>
 					</div>
 
@@ -401,11 +403,13 @@ function PlayerRow({
 	color,
 	gameInfo,
 	isUser,
+	ratingDiff,
 }: {
 	player: User;
 	color: "w" | "b";
 	gameInfo: GameInfo;
 	isUser: boolean;
+	ratingDiff: number | null;
 }) {
 	return (
 		<div className="flex items-center gap-3 justify-between">
@@ -422,7 +426,26 @@ function PlayerRow({
 					)}
 				/>
 				<div>
-					<p className="font-medium">{player.name}</p>
+					<div className="flex items-center gap-1">
+						<p className="font-medium">{player.name}</p>
+						{ratingDiff !== null && (
+							<span
+								className={
+									ratingDiff > 0
+										? "text-emerald-500/80 font-bold text-xs"
+										: ratingDiff < 0
+											? "text-rose-500/80 font-bold text-xs"
+											: "font-bold text-xs"
+								}
+							>
+								(
+								{ratingDiff > 0
+									? `+${ratingDiff}`
+									: `${ratingDiff}`}
+								)
+							</span>
+						)}
+					</div>
 					<p className="text-xs text-muted-foreground">
 						{color === "w" ? "White" : "Black"}
 						{isUser ? " - You" : ""}

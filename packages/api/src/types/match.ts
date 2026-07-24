@@ -40,4 +40,6 @@ export interface Match {
 	finishedAt: Date | null;
 	whitePlayer: User;
 	blackPlayer: User;
+	whiteRatingDiff: number | null;
+	blackRatingDiff: number | null;
 }

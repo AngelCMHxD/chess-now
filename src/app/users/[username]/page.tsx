@@ -299,7 +299,10 @@ export default function UserProfilePage({
 													ELO Rating
 												</span>
 												<span className="font-bold text-primary">
-													{Math.round(searchedUser.rating ?? 1500)}
+													{Math.round(
+														searchedUser.rating ??
+															1500,
+													)}
 												</span>
 											</div>
 											<Separator className="my-1" />

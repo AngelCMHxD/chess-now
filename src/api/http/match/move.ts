@@ -212,6 +212,9 @@ export async function run(
 		match.blackPlayer.rd = newBlack.rd;
 		match.blackPlayer.vol = newBlack.vol;
 
+		const whiteDiff = Math.round(newWhite.rating - whiteStats.rating);
+		const blackDiff = Math.round(newBlack.rating - blackStats.rating);
+
 		const finalMatch = (
 			await db
 				.update(schemas.matches)
@@ -221,6 +224,8 @@ export async function run(
 					finishedAt: new Date(),
 					fen: moveInfo.fen.after,
 					pgn: moveInfo.pgn.after,
+					whiteRatingDiff: whiteDiff,
+					blackRatingDiff: blackDiff,
 				})
 				.where(eq(schemas.matches.id, mId))
 				.returning()
