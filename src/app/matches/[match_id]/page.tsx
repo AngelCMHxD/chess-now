@@ -3,7 +3,7 @@
 import type { Match } from "@chess-now/api";
 import { ChessNowClient } from "@chess-now/api";
 import { Chess } from "chess.js";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 import { use, useEffect, useMemo, useState } from "react";
 import { ThemedChessboard } from "@/components/themed-chessboard";
 import {
@@ -24,6 +24,8 @@ export default function SpectateMatchPage({
 	params: Promise<{ match_id: string }>;
 }) {
 	const { match_id } = use(params);
+
+	const router = useRouter();
 
 	const [match, setMatch] = useState<Match | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -99,7 +101,7 @@ export default function SpectateMatchPage({
 		}
 
 		init();
-	}, [match_id, client]);
+	}, [match_id, client, router]);
 
 	const gameInfo = useMemo(() => {
 		if (!match) return null;
