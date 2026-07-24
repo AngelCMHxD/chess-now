@@ -19,7 +19,7 @@ import type {
 	WatchDeviceAuthMessage,
 	WebSocketEvent,
 } from "./types";
-import { SCOPES } from "./types";
+import { SCOPES, Scope } from "./types";
 
 function wsUrl(baseUrl: string): string {
 	const protocol = baseUrl.startsWith("https") ? "wss" : "ws";
@@ -57,7 +57,9 @@ const nonEmptyStr = z.string().refine((s) => s.trim().length > 0, {
 	message: "must be a non-empty string",
 });
 const scopeSchema = z.enum(SCOPES, {
-	error: "must be 'account', 'challenges', 'matches', 'friends', or 'bots'",
+	error: `must be one of: ${Object.keys(Scope)
+		.map((key) => `Scope.${key}`)
+		.join(", ")}`,
 });
 const scopesSchema = z
 	.array(scopeSchema)
