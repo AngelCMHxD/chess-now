@@ -294,7 +294,7 @@ export const auth = betterAuth({
 				to: [user.email],
 				subject: "Welcome - Chess Now!",
 				react: Emails.Welcome({
-					url: `${process.env.NEXT_PUBLIC_BASE_URL}/account/dashboard`,
+					url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`,
 				}),
 			});
 		},

@@ -40,17 +40,17 @@ import {
 const navMain = [
 	{
 		title: "Matches",
-		url: "/account/dashboard/matches",
+		url: "/dashboard/matches",
 		icon: <TrophyIcon />,
 	},
 	{
 		title: "Friends",
-		url: "/account/dashboard/friends",
+		url: "/dashboard/friends",
 		icon: <UsersIcon />,
 	},
 	{
 		title: "Bots",
-		url: "/account/dashboard/bots",
+		url: "/dashboard/bots",
 		icon: <BotIcon />,
 	},
 ];
@@ -75,10 +75,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					<SidebarMenuItem>
 						<SidebarMenuButton
 							size="lg"
-							isActive={pathname === "/account/dashboard"}
+							isActive={pathname === "/dashboard"}
 							asChild
 						>
-							<a href="/account/dashboard">
+							<a href="/dashboard">
 								<div className="flex aspect-square size-7 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
 									<Image
 										alt="Chess Now! Icon"

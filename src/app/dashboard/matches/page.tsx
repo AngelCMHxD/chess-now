@@ -160,7 +160,7 @@ export default function MatchesPage() {
 							<BreadcrumbList>
 								<BreadcrumbItem>
 									<BreadcrumbPage
-										href="/account/dashboard"
+										href="/dashboard"
 										className="text-foreground/65 hover:text-foreground/75 hover:underline"
 									>
 										Dashboard

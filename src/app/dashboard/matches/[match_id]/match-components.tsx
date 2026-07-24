@@ -46,7 +46,7 @@ export function MatchNotFound() {
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<Link href="/account/dashboard">
+					<Link href="/dashboard">
 						<AlertDialogAction>
 							Return to Dashboard
 						</AlertDialogAction>
@@ -68,7 +68,7 @@ export function NotPlayer({ matchId }: { matchId: number }) {
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<Link href={`/account/dashboard/matches/${matchId}`}>
+					<Link href={`/dashboard/matches/${matchId}`}>
 						<AlertDialogAction>Spectate</AlertDialogAction>
 					</Link>
 				</AlertDialogFooter>

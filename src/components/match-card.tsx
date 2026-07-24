@@ -128,7 +128,7 @@ export function MatchCard({
 			</div>
 			<CardFooter>
 				<Button asChild>
-					<Link href={`/account/dashboard/matches/${match.id}`}>
+					<Link href={`/dashboard/matches/${match.id}`}>
 						Go to Match
 					</Link>
 				</Button>

@@ -8,12 +8,10 @@ export async function proxy(request: NextRequest) {
 	});
 
 	if (["/account"].includes(request.nextUrl.pathname)) {
-		return NextResponse.redirect(
-			new URL("/account/dashboard", request.url),
-		);
+		return NextResponse.redirect(new URL("/dashboard", request.url));
 	}
 
-	if (!session && request.nextUrl.pathname.startsWith("/account/dashboard")) {
+	if (!session && request.nextUrl.pathname.startsWith("/dashboard")) {
 		return NextResponse.redirect(new URL("/account/login", request.url));
 	}
 
@@ -31,14 +29,12 @@ export async function proxy(request: NextRequest) {
 		session &&
 		["/account/login", "/account/signup"].includes(request.nextUrl.pathname)
 	) {
-		return NextResponse.redirect(
-			new URL("/account/dashboard", request.url),
-		);
+		return NextResponse.redirect(new URL("/dashboard", request.url));
 	}
 
 	return NextResponse.next();
 }
 
 export const config = {
-	matcher: ["/account/:path*", "/device"],
+	matcher: ["/account/:path*", "/device", "/dashboard/:path*"],
 };

@@ -1,10 +1,10 @@
 "use client";
 
-import type { Match } from "@chess-now/api";
+import type { Match, User } from "@chess-now/api";
 import { ChessNowClient } from "@chess-now/api";
 import { Chess } from "chess.js";
-import { useRouter } from "next/navigation";
 import { use, useEffect, useMemo, useState } from "react";
+import type { PieceDropHandlerArgs } from "react-chessboard";
 import { ThemedChessboard } from "@/components/themed-chessboard";
 import {
 	Breadcrumb,
@@ -16,7 +16,11 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
-import { MatchDetailsCard, MatchNotFound } from "./match-components";
+import {
+	MatchDetailsCard,
+	MatchNotFound,
+	NotPlayer,
+} from "../match-components";
 import {
 	SidebarInset,
 	SidebarProvider,
@@ -24,15 +28,14 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 
-export default function SpectateMatchPage({
+export default function PlayMatchPage({
 	params,
 }: {
 	params: Promise<{ match_id: string }>;
 }) {
 	const { match_id } = use(params);
 
-	const router = useRouter();
-
+	const [user, setUser] = useState<User | null>(null);
 	const [match, setMatch] = useState<Match | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [client, setClient] = useState<ChessNowClient | null>(null);
@@ -42,36 +45,28 @@ export default function SpectateMatchPage({
 
 		async function init() {
 			try {
-				const sessionRes = await authClient
-					.getSession()
-					.catch(() => null);
-				const token = sessionRes?.data?.session.token;
+				const sessionRes = await authClient.getSession();
+				const token = sessionRes.data?.session.token;
+				if (!token) return;
 
 				const newClient = new ChessNowClient(
 					process.env.NEXT_PUBLIC_BASE_URL as string,
 				);
-
-				if (token) {
-					newClient.setDefaultToken(token);
-				}
-
+				newClient.setDefaultToken(token);
 				setClient(newClient);
 
-				const matchData = await newClient.getMatch(Number(match_id));
+				const [userData, matchData] = await Promise.all([
+					newClient.getAccountInfo(token),
+					newClient.getMatch(Number(match_id), token),
+				]);
+
+				setUser(userData);
 				setMatch(matchData);
 
-				if (
-					[matchData.whiteId, matchData.blackId].includes(
-						sessionRes?.data?.user?.id || "",
-					)
-				) {
-					router.push(`/account/dashboard/matches/${match_id}/play`);
-				}
-
 				await newClient.connect();
+				newClient.subscribe(["match"]);
 
 				const currentMatchId = Number(match_id);
-				newClient.matchSubscribe(currentMatchId);
 
 				newClient.on("match:board_move", (event) => {
 					if (event.payload.match.id === currentMatchId) {
@@ -107,7 +102,7 @@ export default function SpectateMatchPage({
 		}
 
 		init();
-	}, [match_id, client, router]);
+	}, [match_id, client]);
 
 	const gameInfo = useMemo(() => {
 		if (!match) return null;
@@ -140,6 +135,50 @@ export default function SpectateMatchPage({
 		return { turn, moves, capturedByWhite, capturedByBlack };
 	}, [match]);
 
+	function onPieceDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs) {
+		if (!targetSquare || !match) {
+			return false;
+		}
+
+		const chessGame = new Chess();
+		chessGame.loadPgn(match.pgn);
+
+		try {
+			const move = chessGame.move({
+				from: sourceSquare,
+				to: targetSquare,
+				promotion: "q",
+			});
+
+			setMatch({
+				...match,
+				fen: chessGame.fen(),
+				pgn: chessGame.pgn(),
+			});
+
+			try {
+				async function sendMove() {
+					if (!client || !match) return false;
+					const { match: updatedMatch } = await client.makeMove(
+						match.id,
+						move.lan,
+					);
+
+					if (chessGame.isGameOver()) return;
+					setMatch(updatedMatch);
+				}
+
+				sendMove();
+			} catch {
+				return false;
+			}
+
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
 	if (loading) {
 		return (
 			<div className="flex flex-col gap-4 justify-center items-center w-full h-screen">
@@ -149,8 +188,12 @@ export default function SpectateMatchPage({
 		);
 	}
 
-	if (!match) {
+	if (!match || !user) {
 		return <MatchNotFound />;
+	}
+
+	if (user.id !== match.whiteId && user.id !== match.blackId) {
+		return <NotPlayer matchId={match.id} />;
 	}
 
 	return (
@@ -169,7 +212,7 @@ export default function SpectateMatchPage({
 								<BreadcrumbList>
 									<BreadcrumbItem>
 										<BreadcrumbPage
-											href="/account/dashboard"
+											href="/dashboard"
 											className="text-foreground/65 hover:text-foreground/75 hover:underline"
 										>
 											Dashboard
@@ -178,7 +221,7 @@ export default function SpectateMatchPage({
 									<BreadcrumbSeparator />
 									<BreadcrumbItem>
 										<BreadcrumbPage
-											href="/account/dashboard/matches"
+											href="/dashboard/matches"
 											className="text-foreground/65 hover:text-foreground/75 hover:underline"
 										>
 											Matches
@@ -198,9 +241,7 @@ export default function SpectateMatchPage({
 									</BreadcrumbItem>
 									<BreadcrumbSeparator />
 									<BreadcrumbItem>
-										<BreadcrumbPage>
-											Spectate
-										</BreadcrumbPage>
+										<BreadcrumbPage>Play</BreadcrumbPage>
 									</BreadcrumbItem>
 								</BreadcrumbList>
 							</Breadcrumb>
@@ -213,16 +254,49 @@ export default function SpectateMatchPage({
 								<ThemedChessboard
 									options={{
 										position: match?.fen,
+										boardOrientation:
+											match?.whitePlayer.id === user?.id
+												? "white"
+												: "black",
 										boardStyle: {
 											borderRadius: "10px",
 										},
-										allowDragging: false,
+										onPieceDrop,
+										canDragPiece: ({ piece }) => {
+											if (!match) return false;
+
+											if (match.status !== "active")
+												return false;
+
+											const playerColor =
+												user?.id ===
+												match.whitePlayer.id
+													? "w"
+													: "b";
+
+											if (
+												piece.pieceType[0] !==
+												playerColor
+											)
+												return false;
+
+											const chessGame = new Chess(
+												match.fen,
+											);
+											if (
+												chessGame.turn() !== playerColor
+											)
+												return false;
+
+											return true;
+										},
 									}}
 								/>
 							</div>
 							{match && gameInfo && (
 								<MatchDetailsCard
 									match={match}
+									user={user}
 									gameInfo={gameInfo}
 								/>
 							)}

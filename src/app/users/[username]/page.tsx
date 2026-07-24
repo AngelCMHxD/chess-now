@@ -179,7 +179,7 @@ export default function UserProfilePage({
 							<BreadcrumbList>
 								<BreadcrumbItem>
 									<BreadcrumbPage
-										href="/account/dashboard"
+										href="/dashboard"
 										className="text-foreground/65 hover:text-foreground/75 hover:underline"
 									>
 										Dashboard
@@ -188,7 +188,7 @@ export default function UserProfilePage({
 								<BreadcrumbSeparator />
 								<BreadcrumbItem>
 									<BreadcrumbPage
-										href="/account/dashboard/friends"
+										href="/dashboard/friends"
 										className="text-foreground/65 hover:text-foreground/75 hover:underline"
 									>
 										Users

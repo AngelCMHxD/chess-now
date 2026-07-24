@@ -128,7 +128,7 @@ export function NavUser({ user, loading }: { user?: User; loading: boolean }) {
 								</Link>
 							</Button>
 							<Button variant="ghost" size="icon-lg" asChild>
-								<Link href="/account/dashboard/settings">
+								<Link href="/dashboard/settings">
 									<SettingsIcon />
 								</Link>
 							</Button>

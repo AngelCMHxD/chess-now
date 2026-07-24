@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 
 export function LoginForm({
 	className,
-	redirectTo = "/account/dashboard",
+	redirectTo = "/dashboard",
 	...props
 }: React.ComponentProps<"div"> & { redirectTo?: string }) {
 	const router = useRouter();
