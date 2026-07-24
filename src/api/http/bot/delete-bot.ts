@@ -18,7 +18,7 @@ export async function run(
 
 	if (session.user.botOwnerId)
 		throw new ForbiddenError(
-			"A bot account cannot create other bot accounts.",
+			"A bot account cannot manage other bot accounts.",
 		);
 
 	const bot = await db.query.user.findFirst({
