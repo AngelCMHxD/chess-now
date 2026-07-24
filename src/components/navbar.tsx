@@ -41,7 +41,7 @@ export function Navbar({
 			<SidebarGroupLabel>{name}</SidebarGroupLabel>
 			<SidebarMenu className="gap-1">
 				{items.map((item) => {
-					const mainActive = pathname === item.url;
+					const mainActive = pathname.startsWith(item.url);
 					const childActive = item.items?.some(
 						(subItem) => pathname === subItem.url,
 					);
