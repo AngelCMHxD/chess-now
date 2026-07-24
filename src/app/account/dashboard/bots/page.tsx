@@ -2,11 +2,13 @@
 import type { User } from "@chess-now/api";
 import { ChessNowClient } from "@chess-now/api";
 import {
+	AtSignIcon,
 	CheckIcon,
 	CopyIcon,
 	KeyRoundIcon,
 	PlusIcon,
 	Trash2Icon,
+	UserPenIcon,
 	UserXIcon,
 } from "lucide-react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
@@ -48,6 +50,11 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupInput,
+} from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -68,6 +75,13 @@ type TokenDialogType = {
 	open: boolean;
 	token: string | null;
 	botName: string;
+};
+
+type ChangeInfoDialogType = {
+	open: boolean;
+	botName: string;
+	botUsername: string;
+	botId: string;
 };
 
 export default function BotsPage() {
@@ -211,6 +225,157 @@ export default function BotsPage() {
 	);
 }
 
+function ChangeInfoDialog({
+	setBots,
+	client,
+}: {
+	setBots: Dispatch<SetStateAction<User[] | null>>;
+	client: ChessNowClient | null;
+}) {
+	const [changeInfoDialog, setChangeInfoDialog] =
+		useState<ChangeInfoDialogType>({
+			open: false,
+			botId: "",
+			botName: "",
+			botUsername: "",
+		});
+	const [isUpdating, setIsUpdating] = useState(false);
+
+	const handleUpdateBot = async (e: React.SubmitEvent) => {
+		e.preventDefault();
+		if (
+			(!changeInfoDialog.botName && !changeInfoDialog.botUsername) ||
+			!client
+		)
+			return;
+
+		setIsUpdating(true);
+		try {
+			const result = await client.updateBotInfo(changeInfoDialog.botId, {
+				name: changeInfoDialog.botName,
+				username: changeInfoDialog.botUsername,
+			});
+			setBots((prev) => {
+				if (!prev) return null;
+
+				return prev.map((bot) =>
+					bot.id === changeInfoDialog.botId ? result : bot,
+				);
+			});
+
+			setChangeInfoDialog({
+				botName: "",
+				botId: "",
+				botUsername: "",
+				open: false,
+			});
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setIsUpdating(false);
+		}
+	};
+
+	return (
+		<Dialog
+			open={changeInfoDialog.open}
+			onOpenChange={(open) => {
+				if (!open)
+					setChangeInfoDialog({
+						botName: "",
+						botId: "",
+						botUsername: "",
+						open: false,
+					});
+			}}
+		>
+			<Tooltip>
+				<DialogTrigger asChild>
+					<TooltipTrigger asChild>
+						<Button
+							variant="secondary"
+							size="icon"
+							onClick={() =>
+								setChangeInfoDialog({
+									botName: "",
+									botId: "",
+									botUsername: "",
+									open: true,
+								})
+							}
+						>
+							<UserPenIcon />
+						</Button>
+					</TooltipTrigger>
+				</DialogTrigger>
+				<TooltipContent>Change info</TooltipContent>
+			</Tooltip>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Change Bot info</DialogTitle>
+					<DialogDescription>
+						Give your bot a new name or username.
+					</DialogDescription>
+				</DialogHeader>
+				<form onSubmit={handleUpdateBot}>
+					<div className="grid gap-4 py-4">
+						<div className="grid gap-2">
+							<Label htmlFor="name">Display Name</Label>
+							<Input
+								id="name"
+								value={changeInfoDialog.botName}
+								onChange={(e) =>
+									setChangeInfoDialog((prev) => ({
+										...prev,
+										botName: e.target.value,
+									}))
+								}
+								required
+								placeholder="Stockfish Level 1"
+							/>
+						</div>
+						<div className="grid gap-2">
+							<Label htmlFor="username">Username</Label>
+							<InputGroup>
+								<InputGroupAddon>
+									<AtSignIcon />
+								</InputGroupAddon>
+								<InputGroupInput
+									id="username"
+									value={changeInfoDialog.botUsername}
+									onChange={(e) =>
+										setChangeInfoDialog((prev) => ({
+											...prev,
+											botUsername: e.target.value,
+										}))
+									}
+									required
+									placeholder="stockfish_1"
+								/>
+							</InputGroup>
+						</div>
+					</div>
+					<DialogFooter>
+						<Button
+							type="submit"
+							disabled={
+								isUpdating ||
+								(!changeInfoDialog.botName &&
+									!changeInfoDialog.botUsername)
+							}
+						>
+							{isUpdating ? (
+								<Spinner className="mr-2 h-4 w-4" />
+							) : null}
+							Create
+						</Button>
+					</DialogFooter>
+				</form>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
 function BotCard({
 	bot,
 	setBots,
@@ -278,6 +443,8 @@ function BotCard({
 						</CardDescription>
 					</CardHeader>
 					<div className="w-1/4 flex flex-col items-center justify-center gap-2 p-2">
+						<ChangeInfoDialog setBots={setBots} client={client} />
+
 						<AlertDialog>
 							<Tooltip>
 								<AlertDialogTrigger asChild>
@@ -442,15 +609,20 @@ function CreateDialog({
 						</div>
 						<div className="grid gap-2">
 							<Label htmlFor="username">Username</Label>
-							<Input
-								id="username"
-								value={createUsername}
-								onChange={(e) =>
-									setCreateUsername(e.target.value)
-								}
-								required
-								placeholder="stockfish_1"
-							/>
+							<InputGroup>
+								<InputGroupAddon>
+									<AtSignIcon />
+								</InputGroupAddon>
+								<InputGroupInput
+									id="username"
+									value={createUsername}
+									onChange={(e) =>
+										setCreateUsername(e.target.value)
+									}
+									required
+									placeholder="stockfish_1"
+								/>
+							</InputGroup>
 						</div>
 					</div>
 					<DialogFooter>
