@@ -378,6 +378,23 @@ export class ChessNowClient {
 		});
 	}
 
+	async updateBotInfo(
+		botId: string,
+		data: z.infer<typeof updateAccountInfoSchema>,
+		token?: string,
+	): Promise<User> {
+		assert(nonEmptyStr, botId, "botId");
+		assert(updateAccountInfoSchema, data, "data");
+
+		return this._fetch<User>(`/me/bots/${botId}`, {
+			method: "PUT",
+			token,
+			body: JSON.stringify({
+				...data,
+				botId,
+			}),
+		});
+	}
 	connect(): Promise<void> {
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			return Promise.resolve();

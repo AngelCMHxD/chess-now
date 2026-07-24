@@ -9,6 +9,7 @@ import { authHeadersSchema } from "./helper";
 import httpCreateBot from "./http/bot/create-bot";
 import httpDeleteBot from "./http/bot/delete-bot";
 import httpResetBotToken from "./http/bot/reset-bot-token";
+import httpUpdateBotInfo from "./http/bot/update-bot-info";
 import httpGetChallengeInfo from "./http/challenge/get-challenge-info";
 import httpRequestChallenge from "./http/challenge/request-challenge";
 import httpDeviceApprove from "./http/device/device-approve";
@@ -304,6 +305,18 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: authHeadersSchema,
 			detail: {
 				summary: "Delete a bot",
+				tags: ["Bots"],
+			},
+		},
+	)
+	.put(
+		"/me",
+		({ request, body }) => httpUpdateBotInfo.run(request.headers, body),
+		{
+			headers: authHeadersSchema,
+			body: httpUpdateBotInfo.bodyType,
+			detail: {
+				summary: "Update the bot account info",
 				tags: ["Bots"],
 			},
 		},
