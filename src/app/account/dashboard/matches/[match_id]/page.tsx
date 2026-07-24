@@ -17,6 +17,12 @@ import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import { MatchDetailsCard, MatchNotFound } from "./match-components";
+import {
+	SidebarInset,
+	SidebarProvider,
+	SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/dashboard-sidebar";
 
 export default function SpectateMatchPage({
 	params,
@@ -59,7 +65,7 @@ export default function SpectateMatchPage({
 						sessionRes?.data?.user?.id || "",
 					)
 				) {
-					router.push(`/matches/${match_id}/play`);
+					router.push(`/account/dashboard/matches/${match_id}/play`);
 				}
 
 				await newClient.connect();
@@ -148,59 +154,82 @@ export default function SpectateMatchPage({
 	}
 
 	return (
-		<div className="flex min-h-screen flex-col md:h-screen md:overflow-hidden">
-			<header className="flex h-16 shrink-0 items-center gap-2">
-				<div className="flex items-center gap-2 px-4">
-					<Separator
-						orientation="vertical"
-						className="mr-2 data-[orientation=vertical]:h-4"
-					/>
-					<Breadcrumb>
-						<BreadcrumbList>
-							<BreadcrumbItem>
-								<BreadcrumbPage>Spectate</BreadcrumbPage>
-							</BreadcrumbItem>
-							<BreadcrumbSeparator />
-							<BreadcrumbItem>
-								<BreadcrumbPage>
-									Match {match_id}
-								</BreadcrumbPage>
-							</BreadcrumbItem>
-							<BreadcrumbSeparator />
-							<BreadcrumbItem>
-								<BreadcrumbPage>
-									<span className="font-bold">
-										{match?.whitePlayer.name}
-									</span>{" "}
-									vs.{" "}
-									<span className="font-bold">
-										{match?.blackPlayer.name}
-									</span>
-								</BreadcrumbPage>
-							</BreadcrumbItem>
-						</BreadcrumbList>
-					</Breadcrumb>
-				</div>
-			</header>
+		<SidebarProvider>
+			<AppSidebar />
+			<SidebarInset>
+				<div className="flex min-h-screen flex-col md:h-screen md:overflow-hidden">
+					<header className="flex h-16 shrink-0 items-center gap-2">
+						<div className="flex items-center gap-2 px-4">
+							<SidebarTrigger className="-ml-1" />
+							<Separator
+								orientation="vertical"
+								className="mr-2 data-[orientation=vertical]:h-4"
+							/>
+							<Breadcrumb>
+								<BreadcrumbList>
+									<BreadcrumbItem>
+										<BreadcrumbPage
+											href="/account/dashboard"
+											className="text-foreground/65 hover:text-foreground/75 hover:underline"
+										>
+											Dashboard
+										</BreadcrumbPage>
+									</BreadcrumbItem>
+									<BreadcrumbSeparator />
+									<BreadcrumbItem>
+										<BreadcrumbPage
+											href="/account/dashboard/matches"
+											className="text-foreground/65 hover:text-foreground/75 hover:underline"
+										>
+											Matches
+										</BreadcrumbPage>
+									</BreadcrumbItem>
+									<BreadcrumbSeparator />
+									<BreadcrumbItem>
+										<BreadcrumbPage>
+											<span className="font-bold">
+												{match?.whitePlayer.name}
+											</span>{" "}
+											vs.{" "}
+											<span className="font-bold">
+												{match?.blackPlayer.name}
+											</span>
+										</BreadcrumbPage>
+									</BreadcrumbItem>
+									<BreadcrumbSeparator />
+									<BreadcrumbItem>
+										<BreadcrumbPage>
+											Spectate
+										</BreadcrumbPage>
+									</BreadcrumbItem>
+								</BreadcrumbList>
+							</Breadcrumb>
+						</div>
+					</header>
 
-			<div className="m-4 flex flex-1 flex-col rounded-xl bg-muted/50 p-4 md:p-8 md:overflow-hidden md:min-h-0">
-				<div className="grid h-full w-full grid-cols-1 items-center gap-8 md:grid-cols-2">
-					<div className="w-[75vh] max-h-full max-w-full justify-self-center md:justify-self-end">
-						<ThemedChessboard
-							options={{
-								position: match?.fen,
-								boardStyle: {
-									borderRadius: "10px",
-								},
-								allowDragging: false,
-							}}
-						/>
+					<div className="m-4 flex flex-1 flex-col rounded-xl bg-muted/50 p-4 md:p-8 md:overflow-hidden md:min-h-0">
+						<div className="grid h-full w-full grid-cols-1 items-center gap-8 md:grid-cols-2">
+							<div className="w-[75vh] max-h-full max-w-full justify-self-center md:justify-self-end">
+								<ThemedChessboard
+									options={{
+										position: match?.fen,
+										boardStyle: {
+											borderRadius: "10px",
+										},
+										allowDragging: false,
+									}}
+								/>
+							</div>
+							{match && gameInfo && (
+								<MatchDetailsCard
+									match={match}
+									gameInfo={gameInfo}
+								/>
+							)}
+						</div>
 					</div>
-					{match && gameInfo && (
-						<MatchDetailsCard match={match} gameInfo={gameInfo} />
-					)}
 				</div>
-			</div>
-		</div>
+			</SidebarInset>
+		</SidebarProvider>
 	);
 }

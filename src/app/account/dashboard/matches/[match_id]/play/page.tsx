@@ -21,6 +21,12 @@ import {
 	MatchNotFound,
 	NotPlayer,
 } from "../match-components";
+import {
+	SidebarInset,
+	SidebarProvider,
+	SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/dashboard-sidebar";
 
 export default function PlayMatchPage({
 	params,
@@ -191,86 +197,113 @@ export default function PlayMatchPage({
 	}
 
 	return (
-		<div className="flex min-h-screen flex-col md:h-screen md:overflow-hidden">
-			<header className="flex h-16 shrink-0 items-center gap-2">
-				<div className="flex items-center gap-2 px-4">
-					<Separator
-						orientation="vertical"
-						className="mr-2 data-[orientation=vertical]:h-4"
-					/>
-					<Breadcrumb>
-						<BreadcrumbList>
-							<BreadcrumbItem>
-								<BreadcrumbPage>Play</BreadcrumbPage>
-							</BreadcrumbItem>
-							<BreadcrumbSeparator />
-							<BreadcrumbItem>
-								<BreadcrumbPage>
-									Match {match_id}
-								</BreadcrumbPage>
-							</BreadcrumbItem>
-							<BreadcrumbSeparator />
-							<BreadcrumbItem>
-								<BreadcrumbPage>
-									<span className="font-bold">
-										{match?.whitePlayer.name}
-									</span>{" "}
-									vs.{" "}
-									<span className="font-bold">
-										{match?.blackPlayer.name}
-									</span>
-								</BreadcrumbPage>
-							</BreadcrumbItem>
-						</BreadcrumbList>
-					</Breadcrumb>
-				</div>
-			</header>
+		<SidebarProvider>
+			<AppSidebar />
+			<SidebarInset>
+				<div className="flex min-h-screen flex-col md:h-screen md:overflow-hidden">
+					<header className="flex h-16 shrink-0 items-center gap-2">
+						<div className="flex items-center gap-2 px-4">
+							<SidebarTrigger className="-ml-1" />
+							<Separator
+								orientation="vertical"
+								className="mr-2 data-[orientation=vertical]:h-4"
+							/>
+							<Breadcrumb>
+								<BreadcrumbList>
+									<BreadcrumbItem>
+										<BreadcrumbPage
+											href="/account/dashboard"
+											className="text-foreground/65 hover:text-foreground/75 hover:underline"
+										>
+											Dashboard
+										</BreadcrumbPage>
+									</BreadcrumbItem>
+									<BreadcrumbSeparator />
+									<BreadcrumbItem>
+										<BreadcrumbPage
+											href="/account/dashboard/matches"
+											className="text-foreground/65 hover:text-foreground/75 hover:underline"
+										>
+											Matches
+										</BreadcrumbPage>
+									</BreadcrumbItem>
+									<BreadcrumbSeparator />
+									<BreadcrumbItem>
+										<BreadcrumbPage>
+											<span className="font-bold">
+												{match?.whitePlayer.name}
+											</span>{" "}
+											vs.{" "}
+											<span className="font-bold">
+												{match?.blackPlayer.name}
+											</span>
+										</BreadcrumbPage>
+									</BreadcrumbItem>
+									<BreadcrumbSeparator />
+									<BreadcrumbItem>
+										<BreadcrumbPage>Play</BreadcrumbPage>
+									</BreadcrumbItem>
+								</BreadcrumbList>
+							</Breadcrumb>
+						</div>
+					</header>
 
-			<div className="m-4 flex flex-1 flex-col rounded-xl bg-muted/50 p-4 md:p-8 md:overflow-hidden md:min-h-0">
-				<div className="grid h-full w-full grid-cols-1 items-center gap-8 md:grid-cols-2">
-					<div className="w-[75vh] max-h-full max-w-full justify-self-center md:justify-self-end">
-						<ThemedChessboard
-							options={{
-								position: match?.fen,
-								boardOrientation:
-									match?.whitePlayer.id === user?.id
-										? "white"
-										: "black",
-								boardStyle: {
-									borderRadius: "10px",
-								},
-								onPieceDrop,
-								canDragPiece: ({ piece }) => {
-									if (!match) return false;
+					<div className="m-4 flex flex-1 flex-col rounded-xl bg-muted/50 p-4 md:p-8 md:overflow-hidden md:min-h-0">
+						<div className="grid h-full w-full grid-cols-1 items-center gap-8 md:grid-cols-2">
+							<div className="w-[75vh] max-h-full max-w-full justify-self-center md:justify-self-end">
+								<ThemedChessboard
+									options={{
+										position: match?.fen,
+										boardOrientation:
+											match?.whitePlayer.id === user?.id
+												? "white"
+												: "black",
+										boardStyle: {
+											borderRadius: "10px",
+										},
+										onPieceDrop,
+										canDragPiece: ({ piece }) => {
+											if (!match) return false;
 
-									if (match.status !== "active") return false;
+											if (match.status !== "active")
+												return false;
 
-									const playerColor =
-										user?.id === match.whitePlayer.id
-											? "w"
-											: "b";
+											const playerColor =
+												user?.id ===
+												match.whitePlayer.id
+													? "w"
+													: "b";
 
-									if (piece.pieceType[0] !== playerColor)
-										return false;
+											if (
+												piece.pieceType[0] !==
+												playerColor
+											)
+												return false;
 
-									const chessGame = new Chess(match.fen);
-									if (chessGame.turn() !== playerColor)
-										return false;
+											const chessGame = new Chess(
+												match.fen,
+											);
+											if (
+												chessGame.turn() !== playerColor
+											)
+												return false;
 
-									return true;
-								},
-							}}
-						/>
+											return true;
+										},
+									}}
+								/>
+							</div>
+							{match && gameInfo && (
+								<MatchDetailsCard
+									match={match}
+									user={user}
+									gameInfo={gameInfo}
+								/>
+							)}
+						</div>
 					</div>
-					{match && gameInfo && (
-						<MatchDetailsCard
-							match={match}
-							user={user}
-							gameInfo={gameInfo}
-						/>
-					)}
 				</div>
-			</div>
-		</div>
+			</SidebarInset>
+		</SidebarProvider>
 	);
 }

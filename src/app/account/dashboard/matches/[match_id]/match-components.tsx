@@ -68,7 +68,7 @@ export function NotPlayer({ matchId }: { matchId: number }) {
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<Link href={`/matches/${matchId}`}>
+					<Link href={`/account/dashboard/matches/${matchId}`}>
 						<AlertDialogAction>Spectate</AlertDialogAction>
 					</Link>
 				</AlertDialogFooter>
