@@ -5,9 +5,11 @@ import {
 	bold,
 	computed,
 	fg,
+	green,
 	italic,
 	onKeyDown,
 	onMounted,
+	red,
 	ref,
 	Text,
 	t,
@@ -21,6 +23,13 @@ import { state } from "../store";
 
 const yellow = fg("yellow");
 const hoverYellow = fg("#FFFF99");
+
+function formatRatingDiff(diff: number | null | undefined): string {
+	if (diff == null) return "";
+	if (diff > 0) return green(`(+${diff})`);
+	if (diff < 0) return red(`(${diff})`);
+	return "(0)";
+}
 
 function formatEndReason(reason: string | null): string {
 	if (!reason) return "Unknown reason";
@@ -209,10 +218,10 @@ onKeyDown((key) => {
 							})()}`"
 						/>
 					</Box>
-					<Text
-						:content="t`${bold(match.whitePlayer.name)} (@${match.whitePlayer.username}) vs. ${bold(match.blackPlayer.name)} (@${match.blackPlayer.username})`"
-					/>
 					<Box :visible="match.status === 'active'">
+						<Text
+							:content="t`${bold(match.whitePlayer.name)} (@${match.whitePlayer.username}) vs. ${bold(match.blackPlayer.name)} (@${match.blackPlayer.username})`"
+						/>
 						<Text
 							:content="t`${italic(bold('Currently Active'))}`"
 						/>
@@ -221,6 +230,9 @@ onKeyDown((key) => {
 						/>
 					</Box>
 					<Box :visible="match.status !== 'active'">
+						<Text
+							:content="t`${bold(match.whitePlayer.name)} (@${match.whitePlayer.username}) ${formatRatingDiff(match.whiteRatingDiff)} vs. ${bold(match.blackPlayer.name)} (@${match.blackPlayer.username}) ${formatRatingDiff(match.blackRatingDiff)}`"
+						/>
 						<Text
 							:content="t`Finished due to: ${formatEndReason(match.endReason)}`"
 						/>

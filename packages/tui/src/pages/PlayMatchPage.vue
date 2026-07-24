@@ -7,8 +7,10 @@ import {
 	Box,
 	bold,
 	fg,
+	green,
 	Input,
 	onKeyDown,
+	red,
 	Text,
 	t,
 	underline,
@@ -24,7 +26,13 @@ const matchId = Number(route.params.id);
 
 const yellow = fg("yellow");
 const hoverYellow = fg("#FFFF99");
-const red = fg("red");
+
+function formatRatingDiff(diff: number | null | undefined): string {
+	if (diff == null) return "";
+	if (diff > 0) return green(`(+${diff})`);
+	if (diff < 0) return red(`(${diff})`);
+	return "(0)";
+}
 
 const chess = new Chess();
 const boardAscii = ref("");
@@ -141,10 +149,25 @@ onKeyDown((key) => {
 				flexDirection="column"
 				alignItems="center"
 			>
-				<Text
-					:content="t`${bold(matchDetails.whitePlayer.name)} (@${matchDetails.whitePlayer.username}) vs. ${bold(matchDetails.blackPlayer.name)} (@${matchDetails.blackPlayer.username})`"
-				/>
-				<Box v-if="matchDetails.status !== 'active'" :marginTop="1">
+				<Box
+					v-if="matchDetails.status === 'active'"
+					:marginTop="1"
+					flexDirection="column"
+					alignItems="center"
+				>
+					<Text
+						:content="t`${bold(matchDetails.whitePlayer.name)} (@${matchDetails.whitePlayer.username}) vs. ${bold(matchDetails.blackPlayer.name)} (@${matchDetails.blackPlayer.username})`"
+					/>
+				</Box>
+				<Box
+					v-if="matchDetails.status !== 'active'"
+					:marginTop="1"
+					flexDirection="column"
+					alignItems="center"
+				>
+					<Text
+						:content="t`${bold(matchDetails.whitePlayer.name)} (@${matchDetails.whitePlayer.username}) ${formatRatingDiff(matchDetails.whiteRatingDiff)} vs. ${bold(matchDetails.blackPlayer.name)} (@${matchDetails.blackPlayer.username}) ${formatRatingDiff(matchDetails.blackRatingDiff)}`"
+					/>
 					<Text
 						:content="t`${yellow(`Game Over: ${matchDetails.status} - ${matchDetails.endReason}`)}`"
 					/>
