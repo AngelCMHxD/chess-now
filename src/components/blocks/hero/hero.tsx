@@ -115,15 +115,6 @@ const HeroSection = () => {
 														GitHub
 													</Link>
 												</Button>
-												<Button asChild>
-													<Link
-														href="https://discord.gg/aHjD8BRf"
-														target="_blank"
-														rel="noopener noreferrer"
-													>
-														Discord
-													</Link>
-												</Button>
 											</div>
 										</div>
 									</div>
