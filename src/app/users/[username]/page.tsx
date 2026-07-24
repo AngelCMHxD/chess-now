@@ -361,13 +361,19 @@ export default function UserProfilePage({
 									</h3>
 								</div>
 								<div className="grid grid-cols-1 xl:grid-cols-2 gap-4 w-full">
-									{matches.map((match) => (
-										<MatchCard
-											key={match.id}
-											match={match}
-											user={searchedUser}
-										/>
-									))}
+									{matches
+										.sort(
+											(a, b) =>
+												b.createdAt.getTime() -
+												a.createdAt.getTime(),
+										)
+										.map((match) => (
+											<MatchCard
+												key={match.id}
+												match={match}
+												user={searchedUser}
+											/>
+										))}
 								</div>
 								{matches.length === 0 && (
 									<div className="w-full p-10 flex flex-col justify-center items-center gap-1">

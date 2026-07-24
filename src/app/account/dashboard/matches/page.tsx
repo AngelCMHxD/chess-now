@@ -238,13 +238,19 @@ export default function MatchesPage() {
 						</div>
 						<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
 							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
-								{matches.map((match) => (
-									<MatchCard
-										key={match.id}
-										match={match}
-										user={user}
-									/>
-								))}
+								{matches
+									.sort(
+										(a, b) =>
+											b.createdAt.getTime() -
+											a.createdAt.getTime(),
+									)
+									.map((match) => (
+										<MatchCard
+											key={match.id}
+											match={match}
+											user={user}
+										/>
+									))}
 							</div>
 						</div>
 						{matches && matches.length === 0 && (
