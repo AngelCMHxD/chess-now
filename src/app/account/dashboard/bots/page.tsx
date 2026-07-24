@@ -9,7 +9,7 @@ import {
 	Trash2Icon,
 	UserXIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -64,20 +64,20 @@ import {
 } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
 
+type TokenDialogType = {
+	open: boolean;
+	token: string | null;
+	botName: string;
+};
+
 export default function BotsPage() {
 	const [bots, setBots] = useState<User[] | null>(null);
 
-	const [isCreateOpen, setIsCreateOpen] = useState(false);
-	const [createName, setCreateName] = useState("");
-	const [createUsername, setCreateUsername] = useState("");
-	const [isCreating, setIsCreating] = useState(false);
-
-	const [tokenDialog, setTokenDialog] = useState<{
-		open: boolean;
-		token: string | null;
-		botName: string;
-	}>({ open: false, token: null, botName: "" });
-	const [hasCopied, setHasCopied] = useState(false);
+	const [tokenDialog, setTokenDialog] = useState<TokenDialogType>({
+		open: false,
+		token: null,
+		botName: "",
+	});
 	const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
 	const [client, setClient] = useState<ChessNowClient | null>(null);
@@ -111,69 +111,6 @@ export default function BotsPage() {
 			}
 		};
 	}, []);
-
-	const handleCreateBot = async (e: React.SubmitEvent) => {
-		e.preventDefault();
-		if (!createName || !createUsername || !client) return;
-		setIsCreating(true);
-		try {
-			const result = await client.registerBot({
-				name: createName,
-				username: createUsername,
-			});
-			setBots((prev) => (prev ? [...prev, result.bot] : [result.bot]));
-			setIsCreateOpen(false);
-			setCreateName("");
-			setCreateUsername("");
-			setTokenDialog({
-				open: true,
-				token: result.apiKey.key,
-				botName: result.bot.name,
-			});
-		} catch (error) {
-			console.error(error);
-		} finally {
-			setIsCreating(false);
-		}
-	};
-
-	const handleDeleteBot = async (botId: string) => {
-		if (!client) return;
-		setActionLoadingId(botId);
-		try {
-			await client.deleteBot(botId);
-			setBots((prev) => (prev ? prev.filter((b) => b.id !== botId) : []));
-		} catch (error) {
-			console.error(error);
-		} finally {
-			setActionLoadingId(null);
-		}
-	};
-
-	const handleResetToken = async (botId: string, botName: string) => {
-		if (!client) return;
-		setActionLoadingId(botId);
-		try {
-			const apiKey = await client.resetBotToken(botId);
-			setTokenDialog({
-				open: true,
-				token: apiKey.key,
-				botName,
-			});
-		} catch (error) {
-			console.error(error);
-		} finally {
-			setActionLoadingId(null);
-		}
-	};
-
-	const handleCopy = () => {
-		if (tokenDialog.token) {
-			navigator.clipboard.writeText(tokenDialog.token);
-			setHasCopied(true);
-			setTimeout(() => setHasCopied(false), 2000);
-		}
-	};
 
 	if (!bots) {
 		return (
@@ -227,242 +164,27 @@ export default function BotsPage() {
 									Your Bots
 								</h2>
 
-								<Dialog
-									open={isCreateOpen}
-									onOpenChange={setIsCreateOpen}
-								>
-									<DialogTrigger asChild>
-										<Button>
-											<PlusIcon className="mr-2 h-4 w-4" />{" "}
-											Create Bot
-										</Button>
-									</DialogTrigger>
-									<DialogContent>
-										<DialogHeader>
-											<DialogTitle>
-												Create a new Bot
-											</DialogTitle>
-											<DialogDescription>
-												Give your bot a display name and
-												a unique username.
-											</DialogDescription>
-										</DialogHeader>
-										<form onSubmit={handleCreateBot}>
-											<div className="grid gap-4 py-4">
-												<div className="grid gap-2">
-													<Label htmlFor="name">
-														Display Name
-													</Label>
-													<Input
-														id="name"
-														value={createName}
-														onChange={(e) =>
-															setCreateName(
-																e.target.value,
-															)
-														}
-														required
-														placeholder="Stockfish Level 1"
-													/>
-												</div>
-												<div className="grid gap-2">
-													<Label htmlFor="username">
-														Username
-													</Label>
-													<Input
-														id="username"
-														value={createUsername}
-														onChange={(e) =>
-															setCreateUsername(
-																e.target.value,
-															)
-														}
-														required
-														placeholder="stockfish_1"
-													/>
-												</div>
-											</div>
-											<DialogFooter>
-												<Button
-													type="submit"
-													disabled={isCreating}
-												>
-													{isCreating ? (
-														<Spinner className="mr-2 h-4 w-4" />
-													) : null}
-													Create
-												</Button>
-											</DialogFooter>
-										</form>
-									</DialogContent>
-								</Dialog>
+								<CreateDialog
+									client={client}
+									setBots={setBots}
+									setTokenDialog={setTokenDialog}
+								/>
 							</div>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 w-full">
 								<TooltipProvider>
 									{bots.map((bot) => (
-										<Card
-											size="default"
-											className="w-full overflow-hidden p-0"
+										<BotCard
 											key={bot.id}
-										>
-											<div className="flex flex-col xl:flex-row h-full">
-												<div className="flex flex-row justify-between w-full">
-													<CardHeader className="w-3/4">
-														<CardTitle className="pt-4 break-all">
-															{bot.name} <br />
-															<span className="text-muted-foreground text-sm font-normal">
-																@{bot.username}
-															</span>
-														</CardTitle>
-														<CardDescription>
-															<div className="pb-4">
-																<p>
-																	Created at:{" "}
-																	{new Date(
-																		bot.createdAt,
-																	).toLocaleString()}
-																</p>
-																<p>
-																	Bot ID:{" "}
-																	{bot.id}
-																</p>
-															</div>
-														</CardDescription>
-													</CardHeader>
-													<div className="w-1/4 flex flex-col items-center justify-center gap-2 p-2">
-														<AlertDialog>
-															<Tooltip>
-																<AlertDialogTrigger
-																	asChild
-																>
-																	<TooltipTrigger
-																		asChild
-																	>
-																		<Button
-																			variant="secondary"
-																			size="icon"
-																			disabled={
-																				actionLoadingId ===
-																				bot.id
-																			}
-																		>
-																			{actionLoadingId ===
-																			bot.id ? (
-																				<Spinner />
-																			) : (
-																				<KeyRoundIcon />
-																			)}
-																		</Button>
-																	</TooltipTrigger>
-																</AlertDialogTrigger>
-																<TooltipContent>
-																	Reset Token
-																</TooltipContent>
-															</Tooltip>
-															<AlertDialogContent>
-																<AlertDialogHeader>
-																	<AlertDialogTitle>
-																		Are you
-																		sure?
-																	</AlertDialogTitle>
-																	<AlertDialogDescription>
-																		This
-																		will
-																		revoke
-																		the old
-																		token.
-																		Any
-																		instances
-																		using
-																		the old
-																		token
-																		will
-																		stop
-																		working
-																	</AlertDialogDescription>
-																</AlertDialogHeader>
-																<AlertDialogFooter>
-																	<AlertDialogCancel>
-																		Cancel
-																	</AlertDialogCancel>
-																	<AlertDialogAction
-																		onClick={() =>
-																			handleResetToken(
-																				bot.id,
-																				bot.name,
-																			)
-																		}
-																	>
-																		Continue
-																	</AlertDialogAction>
-																</AlertDialogFooter>
-															</AlertDialogContent>
-														</AlertDialog>
-
-														<AlertDialog>
-															<Tooltip>
-																<AlertDialogTrigger
-																	asChild
-																>
-																	<TooltipTrigger
-																		asChild
-																	>
-																		<Button
-																			variant="destructive"
-																			size="icon"
-																			disabled={
-																				actionLoadingId ===
-																				bot.id
-																			}
-																		>
-																			{actionLoadingId ===
-																			bot.id ? (
-																				<Spinner />
-																			) : (
-																				<Trash2Icon />
-																			)}
-																		</Button>
-																	</TooltipTrigger>
-																</AlertDialogTrigger>
-																<TooltipContent>
-																	Delete Bot
-																</TooltipContent>
-															</Tooltip>
-															<AlertDialogContent>
-																<AlertDialogHeader>
-																	<AlertDialogTitle>
-																		Are you
-																		sure?
-																	</AlertDialogTitle>
-																	<AlertDialogDescription>
-																		This
-																		cannot
-																		be
-																		undone
-																	</AlertDialogDescription>
-																</AlertDialogHeader>
-																<AlertDialogFooter>
-																	<AlertDialogCancel>
-																		Cancel
-																	</AlertDialogCancel>
-																	<AlertDialogAction
-																		variant="destructive"
-																		onClick={() =>
-																			handleDeleteBot(
-																				bot.id,
-																			)
-																		}
-																	>
-																		Continue
-																	</AlertDialogAction>
-																</AlertDialogFooter>
-															</AlertDialogContent>
-														</AlertDialog>
-													</div>
-												</div>
-											</div>
-										</Card>
+											actionLoadingId={actionLoadingId}
+											bot={bot}
+											setBots={setBots}
+											client={client}
+											setActionLoadingId={
+												setActionLoadingId
+											}
+											setTokenDialog={setTokenDialog}
+										/>
 									))}
 								</TooltipProvider>
 							</div>
@@ -480,41 +202,320 @@ export default function BotsPage() {
 					</div>
 				</div>
 
-				<Dialog
-					open={tokenDialog.open}
-					onOpenChange={(open) => {
-						if (!open)
-							setTokenDialog({
-								open: false,
-								token: null,
-								botName: "",
-							});
-					}}
-				>
-					<DialogContent showCloseButton={false}>
-						<DialogHeader>
-							<DialogTitle>
-								Token for {tokenDialog.botName}
-							</DialogTitle>
-							<DialogDescription>
-								Make sure to copy your token. You won't be able
-								to see it again!
-							</DialogDescription>
-						</DialogHeader>
-						<div className="flex items-center space-x-2 my-4">
-							<Input value={tokenDialog.token || ""} readOnly />
-							<Button size="icon" onClick={handleCopy}>
-								{hasCopied ? (
-									<CheckIcon className="h-4 w-4" />
-								) : (
-									<CopyIcon className="h-4 w-4" />
-								)}
-							</Button>
-						</div>
-						<DialogFooter showCloseButton={true} />
-					</DialogContent>
-				</Dialog>
+				<TokenDialog
+					tokenDialog={tokenDialog}
+					setTokenDialog={setTokenDialog}
+				/>
 			</SidebarInset>
 		</SidebarProvider>
+	);
+}
+
+function BotCard({
+	bot,
+	setBots,
+	setTokenDialog,
+	client,
+	setActionLoadingId,
+	actionLoadingId,
+}: {
+	bot: User;
+	setBots: Dispatch<SetStateAction<User[] | null>>;
+	setTokenDialog: Dispatch<SetStateAction<TokenDialogType>>;
+	client: ChessNowClient | null;
+	setActionLoadingId: Dispatch<SetStateAction<string | null>>;
+	actionLoadingId: string | null;
+}) {
+	const handleResetToken = async (botId: string, botName: string) => {
+		if (!client) return;
+		setActionLoadingId(botId);
+		try {
+			const apiKey = await client.resetBotToken(botId);
+			setTokenDialog({
+				open: true,
+				token: apiKey.key,
+				botName,
+			});
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setActionLoadingId(null);
+		}
+	};
+
+	const handleDeleteBot = async (botId: string) => {
+		if (!client) return;
+		setActionLoadingId(botId);
+		try {
+			await client.deleteBot(botId);
+			setBots((prev) => (prev ? prev.filter((b) => b.id !== botId) : []));
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setActionLoadingId(null);
+		}
+	};
+
+	return (
+		<Card size="default" className="w-full overflow-hidden p-0">
+			<div className="flex flex-col xl:flex-row h-full">
+				<div className="flex flex-row justify-between w-full">
+					<CardHeader className="w-3/4">
+						<CardTitle className="pt-4 break-all">
+							{bot.name} <br />
+							<span className="text-muted-foreground text-sm font-normal">
+								@{bot.username}
+							</span>
+						</CardTitle>
+						<CardDescription>
+							<div className="pb-4">
+								<p>
+									Created at:{" "}
+									{new Date(bot.createdAt).toLocaleString()}
+								</p>
+								<p>Bot ID: {bot.id}</p>
+							</div>
+						</CardDescription>
+					</CardHeader>
+					<div className="w-1/4 flex flex-col items-center justify-center gap-2 p-2">
+						<AlertDialog>
+							<Tooltip>
+								<AlertDialogTrigger asChild>
+									<TooltipTrigger asChild>
+										<Button
+											variant="secondary"
+											size="icon"
+											disabled={
+												actionLoadingId === bot.id
+											}
+										>
+											{actionLoadingId === bot.id ? (
+												<Spinner />
+											) : (
+												<KeyRoundIcon />
+											)}
+										</Button>
+									</TooltipTrigger>
+								</AlertDialogTrigger>
+								<TooltipContent>Reset Token</TooltipContent>
+							</Tooltip>
+							<AlertDialogContent>
+								<AlertDialogHeader>
+									<AlertDialogTitle>
+										Are you sure?
+									</AlertDialogTitle>
+									<AlertDialogDescription>
+										This will revoke the old token. Any
+										instances using the old token will stop
+										working
+									</AlertDialogDescription>
+								</AlertDialogHeader>
+								<AlertDialogFooter>
+									<AlertDialogCancel>
+										Cancel
+									</AlertDialogCancel>
+									<AlertDialogAction
+										onClick={() =>
+											handleResetToken(bot.id, bot.name)
+										}
+									>
+										Continue
+									</AlertDialogAction>
+								</AlertDialogFooter>
+							</AlertDialogContent>
+						</AlertDialog>
+
+						<AlertDialog>
+							<Tooltip>
+								<AlertDialogTrigger asChild>
+									<TooltipTrigger asChild>
+										<Button
+											variant="destructive"
+											size="icon"
+											disabled={
+												actionLoadingId === bot.id
+											}
+										>
+											{actionLoadingId === bot.id ? (
+												<Spinner />
+											) : (
+												<Trash2Icon />
+											)}
+										</Button>
+									</TooltipTrigger>
+								</AlertDialogTrigger>
+								<TooltipContent>Delete Bot</TooltipContent>
+							</Tooltip>
+							<AlertDialogContent>
+								<AlertDialogHeader>
+									<AlertDialogTitle>
+										Are you sure?
+									</AlertDialogTitle>
+									<AlertDialogDescription>
+										This cannot be undone
+									</AlertDialogDescription>
+								</AlertDialogHeader>
+								<AlertDialogFooter>
+									<AlertDialogCancel>
+										Cancel
+									</AlertDialogCancel>
+									<AlertDialogAction
+										variant="destructive"
+										onClick={() => handleDeleteBot(bot.id)}
+									>
+										Continue
+									</AlertDialogAction>
+								</AlertDialogFooter>
+							</AlertDialogContent>
+						</AlertDialog>
+					</div>
+				</div>
+			</div>
+		</Card>
+	);
+}
+
+function CreateDialog({
+	setBots,
+	setTokenDialog,
+	client,
+}: {
+	setBots: Dispatch<SetStateAction<User[] | null>>;
+	setTokenDialog: Dispatch<SetStateAction<TokenDialogType>>;
+	client: ChessNowClient | null;
+}) {
+	const [isCreateOpen, setIsCreateOpen] = useState(false);
+	const [createName, setCreateName] = useState("");
+	const [createUsername, setCreateUsername] = useState("");
+	const [isCreating, setIsCreating] = useState(false);
+
+	const handleCreateBot = async (e: React.SubmitEvent) => {
+		e.preventDefault();
+		if (!createName || !createUsername || !client) return;
+		setIsCreating(true);
+		try {
+			const result = await client.registerBot({
+				name: createName,
+				username: createUsername,
+			});
+			setBots((prev) => (prev ? [...prev, result.bot] : [result.bot]));
+			setIsCreateOpen(false);
+			setCreateName("");
+			setCreateUsername("");
+			setTokenDialog({
+				open: true,
+				token: result.apiKey.key,
+				botName: result.bot.name,
+			});
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setIsCreating(false);
+		}
+	};
+
+	return (
+		<Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+			<DialogTrigger asChild>
+				<Button>
+					<PlusIcon className="mr-2 h-4 w-4" /> Create Bot
+				</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Create a new Bot</DialogTitle>
+					<DialogDescription>
+						Give your bot a display name and a unique username.
+					</DialogDescription>
+				</DialogHeader>
+				<form onSubmit={handleCreateBot}>
+					<div className="grid gap-4 py-4">
+						<div className="grid gap-2">
+							<Label htmlFor="name">Display Name</Label>
+							<Input
+								id="name"
+								value={createName}
+								onChange={(e) => setCreateName(e.target.value)}
+								required
+								placeholder="Stockfish Level 1"
+							/>
+						</div>
+						<div className="grid gap-2">
+							<Label htmlFor="username">Username</Label>
+							<Input
+								id="username"
+								value={createUsername}
+								onChange={(e) =>
+									setCreateUsername(e.target.value)
+								}
+								required
+								placeholder="stockfish_1"
+							/>
+						</div>
+					</div>
+					<DialogFooter>
+						<Button type="submit" disabled={isCreating}>
+							{isCreating ? (
+								<Spinner className="mr-2 h-4 w-4" />
+							) : null}
+							Create
+						</Button>
+					</DialogFooter>
+				</form>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+function TokenDialog({
+	tokenDialog,
+	setTokenDialog,
+}: {
+	tokenDialog: TokenDialogType;
+	setTokenDialog: Dispatch<SetStateAction<TokenDialogType>>;
+}) {
+	const [hasCopied, setHasCopied] = useState(false);
+
+	const handleCopy = () => {
+		if (tokenDialog.token) {
+			navigator.clipboard.writeText(tokenDialog.token);
+			setHasCopied(true);
+			setTimeout(() => setHasCopied(false), 2000);
+		}
+	};
+
+	return (
+		<Dialog
+			open={tokenDialog.open}
+			onOpenChange={(open) => {
+				if (!open)
+					setTokenDialog({
+						open: false,
+						token: null,
+						botName: "",
+					});
+			}}
+		>
+			<DialogContent showCloseButton={false}>
+				<DialogHeader>
+					<DialogTitle>Token for {tokenDialog.botName}</DialogTitle>
+					<DialogDescription>
+						Make sure to copy your token. You won't be able to see
+						it again!
+					</DialogDescription>
+				</DialogHeader>
+				<div className="flex items-center space-x-2 my-4">
+					<Input value={tokenDialog.token || ""} readOnly />
+					<Button size="icon" onClick={handleCopy}>
+						{hasCopied ? (
+							<CheckIcon className="h-4 w-4" />
+						) : (
+							<CopyIcon className="h-4 w-4" />
+						)}
+					</Button>
+				</div>
+				<DialogFooter showCloseButton={true} />
+			</DialogContent>
+		</Dialog>
 	);
 }
