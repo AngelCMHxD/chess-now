@@ -2,6 +2,7 @@ import type { ApiSuccessResponse, Match, Move } from "@chess-now/api";
 import { Scope } from "@chess-now/api";
 import { Chess, type Move as ChessMove } from "chess.js";
 import { eq } from "drizzle-orm";
+import { glicko2 } from "glicko2-lite";
 import z from "zod";
 import {
 	BadRequestError,
@@ -21,6 +22,44 @@ export const bodyType = z.object({
 		error: "'body' is required and is a string containing the move in SAN notation",
 	}),
 });
+
+const getDecayedStats = async (player: {
+	id: string;
+	rating: number;
+	rd: number;
+	vol: number;
+}) => {
+	const lastMatch = await db.query.matches.findFirst({
+		where: (matches, { or, eq, ne, and }) =>
+			and(
+				or(
+					eq(matches.whiteId, player.id),
+					eq(matches.blackId, player.id),
+				),
+				ne(matches.status, "active"),
+			),
+		orderBy: (matches, { desc }) => desc(matches.finishedAt),
+	});
+
+	let { rating, rd, vol } = player;
+
+	if (lastMatch?.finishedAt) {
+		const weekInMs = 1000 * 60 * 60 * 24 * 7;
+		const weeksElapsed = Math.floor(
+			(Date.now() - lastMatch.finishedAt.getTime()) / weekInMs,
+		);
+
+		// this is to simulate an rd increase over time
+		for (let i = 0; i < weeksElapsed; i++) {
+			const decayed = glicko2(rating, rd, vol, []);
+			rating = decayed.rating;
+			rd = decayed.rd;
+			vol = decayed.vol;
+		}
+	}
+
+	return { rating, rd, vol };
+};
 
 export async function run(
 	headers: Headers,
@@ -127,6 +166,51 @@ export async function run(
 		else if (chess.isDrawByFiftyMoves()) endReason = "50-moves";
 
 		await secondaryStorage.delete(`match_${mId}`);
+
+		let outcomeWhite = 0.5;
+		let outcomeBlack = 0.5;
+		if (status === "white_won") {
+			outcomeWhite = 1;
+			outcomeBlack = 0;
+		} else if (status === "black_won") {
+			outcomeWhite = 0;
+			outcomeBlack = 1;
+		}
+
+		const whiteStats = await getDecayedStats(match.whitePlayer);
+		const blackStats = await getDecayedStats(match.blackPlayer);
+
+		const newWhite = glicko2(
+			whiteStats.rating,
+			whiteStats.rd,
+			whiteStats.vol,
+			[[blackStats.rating, blackStats.rd, outcomeWhite]],
+		);
+		const newBlack = glicko2(
+			blackStats.rating,
+			blackStats.rd,
+			blackStats.vol,
+			[[whiteStats.rating, whiteStats.rd, outcomeBlack]],
+		);
+
+		await Promise.all([
+			db
+				.update(schemas.user)
+				.set(newWhite)
+				.where(eq(schemas.user.id, match.whitePlayer.id)),
+			db
+				.update(schemas.user)
+				.set(newBlack)
+				.where(eq(schemas.user.id, match.blackPlayer.id)),
+		]);
+
+		match.whitePlayer.rating = newWhite.rating;
+		match.whitePlayer.rd = newWhite.rd;
+		match.whitePlayer.vol = newWhite.vol;
+
+		match.blackPlayer.rating = newBlack.rating;
+		match.blackPlayer.rd = newBlack.rd;
+		match.blackPlayer.vol = newBlack.vol;
 
 		const finalMatch = (
 			await db

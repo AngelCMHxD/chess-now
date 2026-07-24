@@ -6,6 +6,9 @@ export interface User {
 	createdAt: Date;
 	updatedAt: Date;
 	botOwnerId?: string | null;
+	rating: number;
+	rd: number;
+	vol: number;
 }
 
 export interface FriendRequest {

@@ -206,6 +206,21 @@ export const auth = betterAuth({
 				type: "string",
 				required: false,
 			},
+			rating: {
+				type: "number",
+				required: true,
+				defaultValue: 1500,
+			},
+			rd: {
+				type: "number",
+				required: true,
+				defaultValue: 350,
+			},
+			vol: {
+				type: "number",
+				required: true,
+				defaultValue: 0.06,
+			},
 		},
 		deleteUser: {
 			enabled: false,

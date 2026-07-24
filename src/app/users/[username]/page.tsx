@@ -296,6 +296,15 @@ export default function UserProfilePage({
 										<div className="flex flex-col gap-2 text-sm">
 											<div className="flex justify-between items-center">
 												<span className="text-muted-foreground">
+													ELO Rating
+												</span>
+												<span className="font-bold text-primary">
+													{Math.round(searchedUser.rating ?? 1500)}
+												</span>
+											</div>
+											<Separator className="my-1" />
+											<div className="flex justify-between items-center">
+												<span className="text-muted-foreground">
 													Matches Played
 												</span>
 												<span className="font-bold">

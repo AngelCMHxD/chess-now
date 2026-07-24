@@ -20,6 +20,9 @@ export const publicUserColumns = {
 	createdAt: true,
 	updatedAt: true,
 	botOwnerId: true,
+	rating: true,
+	rd: true,
+	vol: true,
 } as Record<keyof User, true>;
 
 export const subscribeEventsSchema = z.array(

@@ -14,14 +14,16 @@ export const user = pgTable("user", {
 	email: text("email").notNull().unique(),
 	emailVerified: boolean("email_verified").default(false).notNull(),
 	image: text("image"),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
+	createdAt: timestamp("created_at").notNull(),
 	updatedAt: timestamp("updated_at")
-		.defaultNow()
-		.$onUpdate(() => /* @__PURE__ */ new Date())
+		.$onUpdate(() => new Date())
 		.notNull(),
 	isAnonymous: boolean("is_anonymous").default(false),
 	username: text("username").notNull().unique(),
 	botOwnerId: text("bot_owner_id"),
+	rating: integer("rating").default(1500).notNull(),
+	rd: integer("rd").default(350).notNull(),
+	vol: integer("vol").default(0.06).notNull(),
 });
 
 export const session = pgTable(
@@ -30,9 +32,9 @@ export const session = pgTable(
 		id: text("id").primaryKey(),
 		expiresAt: timestamp("expires_at").notNull(),
 		token: text("token").notNull().unique(),
-		createdAt: timestamp("created_at").defaultNow().notNull(),
+		createdAt: timestamp("created_at").notNull(),
 		updatedAt: timestamp("updated_at")
-			.$onUpdate(() => /* @__PURE__ */ new Date())
+			.$onUpdate(() => new Date())
 			.notNull(),
 		ipAddress: text("ip_address"),
 		userAgent: text("user_agent"),
@@ -60,9 +62,9 @@ export const account = pgTable(
 		refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
 		scope: text("scope"),
 		password: text("password"),
-		createdAt: timestamp("created_at").defaultNow().notNull(),
+		createdAt: timestamp("created_at").notNull(),
 		updatedAt: timestamp("updated_at")
-			.$onUpdate(() => /* @__PURE__ */ new Date())
+			.$onUpdate(() => new Date())
 			.notNull(),
 	},
 	(table) => [index("account_userId_idx").on(table.userId)],
