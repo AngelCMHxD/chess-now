@@ -43,6 +43,7 @@ export type {
 } from "./ws-events";
 export type {
 	ClientMessage,
+	MatchSubscribeMessage,
 	SubscribeMessage,
 	WatchDeviceAuthMessage,
 } from "./ws-messages";

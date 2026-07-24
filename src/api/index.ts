@@ -35,6 +35,7 @@ import httpGetUserFriends from "./http/user/get-user-friends";
 import httpGetUserInfo from "./http/user/get-user-info";
 import httpGetUserMatches from "./http/user/get-user-matches";
 
+import wsMatchSubscribe from "./websocket/match-subscribe";
 import wsSubscribe from "./websocket/subscribe";
 import watchDeviceAuth from "./websocket/watch-device-auth";
 
@@ -114,16 +115,31 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.ws("/websocket", {
 		body: z.discriminatedUnion(
 			"type",
-			[wsSubscribe.bodyType, watchDeviceAuth.bodyType],
+			[
+				wsSubscribe.bodyType,
+				watchDeviceAuth.bodyType,
+				wsMatchSubscribe.bodyType,
+			],
 			{
 				error: "Invalid message type",
 			},
 		),
 		async message(ws, message) {
-			const response =
-				message.type === "subscribe"
-					? await wsSubscribe.run(ws, message)
-					: await watchDeviceAuth.run(ws, message);
+			let response: unknown;
+
+			switch (message.type) {
+				case "subscribe":
+					response = await wsSubscribe.run(ws, message);
+					break;
+				case "watch_device_auth":
+					response = await watchDeviceAuth.run(ws, message);
+					break;
+				case "match_subscribe":
+					response = await wsMatchSubscribe.run(ws, message);
+					break;
+				default:
+					throw new Error("Invalid message type");
+			}
 
 			ws.send(response);
 		},

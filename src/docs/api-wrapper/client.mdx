@@ -64,6 +64,18 @@ Each return type links to its full definition on the Types page.
 | `denyFriendRequest(id, token?)`                | [`FriendRequest`](/docs/api-wrapper/types#user)                                                                |
 | `removeFriend(friendshipId, token?)`           | [`Friendship`](/docs/api-wrapper/types#user)                                                                   |
 
+### WebSocket Methods
+
+| Method                                  | Returns |
+| --------------------------------------- | ------- |
+| `connect()`                             | `void`  |
+| `disconnect()`                          | `void`  |
+| `subscribe(tokenOrEvents?, events?)`    | `void`  |
+| `matchSubscribe(matchId, token?)`       | `void`  |
+| `watchDeviceAuth(userCode, deviceCode)` | `void`  |
+| `on(event, handler)`                    | `void`  |
+| `off(event, handler)`                   | `void`  |
+
 ### WebSocket Events
 
 Each payload links to its full definition on the WebSocket Events page.
@@ -84,6 +96,7 @@ Events starting with `response:` are sent so you can verify the success or failu
 | `friend:removed`             | [`FriendRemovedPayload`](/docs/api-wrapper/ws-events#friendremoved)                       |
 | `response:subscribe`         | [`SubscribeResponsePayload`](/docs/api-wrapper/ws-events#responsesubscribe)               |
 | `response:watch_device_auth` | [`WatchDeviceAuthResponsePayload`](/docs/api-wrapper/ws-events#responsewatch_device_auth) |
+| `response:match_subscribe`   | [`MatchSubscribeResponsePayload`](/docs/api-wrapper/ws-events#responsematch_subscribe)    |
 
 ## Full API
 

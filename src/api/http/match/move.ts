@@ -152,6 +152,11 @@ export async function run(
 		});
 	});
 
+	publishToSubscriber(`match:${match.id}`, "match:board_move", undefined, {
+		match: matchAfterMove,
+		move: moveInfo,
+	});
+
 	if (chess.isGameOver()) {
 		let endReason: (typeof schemas.matchEndReason.enumValues)[number] =
 			"draw";
@@ -243,6 +248,11 @@ export async function run(
 					lastMove: moveInfo,
 				},
 			);
+		});
+
+		publishToSubscriber(`match:${match.id}`, "match:game_over", undefined, {
+			match: finalMatch,
+			lastMove: moveInfo,
 		});
 	}
 

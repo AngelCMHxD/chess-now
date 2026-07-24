@@ -31,6 +31,7 @@ export type {
 	Match,
 	MatchGameOverPayload,
 	MatchMovePayload,
+	MatchSubscribeMessage,
 	Move,
 	ServerMessage,
 	ServerResponse,

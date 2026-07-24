@@ -17,6 +17,11 @@ export interface SubscribeResponsePayload {
 	events: SubscribeEvents;
 }
 
+export interface MatchSubscribeResponsePayload {
+	matchId: number;
+	userId: string;
+}
+
 export type WebSocketResponse =
 	| {
 			type: "watch_device_auth";
@@ -25,6 +30,10 @@ export type WebSocketResponse =
 	| {
 			type: "subscribe";
 			payload: SubscribeResponsePayload;
+	  }
+	| {
+			type: "match_subscribe";
+			payload: MatchSubscribeResponsePayload;
 	  };
 
 export type ServerResponseSuccess<T extends WebSocketResponse["type"]> = {

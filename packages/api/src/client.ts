@@ -11,6 +11,7 @@ import type {
 	FriendRequest,
 	Friendship,
 	Match,
+	MatchSubscribeMessage,
 	Move,
 	ScopeType,
 	SubscribeEvents,
@@ -95,6 +96,8 @@ export class ChessNowClient {
 		userCode: string;
 		deviceCode: string;
 	}> = [];
+	/** @internal */
+	private matchSubscriptions: Array<{ matchId: number; token: string }> = [];
 	/** @internal */
 	private reconnectAttempts = 0;
 	/** @internal */
@@ -400,6 +403,7 @@ export class ChessNowClient {
 
 		this.subscriptions = [];
 		this.deviceAuthWatchers = [];
+		this.matchSubscriptions = [];
 
 		if (this.ws) {
 			this.ws.close();
@@ -441,6 +445,25 @@ export class ChessNowClient {
 					authorization: token.startsWith("Bearer ")
 						? token
 						: `Bearer ${token}`,
+				},
+			});
+		}
+	}
+
+	matchSubscribe(matchId: number, token?: string): void {
+		const authToken = token ?? this.defaultToken;
+		assert(nonEmptyStr, authToken as string, "token");
+
+		this.matchSubscriptions.push({ matchId, token: authToken as string });
+
+		if (this.ws?.readyState === WebSocket.OPEN) {
+			this._send<MatchSubscribeMessage>({
+				type: "match_subscribe",
+				content: {
+					id: matchId,
+					authorization: (authToken as string).startsWith("Bearer ")
+						? (authToken as string)
+						: `Bearer ${authToken as string}`,
 				},
 			});
 		}
@@ -509,6 +532,18 @@ export class ChessNowClient {
 					content: {
 						userCode: watcher.userCode,
 						deviceCode: watcher.deviceCode,
+					},
+				});
+			}
+
+			for (const sub of this.matchSubscriptions) {
+				this._send<MatchSubscribeMessage>({
+					type: "match_subscribe",
+					content: {
+						id: sub.matchId,
+						authorization: sub.token.startsWith("Bearer ")
+							? sub.token
+							: `Bearer ${sub.token}`,
 					},
 				});
 			}
