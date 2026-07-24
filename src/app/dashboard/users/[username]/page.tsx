@@ -400,7 +400,7 @@ export default function UserProfilePage({
 										return (
 											<Link
 												key={friendship.id}
-												href={`/users/${friend.username}`}
+												href={`/dashboard/users/${friend.username}`}
 												className="flex gap-2 p-2 items-center border rounded-md bg-background/50 hover:bg-muted/80 transition-colors"
 											>
 												<Avatar>

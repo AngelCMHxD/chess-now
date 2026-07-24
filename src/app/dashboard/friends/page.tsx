@@ -267,7 +267,7 @@ export default function FriendsPage() {
 																	asChild
 																>
 																	<Link
-																		href={`/users/${otherUser.username}`}
+																		href={`/dashboard/users/${otherUser.username}`}
 																	>
 																		<UserIcon />
 																	</Link>
@@ -362,7 +362,7 @@ function SearchUserDialog() {
 	const handleSearch = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!username.trim()) return;
-		router.push(`/users/${username.trim()}`);
+		router.push(`/dashboard/users/${username.trim()}`);
 	};
 
 	return (

@@ -101,7 +101,7 @@ export function NavUser({ user, loading }: { user?: User; loading: boolean }) {
 							<Button variant="ghost" asChild>
 								<Link
 									className="flex flex-1 items-center gap-2 py-1.5 text-left text-sm h-12"
-									href={`/users/${user.username}`}
+									href={`/dashboard/users/${user.username}`}
 								>
 									<Avatar className="h-8 w-8 rounded-full">
 										<AvatarImage
