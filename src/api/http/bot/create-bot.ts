@@ -49,6 +49,7 @@ export async function run(
 		.values({
 			id: botId,
 			name: body.name,
+			createdAt: new Date(),
 			email,
 			isAnonymous: true,
 			username: body.username,
