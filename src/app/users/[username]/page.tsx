@@ -300,8 +300,7 @@ export default function UserProfilePage({
 												</span>
 												<span className="font-bold text-primary">
 													{Math.round(
-														searchedUser.rating ??
-															1500,
+														searchedUser.rating,
 													)}
 												</span>
 											</div>
