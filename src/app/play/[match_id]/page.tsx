@@ -100,6 +100,10 @@ export default function PlayMatchPage({
 										finishedAt:
 											event.payload.match.finishedAt,
 										status: event.payload.match.status,
+										whiteRatingDiff:
+											event.payload.match.whiteRatingDiff,
+										blackRatingDiff:
+											event.payload.match.blackRatingDiff,
 									}
 								: prev,
 						);
