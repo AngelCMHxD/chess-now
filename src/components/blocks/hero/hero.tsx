@@ -83,7 +83,10 @@ const HeroSection = () => {
 						<CardContent className="flex p-2">
 							<div className="p-4">
 								<Avatar className="size-12">
-									<AvatarImage src="https://github.com/AngelCMHxD.png" />
+									<AvatarImage
+										src="https://github.com/AngelCMHxD.png"
+										loading="eager"
+									/>
 									<AvatarFallback>
 										<UserIcon />
 									</AvatarFallback>

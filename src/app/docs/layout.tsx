@@ -32,6 +32,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 								width="32"
 								height="32"
 								src="/icon.svg"
+								loading="eager"
 								className="h-full w-auto aspect-square"
 							/>
 							<span>Chess Now</span>

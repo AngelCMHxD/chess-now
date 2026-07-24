@@ -85,6 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 										width="8"
 										height="8"
 										src="/icon.svg"
+										loading="eager"
 										className="h-full w-auto"
 									/>
 								</div>

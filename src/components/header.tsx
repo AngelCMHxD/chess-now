@@ -54,6 +54,7 @@ const Header = ({ className }: HeaderProps) => {
 						width="8"
 						height="8"
 						src="/icon.svg"
+						loading="eager"
 						className="h-8 w-8"
 					/>
 					<span className="font-bold text-xl">Chess Now!</span>
