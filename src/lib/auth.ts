@@ -205,6 +205,11 @@ export const auth = betterAuth({
 			botOwnerId: {
 				type: "string",
 				required: false,
+				references: {
+					model: "user",
+					field: "id",
+					onDelete: "cascade",
+				},
 			},
 			rating: {
 				type: "number",

@@ -1,9 +1,10 @@
 import { relations } from "drizzle-orm";
 import {
+	type AnyPgColumn,
 	boolean,
+	doublePrecision,
 	index,
 	integer,
-	numeric,
 	pgTable,
 	text,
 	timestamp,
@@ -15,28 +16,19 @@ export const user = pgTable("user", {
 	email: text("email").notNull().unique(),
 	emailVerified: boolean("email_verified").default(false).notNull(),
 	image: text("image"),
-	createdAt: timestamp("created_at").notNull(),
+	createdAt: timestamp("created_at").defaultNow().notNull(),
 	updatedAt: timestamp("updated_at")
-		.$onUpdate(() => new Date())
+		.defaultNow()
+		.$onUpdate(() => /* @__PURE__ */ new Date())
 		.notNull(),
 	isAnonymous: boolean("is_anonymous").default(false),
 	username: text("username").notNull().unique(),
-	botOwnerId: text("bot_owner_id"),
-	rating: numeric({
-		mode: "number",
-	})
-		.default(1500)
-		.notNull(),
-	rd: numeric({
-		mode: "number",
-	})
-		.default(350)
-		.notNull(),
-	vol: numeric({
-		mode: "number",
-	})
-		.default(0.06)
-		.notNull(),
+	botOwnerId: text("bot_owner_id").references((): AnyPgColumn => user.id, {
+		onDelete: "cascade",
+	}),
+	rating: doublePrecision("rating").default(1500).notNull(),
+	rd: doublePrecision("rd").default(350).notNull(),
+	vol: doublePrecision("vol").default(0.06).notNull(),
 });
 
 export const session = pgTable(
@@ -45,9 +37,9 @@ export const session = pgTable(
 		id: text("id").primaryKey(),
 		expiresAt: timestamp("expires_at").notNull(),
 		token: text("token").notNull().unique(),
-		createdAt: timestamp("created_at").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
-			.$onUpdate(() => new Date())
+			.$onUpdate(() => /* @__PURE__ */ new Date())
 			.notNull(),
 		ipAddress: text("ip_address"),
 		userAgent: text("user_agent"),
@@ -75,9 +67,9 @@ export const account = pgTable(
 		refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
 		scope: text("scope"),
 		password: text("password"),
-		createdAt: timestamp("created_at").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
-			.$onUpdate(() => new Date())
+			.$onUpdate(() => /* @__PURE__ */ new Date())
 			.notNull(),
 	},
 	(table) => [index("account_userId_idx").on(table.userId)],
@@ -131,7 +123,11 @@ export const apikey = pgTable(
 	],
 );
 
-export const userRelations = relations(user, ({ many }) => ({
+export const userRelations = relations(user, ({ one, many }) => ({
+	user: one(user, {
+		fields: [user.botOwnerId],
+		references: [user.id],
+	}),
 	sessions: many(session),
 	accounts: many(account),
 }));

@@ -40,11 +40,11 @@ export const challengeStatus = pgEnum("challenge_status", [
 
 export const friendRequests = pgTable("friend_request", {
 	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-	fromId: varchar("from_id")
-		.references(() => user.id)
+	fromId: text("from_id")
+		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
-	toId: varchar("to_id")
-		.references(() => user.id)
+	toId: text("to_id")
+		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
 	status: text("status", { enum: ["pending", "accepted", "denied"] })
 		.notNull()
@@ -54,38 +54,40 @@ export const friendRequests = pgTable("friend_request", {
 
 export const friendships = pgTable("friendship", {
 	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-	userAId: varchar("user_a_id")
-		.references(() => user.id)
+	userAId: text("user_a_id")
+		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
-	userBId: varchar("user_b_id")
-		.references(() => user.id)
+	userBId: text("user_b_id")
+		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const challenges = pgTable("challenge", {
 	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-	fromId: varchar("from_id")
-		.references(() => user.id)
+	fromId: text("from_id")
+		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
-	toId: varchar("to_id")
-		.references(() => user.id)
+	toId: text("to_id")
+		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
 	challengerColor: startingColor("challenger_color")
 		.default("random")
 		.notNull(),
 	status: challengeStatus("status").default("pending").notNull(),
-	matchId: integer("matchId").references(() => matches.id),
+	matchId: integer("matchId").references(() => matches.id, {
+		onDelete: "cascade",
+	}),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const matches = pgTable("match", {
 	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 	whiteId: text("white_id")
-		.references(() => user.id)
+		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
 	blackId: text("black_id")
-		.references(() => user.id)
+		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
 	status: matchStatus("status").default("active").notNull(),
 	endReason: matchEndReason("end_reason"),
