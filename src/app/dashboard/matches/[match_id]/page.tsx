@@ -5,6 +5,7 @@ import { ChessNowClient } from "@chess-now/api";
 import { Chess } from "chess.js";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useMemo, useState } from "react";
+import { AppSidebar } from "@/components/dashboard-sidebar";
 import { ThemedChessboard } from "@/components/themed-chessboard";
 import {
 	Breadcrumb,
@@ -14,15 +15,14 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
-import { authClient } from "@/lib/auth-client";
-import { MatchDetailsCard, MatchNotFound } from "./match-components";
 import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/dashboard-sidebar";
+import { Spinner } from "@/components/ui/spinner";
+import { authClient } from "@/lib/auth-client";
+import { MatchDetailsCard, MatchNotFound } from "./match-components";
 
 export default function SpectateMatchPage({
 	params,

@@ -5,6 +5,7 @@ import { ChessNowClient } from "@chess-now/api";
 import { Chess } from "chess.js";
 import { use, useEffect, useMemo, useState } from "react";
 import type { PieceDropHandlerArgs } from "react-chessboard";
+import { AppSidebar } from "@/components/dashboard-sidebar";
 import { ThemedChessboard } from "@/components/themed-chessboard";
 import {
 	Breadcrumb,
@@ -14,6 +15,11 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
+import {
+	SidebarInset,
+	SidebarProvider,
+	SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -21,12 +27,6 @@ import {
 	MatchNotFound,
 	NotPlayer,
 } from "../match-components";
-import {
-	SidebarInset,
-	SidebarProvider,
-	SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/dashboard-sidebar";
 
 export default function PlayMatchPage({
 	params,
