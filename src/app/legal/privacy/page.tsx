@@ -57,8 +57,9 @@ export default function PrivacyPage() {
 								<AlertDescription>
 									We don't sell your data, we don't serve ads,
 									and we don't track you. We only collect
-									what's necessary for you to just play chess
-									;D
+									what's necessary for you to just play chess.
+									You can delete your account at any time,
+									from the dashboard. No questions asked :P
 								</AlertDescription>
 							</Alert>
 
