@@ -227,11 +227,17 @@ export const Responses = {
 	get CreateBot() {
 		return {
 			success: true,
-			data: { bot: Docs.BotUser, apiKey: "bot_123456789" },
+			data: {
+				bot: Docs.BotUser,
+				apiKey: "bot_QeAQxBylNEjzEuUbWkQfQTlJZfgOmOKDebDsgzRQdXGQdOjpYSEuustFmEBakMua",
+			},
 		};
 	},
 	get ResetToken() {
-		return { success: true, data: "bot_123456789" };
+		return {
+			success: true,
+			data: "bot_QeAQxBylNEjzEuUbWkQfQTlJZfgOmOKDebDsgzRQdXGQdOjpYSEuustFmEBakMua",
+		};
 	},
 
 	get DeviceInit() {
