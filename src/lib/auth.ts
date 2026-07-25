@@ -139,10 +139,7 @@ export const auth = betterAuth({
 			}
 
 			if (ctx.path === "/sign-up/email") {
-				const body = ctx.body as
-					| { username?: unknown; image?: unknown }
-					| undefined;
-				const username = body?.username;
+				const username = ctx.body.username;
 
 				if (
 					typeof username !== "string" ||
@@ -165,12 +162,15 @@ export const auth = betterAuth({
 					});
 				}
 
-				const { image: _image, ...safeBody } = body ?? {};
-
-				ctx.body = {
-					...safeBody,
-					username,
-				};
+				if (ctx.body) {
+					ctx.body = {
+						name: ctx.body.name,
+						email: ctx.body.email,
+						password: ctx.body.password,
+						username,
+						callbackUrl: ctx.body.callbackUrl,
+					};
+				}
 			}
 
 			if (privateEndpoints.includes(ctx.path)) {
