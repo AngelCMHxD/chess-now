@@ -165,7 +165,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Request a challenge",
 				tags: ["Challenges"],
 			},
@@ -188,7 +187,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Get challenge info",
 				tags: ["Challenges"],
 			},
@@ -210,7 +208,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Get your challenge history",
 				tags: ["Me"],
 			},
@@ -233,7 +230,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Accept a challenge",
 				tags: ["Challenges"],
 			},
@@ -256,7 +252,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Deny a challenge",
 				tags: ["Challenges"],
 			},
@@ -275,7 +270,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 			},
-
 			summary: "Get your match history",
 			tags: ["Me"],
 		},
@@ -297,7 +291,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Send a friend request",
 				tags: ["Friends"],
 			},
@@ -319,7 +312,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Get your pending friend requests",
 				tags: ["Friends"],
 			},
@@ -342,7 +334,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Accept a friend request",
 				tags: ["Friends"],
 			},
@@ -365,7 +356,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Deny a friend request",
 				tags: ["Friends"],
 			},
@@ -384,7 +374,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 			},
-
 			summary: "Get your friends list",
 			tags: ["Friends"],
 		},
@@ -406,7 +395,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Remove a friend",
 				tags: ["Friends"],
 			},
@@ -425,7 +413,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 			},
-
 			summary: "Get your registered bots",
 			tags: ["Bots"],
 		},
@@ -447,7 +434,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Register a new bot",
 				tags: ["Bots"],
 			},
@@ -470,7 +456,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Delete a bot",
 				tags: ["Bots"],
 			},
@@ -493,7 +478,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Update the bot account info",
 				tags: ["Bots"],
 			},
@@ -516,7 +500,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Reset a bot's token",
 				tags: ["Bots"],
 			},
@@ -535,7 +518,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 			},
-
 			summary: "Get account info",
 			tags: ["Me"],
 		},
@@ -553,7 +535,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 			},
-
 			summary: "Delete your account",
 			tags: ["Internal"],
 		},
@@ -575,7 +556,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Update your account info",
 				tags: ["Me"],
 			},
@@ -598,7 +578,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Get user info",
 				tags: ["User"],
 			},
@@ -621,7 +600,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Get user matches",
 				tags: ["User"],
 			},
@@ -644,7 +622,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Get user friends",
 				tags: ["User"],
 			},
@@ -667,7 +644,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Get match info",
 				tags: ["Matches"],
 			},
@@ -691,7 +667,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 						},
 					},
 				},
-
 				summary: "Make a move",
 				tags: ["Matches"],
 			},
@@ -721,7 +696,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 			},
-
 			summary: "Start device auth",
 			tags: ["Device auth"],
 		},
@@ -759,7 +733,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 			},
-
 			summary: "Get token by device auth",
 			tags: ["Device auth"],
 		},
