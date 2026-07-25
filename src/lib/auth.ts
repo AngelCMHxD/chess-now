@@ -7,6 +7,7 @@ import {
 	anonymous,
 	bearer,
 	captcha,
+	customSession,
 	deviceAuthorization,
 } from "better-auth/plugins";
 import { Resend } from "resend";
@@ -91,6 +92,23 @@ export const auth = betterAuth({
 	basePath: process.env.BETTER_AUTH_PATH,
 	plugins: [
 		bearer(),
+		customSession(async ({ user, session }) => {
+			if (!(await secondaryStorage.get(session.token))) {
+				await secondaryStorage.set(
+					session.token,
+					JSON.stringify({
+						user,
+						session,
+					}),
+					604798000,
+				);
+			}
+
+			return {
+				user,
+				session,
+			};
+		}),
 		deviceAuthorization({
 			verificationUri: "/device",
 			schema: {},
@@ -125,7 +143,7 @@ export const auth = betterAuth({
 		},
 		storeSessionInDatabase: true,
 		cookieCache: {
-			enabled: true,
+			enabled: false,
 		},
 	},
 	hooks: {
