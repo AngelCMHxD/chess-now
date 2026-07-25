@@ -1,4 +1,4 @@
-import type { Match, User } from "@chess-now/api";
+import type { ChessNowClient, Match, User } from "@chess-now/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -26,6 +26,19 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn, formatMiliseconds } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 export interface GameInfo {
 	turn: "w" | "b" | null;
@@ -80,10 +93,12 @@ export function MatchDetailsCard({
 	match,
 	user,
 	gameInfo,
+	client,
 }: {
 	match: Match;
 	user?: User | null;
 	gameInfo: GameInfo;
+	client?: ChessNowClient | null;
 }) {
 	return (
 		<Card className="w-full max-w-2xl flex flex-col max-h-full">
@@ -137,10 +152,64 @@ export function MatchDetailsCard({
 
 				<Separator />
 				<MoveHistory moves={gameInfo.moves} />
-
+				{client && match.status === "active" && (
+					<ForfeitButton client={client} match={match} />
+				)}
 				{match.status !== "active" && <MatchResult match={match} />}
 			</CardContent>
 		</Card>
+	);
+}
+
+function ForfeitButton({
+	client,
+	match,
+}: {
+	client: ChessNowClient;
+	match: Match;
+}) {
+	const [isForfeiting, setIsForfeiting] = useState(false);
+
+	async function forfeit() {
+		setIsForfeiting(true);
+		try {
+			await client.forfeitMatch(match.id);
+			toast.success("Match forfeited.", {
+				position: "bottom-center",
+			});
+		} catch {
+			toast.error("There was an error forfeiting the match.", {
+				position: "bottom-center",
+			});
+			setIsForfeiting(false);
+		}
+	}
+
+	return (
+		<Dialog>
+			<DialogTrigger asChild>
+				<Button variant="secondary" size="icon" className="w-full">
+					Forfeit
+				</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Are you sure you wanna forfeit?</DialogTitle>
+					<DialogDescription>
+						This will grant the win to your oponent.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogFooter>
+					<DialogClose asChild>
+						<Button>Go back</Button>
+					</DialogClose>
+					<Button disabled={isForfeiting} onClick={() => forfeit()}>
+						{isForfeiting ? <Spinner className="h-4 w-4" /> : null}
+						Forfeit
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }
 

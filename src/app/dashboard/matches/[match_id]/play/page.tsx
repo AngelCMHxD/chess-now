@@ -298,6 +298,7 @@ export default function PlayMatchPage({
 									match={match}
 									user={user}
 									gameInfo={gameInfo}
+									client={client}
 								/>
 							)}
 						</div>
