@@ -304,6 +304,14 @@ export class ChessNowClient {
 		return this._fetch<Match>(`/match/${matchId}`, { token });
 	}
 
+	async forfeitMatch(matchId: number, token?: string): Promise<Match> {
+		assert(positiveInt, matchId, "matchId");
+		return this._fetch<Match>(`/match/${matchId}/forfeit`, {
+			method: "POST",
+			token,
+		});
+	}
+
 	async makeMove(
 		matchId: number,
 		moveSan: string,

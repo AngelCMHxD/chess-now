@@ -94,6 +94,8 @@ export function MatchCard({
 														return "Draw";
 													case "stalemate":
 														return "Stalemate";
+													case "forfeit":
+														return "Forfeit";
 													default:
 														return "Unknown";
 												}

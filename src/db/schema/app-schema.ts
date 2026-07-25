@@ -28,6 +28,7 @@ export const matchEndReason = pgEnum("match_end_reason", [
 	"stalemate",
 	"insufficient-material",
 	"50-moves",
+	"forfeit",
 ]);
 
 export const challengeStatus = pgEnum("challenge_status", [

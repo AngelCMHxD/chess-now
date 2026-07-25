@@ -17,6 +17,7 @@ import httpDeviceDeny from "./http/device/device-deny";
 import httpDeviceInfo from "./http/device/device-info";
 import httpDeviceInit from "./http/device/device-init";
 import httpDeviceToken from "./http/device/device-token";
+import httpForfeit from "./http/match/forfeit";
 import httpGetMatchInfo from "./http/match/get-match-info";
 import httpMove from "./http/match/move";
 import httpAcceptChallenge from "./http/me/accept-challenge";
@@ -727,7 +728,34 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 				summary: "Make a move",
 				description: [
 					"Submits a new move for an active chess match. The move is validated and then the board state is updated.",
-					"Triggers the `match:board_move` (and `match:game_over` if applicable) ws event to the match subscribers and the opponent.",
+					"Triggers the `match:board_move` ws event to the match subscribers and the opponent.",
+					"Also triggers `match:game_over` to both players and subscribers if the move causes the match to end",
+				].join("\n\n"),
+				tags: ["Matches"],
+			},
+		},
+	)
+	.post(
+		"/match/:match_id/forfeit",
+		({ params, request }) =>
+			httpForfeit.run(request.headers, params.match_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.ForfeitResult,
+							},
+						},
+					},
+				},
+				summary: "Forfeit a match",
+				description: [
+					"Forfeits a match and grants the win to the oponent.",
+					"Triggers the `match:game_over` ws event to the players and match subscribers.",
 				].join("\n\n"),
 				tags: ["Matches"],
 			},

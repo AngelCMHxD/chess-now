@@ -204,11 +204,6 @@ export function registerNotificationHandlers() {
 			{ $set: { activeMatchId: null } },
 		);
 
-		const userColor =
-			event.target === event.payload.match.whiteId ? "w" : "b";
-		const movedColor = event.payload.lastMove.turn.before;
-		if (userColor === movedColor) return;
-
 		const formatEloDiff = (diff: number | null) => {
 			if (diff == null) return "";
 			if (diff > 0) return `(+${diff})`;
@@ -226,7 +221,7 @@ export function registerNotificationHandlers() {
 					[
 						`Match #${event.payload.match.id}`,
 						`${event.payload.match.whitePlayer.name} (White) vs ${event.payload.match.blackPlayer.name} (Black)`,
-						`Final Move: ${event.payload.lastMove.lan}`,
+						`Final Move: ${event.payload.lastMove?.lan}`,
 						`Result: ${event.payload.match.status.replace("_", " ").toUpperCase()}`,
 						`ELO Diff: White ${whiteEloDiff} | Black ${blackEloDiff}`,
 						`The match is no longer active. Your active match was cleared.`,

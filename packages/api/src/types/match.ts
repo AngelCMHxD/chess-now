@@ -34,6 +34,7 @@ export interface Match {
 		| "stalemate"
 		| "insufficient-material"
 		| "50-moves"
+		| "forfeit"
 		| null;
 	fen: string;
 	pgn: string;

@@ -9,7 +9,7 @@ export interface DeviceAuthPayload {
 
 export interface MatchGameOverPayload {
 	match: Match;
-	lastMove: Move;
+	lastMove?: Move;
 }
 
 export interface MatchMovePayload {

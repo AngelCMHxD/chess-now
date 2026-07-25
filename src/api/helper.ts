@@ -63,6 +63,7 @@ export const matchSchema = z.object({
 			"stalemate",
 			"insufficient-material",
 			"50-moves",
+			"forfeit",
 		])
 		.nullable(),
 	fen: z.string(),
