@@ -1,7 +1,6 @@
 import z from "zod";
 import { ChessNowError } from "./errors";
 import type {
-	ApiKey,
 	Challenge,
 	ChallengeConfig,
 	ClientMessage,
@@ -360,19 +359,19 @@ export class ChessNowClient {
 	async registerBot(
 		botInfo: { name: string; username: string },
 		token?: string,
-	): Promise<{ bot: User; apiKey: ApiKey }> {
+	): Promise<{ bot: User; apiKey: string }> {
 		assert(nonEmptyStr, botInfo.name, "name");
 		assert(nonEmptyStr, botInfo.username, "username");
-		return this._fetch<{ bot: User; apiKey: ApiKey }>("/me/bots", {
+		return this._fetch<{ bot: User; apiKey: string }>("/me/bots", {
 			method: "POST",
 			body: JSON.stringify(botInfo),
 			token,
 		});
 	}
 
-	async resetBotToken(botId: string, token?: string): Promise<ApiKey> {
+	async resetBotToken(botId: string, token?: string): Promise<string> {
 		assert(nonEmptyStr, botId, "botId");
-		return this._fetch<ApiKey>(`/me/bots/${botId}/reset_token`, {
+		return this._fetch<string>(`/me/bots/${botId}/reset_token`, {
 			method: "POST",
 			token,
 		});

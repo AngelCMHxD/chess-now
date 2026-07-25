@@ -1,9 +1,4 @@
-import {
-	type ApiKey,
-	type ApiSuccessResponse,
-	Scope,
-	type User,
-} from "@chess-now/api";
+import { type ApiSuccessResponse, Scope, type User } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import z from "zod";
 import { ConflictError, ForbiddenError, UnauthorizedError } from "@/api/errors";
@@ -19,7 +14,7 @@ export const bodyType = z.object({
 export async function run(
 	headers: Headers,
 	body: z.infer<typeof bodyType>,
-): Promise<ApiSuccessResponse<{ bot: User; apiKey: ApiKey }>> {
+): Promise<ApiSuccessResponse<{ bot: User; apiKey: string }>> {
 	const session = await auth.api.getSession({
 		headers,
 	});
@@ -86,7 +81,7 @@ export async function run(
 
 	return {
 		success: true,
-		data: { bot: removePrivateUserFields(newBot), apiKey },
+		data: { bot: removePrivateUserFields(newBot), apiKey: apiKey.key },
 	};
 }
 

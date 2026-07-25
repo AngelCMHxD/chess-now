@@ -398,7 +398,7 @@ function BotCard({
 			const apiKey = await client.resetBotToken(botId);
 			setTokenDialog({
 				open: true,
-				token: apiKey.key,
+				token: apiKey,
 				botName,
 			});
 		} catch (error) {
@@ -571,7 +571,7 @@ function CreateDialog({
 			setCreateUsername("");
 			setTokenDialog({
 				open: true,
-				token: result.apiKey.key,
+				token: result.apiKey,
 				botName: result.bot.name,
 			});
 		} catch (error) {

@@ -1,4 +1,4 @@
-import { type ApiKey, type ApiSuccessResponse, Scope } from "@chess-now/api";
+import { type ApiSuccessResponse, Scope } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { ForbiddenError, UnauthorizedError } from "@/api/errors";
 import { hasScope } from "@/api/helper";
@@ -8,7 +8,7 @@ import { db, schemas } from "@/lib/database";
 export async function run(
 	headers: Headers,
 	botId: string,
-): Promise<ApiSuccessResponse<ApiKey>> {
+): Promise<ApiSuccessResponse<string>> {
 	const session = await auth.api.getSession({
 		headers,
 	});
@@ -58,7 +58,7 @@ export async function run(
 
 	return {
 		success: true,
-		data: apiKey,
+		data: apiKey.key,
 	};
 }
 

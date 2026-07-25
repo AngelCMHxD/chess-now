@@ -1,5 +1,3 @@
-export type { ApiKey } from "./bots";
-
 export type {
 	Challenge,
 	ChallengeConfig,
