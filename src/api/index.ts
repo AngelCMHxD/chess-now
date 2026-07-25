@@ -107,6 +107,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			).toResponse();
 		}
 
+		console.log(error);
+
 		set.status = 500;
 		return new APIError(
 			error instanceof Error
