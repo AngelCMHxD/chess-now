@@ -50,7 +50,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			documentation: {
 				servers: [
 					{
-						url: process.env.NEXT_PUBLIC_API_ENDPOINT ?? "",
+						url: process.env.NEXT_PUBLIC_BASE_URL ?? "",
 						description: "Main Server",
 					},
 				],
