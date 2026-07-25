@@ -20,6 +20,7 @@ import httpDeviceToken from "./http/device/device-token";
 import httpGetMatchInfo from "./http/match/get-match-info";
 import httpMove from "./http/match/move";
 import httpAcceptChallenge from "./http/me/accept-challenge";
+import httpDeleteAccount from "./http/me/delete-account";
 import httpDenyChallenge from "./http/me/deny-challenge";
 import httpAcceptFriendRequest from "./http/me/friendships/accept-friend-request";
 import httpDeleteFriendship from "./http/me/friendships/delete-friendship";
@@ -338,6 +339,13 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		detail: {
 			summary: "Get account info",
 			tags: ["Me"],
+		},
+	})
+	.delete("/me", ({ request }) => httpDeleteAccount.run(request.headers), {
+		headers: authHeadersSchema,
+		detail: {
+			summary: "Delete your account",
+			tags: ["Internal"],
 		},
 	})
 	.put(
