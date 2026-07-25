@@ -16,7 +16,6 @@ export const publicUserColumns = {
 	name: true,
 	username: true,
 	id: true,
-	image: true,
 	createdAt: true,
 	updatedAt: true,
 	botOwnerId: true,

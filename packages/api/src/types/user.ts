@@ -2,7 +2,6 @@ export interface User {
 	id: string;
 	name: string;
 	username: string;
-	image?: string | null;
 	createdAt: Date;
 	updatedAt: Date;
 	botOwnerId?: string | null;
