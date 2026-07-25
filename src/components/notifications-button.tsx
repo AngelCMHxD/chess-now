@@ -92,10 +92,35 @@ export function NotificationsButton() {
 		fetchNotifications();
 	}, [fetchNotifications]);
 
+	const handleAcceptChallenge = async (e: React.MouseEvent, id: number) => {
+		e.preventDefault();
+		if (actionLoading) return;
+		setActionLoading(`challenge-${id}-accept`);
+		try {
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/challenges/${id}/accept`,
+				{
+					method: "POST",
+					credentials: "include",
+				},
+			);
+			if (res.ok) {
+				toast.success("Challenge accepted");
+				fetchNotifications();
+			} else {
+				toast.error("Failed to accept challenge");
+			}
+		} catch (_error) {
+			toast.error("An error occurred");
+		} finally {
+			setActionLoading(null);
+		}
+	};
+
 	const handleRejectChallenge = async (e: React.MouseEvent, id: number) => {
 		e.preventDefault();
 		if (actionLoading) return;
-		setActionLoading(`challenge-${id}`);
+		setActionLoading(`challenge-${id}-reject`);
 		try {
 			const res = await fetch(
 				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me/challenges/${id}/deny`,
@@ -234,10 +259,27 @@ export function NotificationsButton() {
 												disabled={!!actionLoading}
 											>
 												{actionLoading ===
-												`challenge-${item.data.id}` ? (
+												`challenge-${item.data.id}-reject` ? (
 													<Spinner className="w-4 h-4" />
 												) : (
 													"Reject"
+												)}
+											</Button>
+											<Button
+												size="sm"
+												onClick={(e) =>
+													handleAcceptChallenge(
+														e,
+														item.data.id,
+													)
+												}
+												disabled={!!actionLoading}
+											>
+												{actionLoading ===
+												`challenge-${item.data.id}-accept` ? (
+													<Spinner className="w-4 h-4" />
+												) : (
+													"Accept"
 												)}
 											</Button>
 										</div>
