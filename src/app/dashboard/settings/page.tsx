@@ -56,7 +56,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
@@ -613,26 +612,20 @@ function ChangePasswordTab() {
 									className="font-medium flex items-center"
 								>
 									Revoke other sessions
-									<TooltipProvider delayDuration={150}>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<HelpCircleIcon className="w-4 h-4 ml-1.5 text-muted-foreground" />
-											</TooltipTrigger>
-											<TooltipContent
-												className="flex flex-col gap-1"
-												side="right"
-											>
-												<p>
-													This also revokes external
-													apps.
-												</p>
-												<p>
-													Doesn't regenerate bot
-													tokens
-												</p>
-											</TooltipContent>
-										</Tooltip>
-									</TooltipProvider>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<HelpCircleIcon className="w-4 h-4 ml-1.5 text-muted-foreground" />
+										</TooltipTrigger>
+										<TooltipContent
+											className="flex flex-col gap-1"
+											side="right"
+										>
+											<p>
+												This also revokes external apps.
+											</p>
+											<p>Doesn't regenerate bot tokens</p>
+										</TooltipContent>
+									</Tooltip>
 								</label>
 							</div>
 							<Button

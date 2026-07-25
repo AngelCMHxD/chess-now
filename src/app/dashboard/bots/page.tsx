@@ -66,7 +66,6 @@ import { Spinner } from "@/components/ui/spinner";
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
@@ -186,21 +185,17 @@ export default function BotsPage() {
 							</div>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 w-full">
-								<TooltipProvider>
-									{bots.map((bot) => (
-										<BotCard
-											key={bot.id}
-											actionLoadingId={actionLoadingId}
-											bot={bot}
-											setBots={setBots}
-											client={client}
-											setActionLoadingId={
-												setActionLoadingId
-											}
-											setTokenDialog={setTokenDialog}
-										/>
-									))}
-								</TooltipProvider>
+								{bots.map((bot) => (
+									<BotCard
+										key={bot.id}
+										actionLoadingId={actionLoadingId}
+										bot={bot}
+										setBots={setBots}
+										client={client}
+										setActionLoadingId={setActionLoadingId}
+										setTokenDialog={setTokenDialog}
+									/>
+								))}
 							</div>
 						</div>
 						{bots && bots.length === 0 && (

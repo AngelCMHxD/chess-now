@@ -23,7 +23,6 @@ import { Separator } from "@/components/ui/separator";
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn, formatMiliseconds } from "@/lib/utils";
@@ -87,63 +86,61 @@ export function MatchDetailsCard({
 	gameInfo: GameInfo;
 }) {
 	return (
-		<TooltipProvider>
-			<Card className="w-full max-w-2xl flex flex-col max-h-full">
-				<CardHeader className="shrink-0">
-					<div>
-						<div className="flex gap-2">
-							<CardTitle>Match #{match.id}</CardTitle>
-							<Badge
-								variant={
-									match.status === "active"
-										? "default"
-										: "secondary"
-								}
-								className="capitalize"
-							>
-								{match.status.replaceAll("_", " ")}
-							</Badge>
-						</div>
-						<CardDescription>
-							<MatchDuration match={match} />
-						</CardDescription>
-					</div>
-				</CardHeader>
-
-				<CardContent className="flex flex-col gap-4 min-h-0">
-					<div className="flex flex-col gap-3">
-						<PlayerRow
-							player={match.whitePlayer}
-							color="w"
-							gameInfo={gameInfo}
-							isUser={user?.id === match.whiteId}
-							ratingDiff={
-								match.whiteRatingDiff
-									? Math.round(match.whiteRatingDiff)
-									: null
+		<Card className="w-full max-w-2xl flex flex-col max-h-full">
+			<CardHeader className="shrink-0">
+				<div>
+					<div className="flex gap-2">
+						<CardTitle>Match #{match.id}</CardTitle>
+						<Badge
+							variant={
+								match.status === "active"
+									? "default"
+									: "secondary"
 							}
-						/>
-						<Separator />
-						<PlayerRow
-							player={match.blackPlayer}
-							color="b"
-							gameInfo={gameInfo}
-							isUser={user?.id === match.blackId}
-							ratingDiff={
-								match.blackRatingDiff
-									? Math.round(match.blackRatingDiff)
-									: null
-							}
-						/>
+							className="capitalize"
+						>
+							{match.status.replaceAll("_", " ")}
+						</Badge>
 					</div>
+					<CardDescription>
+						<MatchDuration match={match} />
+					</CardDescription>
+				</div>
+			</CardHeader>
 
+			<CardContent className="flex flex-col gap-4 min-h-0">
+				<div className="flex flex-col gap-3">
+					<PlayerRow
+						player={match.whitePlayer}
+						color="w"
+						gameInfo={gameInfo}
+						isUser={user?.id === match.whiteId}
+						ratingDiff={
+							match.whiteRatingDiff
+								? Math.round(match.whiteRatingDiff)
+								: null
+						}
+					/>
 					<Separator />
-					<MoveHistory moves={gameInfo.moves} />
+					<PlayerRow
+						player={match.blackPlayer}
+						color="b"
+						gameInfo={gameInfo}
+						isUser={user?.id === match.blackId}
+						ratingDiff={
+							match.blackRatingDiff
+								? Math.round(match.blackRatingDiff)
+								: null
+						}
+					/>
+				</div>
 
-					{match.status !== "active" && <MatchResult match={match} />}
-				</CardContent>
-			</Card>
-		</TooltipProvider>
+				<Separator />
+				<MoveHistory moves={gameInfo.moves} />
+
+				{match.status !== "active" && <MatchResult match={match} />}
+			</CardContent>
+		</Card>
 	);
 }
 
