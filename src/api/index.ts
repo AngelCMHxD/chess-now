@@ -166,6 +166,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Request a challenge",
+				description: [
+					"Requests a new chess challenge to a user by their username. This creates a pending challenge record which, once the target user accepts, starts a match.",
+					"Triggers the `challenge:request` ws event to the target user.",
+				].join("\n\n"),
 				tags: ["Challenges"],
 			},
 		},
@@ -188,6 +192,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Get challenge info",
+				description:
+					"Retrieves the full details of a specific challenge by its ID, including information about the challenger and the opponent.",
 				tags: ["Challenges"],
 			},
 		},
@@ -209,6 +215,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Get your challenge history",
+				description:
+					"Fetches a list of all challenges associated with your account, regardless of their current status.",
 				tags: ["Me"],
 			},
 		},
@@ -231,6 +239,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Accept a challenge",
+				description: [
+					"Accepts a pending incoming challenge from another user. After accepting, a new chess match is created between both players.",
+					"Triggers the `challenge:accepted` ws event to the target user.",
+				].join("\n\n"),
 				tags: ["Challenges"],
 			},
 		},
@@ -253,6 +265,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Deny a challenge",
+				description: [
+					"Declines a pending incoming challenge. This updates the challenge status to declined. Doesn't create a match.",
+					"Triggers the `challenge:denied` ws event to the target user.",
+				].join("\n\n"),
 				tags: ["Challenges"],
 			},
 		},
@@ -271,6 +287,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 				},
 			},
 			summary: "Get your match history",
+			description:
+				"Retrieves a list of all your active and past matches.",
 			tags: ["Me"],
 		},
 	})
@@ -292,6 +310,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Send a friend request",
+				description: [
+					"Sends a friend request to a target user by their username. It stays pending until the target user either accepts or denies it.",
+					"Triggers the `friend:request` ws event to the target user.",
+				].join("\n\n"),
 				tags: ["Friends"],
 			},
 		},
@@ -313,6 +335,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Get your pending friend requests",
+				description:
+					"Fetches all pending incoming and outgoing friend requests.",
 				tags: ["Friends"],
 			},
 		},
@@ -335,6 +359,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Accept a friend request",
+				description: [
+					"Accepts a pending incoming friend request from the specified user. This creates a friendship between both accounts.",
+					"Triggers the `friend:accepted` ws event to the target user.",
+				].join("\n\n"),
 				tags: ["Friends"],
 			},
 		},
@@ -357,6 +385,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Deny a friend request",
+				description: [
+					"Rejects a pending incoming friend request from the specified user. The request is rejected and no friendship is created.",
+					"Triggers the `friend:denied` ws event to the target user.",
+				].join("\n\n"),
 				tags: ["Friends"],
 			},
 		},
@@ -375,6 +407,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 				},
 			},
 			summary: "Get your friends list",
+			description:
+				"Retrieves the list of users you are currently friends with, providing their basic profile information.",
 			tags: ["Friends"],
 		},
 	})
@@ -396,6 +430,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Remove a friend",
+				description: [
+					"Removes an existing friendship with the specified user.",
+					"Triggers the `friend:removed` ws event to the target user.",
+				].join("\n\n"),
 				tags: ["Friends"],
 			},
 		},
@@ -414,6 +452,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 				},
 			},
 			summary: "Get your registered bots",
+			description:
+				"Fetches a list of all bot accounts that are owned by your account.",
 			tags: ["Bots"],
 		},
 	})
@@ -435,6 +475,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Register a new bot",
+				description:
+					"Creates a new bot account under your ownership. An API key is generated so you can auth the bot against the API.",
 				tags: ["Bots"],
 			},
 		},
@@ -457,6 +499,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Delete a bot",
+				description: "Deletes a specific bot account that you own.",
 				tags: ["Bots"],
 			},
 		},
@@ -479,6 +522,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Update the bot account info",
+				description:
+					"Updates the profile information and settings for a specific bot account that you own.",
 				tags: ["Bots"],
 			},
 		},
@@ -501,6 +546,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Reset a bot's token",
+				description:
+					"Invalidates the current API key for a specified bot you own and generates a new API key.",
 				tags: ["Bots"],
 			},
 		},
@@ -519,6 +566,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 				},
 			},
 			summary: "Get account info",
+			description: "Retrieves the profile of your account.",
 			tags: ["Me"],
 		},
 	})
@@ -557,6 +605,7 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Update your account info",
+				description: "Updates the profile information of your account.",
 				tags: ["Me"],
 			},
 		},
@@ -579,6 +628,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Get user info",
+				description:
+					"Fetches the profile information of a specific user by their username.",
 				tags: ["User"],
 			},
 		},
@@ -601,6 +652,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Get user matches",
+				description:
+					"Retrieves the match history of a specific user by their username.",
 				tags: ["User"],
 			},
 		},
@@ -623,6 +676,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Get user friends",
+				description:
+					"Fetches the friends list for a specific user by their username.",
 				tags: ["User"],
 			},
 		},
@@ -645,6 +700,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Get match info",
+				description:
+					"Retrieves all of the match information by its ID. Includes player details.",
 				tags: ["Matches"],
 			},
 		},
@@ -668,6 +725,10 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 					},
 				},
 				summary: "Make a move",
+				description: [
+					"Submits a new move for an active chess match. The move is validated and then the board state is updated.",
+					"Triggers the `match:board_move` (and `match:game_over` if applicable) ws event to the match subscribers and the opponent.",
+				].join("\n\n"),
 				tags: ["Matches"],
 			},
 		},
@@ -697,6 +758,11 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 				},
 			},
 			summary: "Start device auth",
+			description: [
+				"Initiates a device auth flow by generating a device code and user code.",
+				"It's not an OAuth 2.0 Device Authorization Grant, as this doesn't follow the format, but it's pretty similar to it.",
+				"Triggers the `device_auth` ws event once the user denies/accepts the device auth request (or it expires).",
+			].join("\n\n"),
 			tags: ["Device auth"],
 		},
 	})
@@ -734,6 +800,8 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 				},
 			},
 			summary: "Get token by device auth",
+			description:
+				"Exchanges the device token and returns the access token once the user has authorized the device.",
 			tags: ["Device auth"],
 		},
 	})
