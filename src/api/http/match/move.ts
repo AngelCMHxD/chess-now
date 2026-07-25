@@ -106,14 +106,15 @@ export async function run(
 
 	const turnBefore = chess.turn();
 	const pgnBefore = chess.pgn();
-	if (roles[session.user.id] !== turnBefore) throw new ConflictError();
+	if (roles[session.user.id] !== turnBefore)
+		throw new ConflictError("It's not your turn");
 
 	let move: ChessMove;
 
 	try {
 		move = chess.move(body.move);
 	} catch (_e) {
-		throw new UnprocessableContentError();
+		throw new UnprocessableContentError("Invalid move");
 	}
 
 	chess.setHeader("Event", "Casual");
