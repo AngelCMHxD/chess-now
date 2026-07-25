@@ -1,9 +1,9 @@
 import { cors } from "@elysia/cors";
-import { fromTypes, openapi } from "@elysia/openapi";
+import { openapi } from "@elysia/openapi";
 import { Elysia } from "elysia";
 import z from "zod";
 import { auth } from "@/lib/auth";
-
+import { Responses } from "./docs";
 import { APIError, UnprocessableContentError } from "./errors";
 import { authHeadersSchema } from "./helper";
 import httpCreateBot from "./http/bot/create-bot";
@@ -47,7 +47,6 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		openapi({
 			provider: null,
 			specPath: "/openapi",
-			references: fromTypes("src/api/index.ts"),
 			documentation: {
 				servers: [
 					{
@@ -156,6 +155,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: authHeadersSchema,
 			body: httpRequestChallenge.bodyType,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.ChallengeResult,
+							},
+						},
+					},
+				},
+
 				summary: "Request a challenge",
 				tags: ["Challenges"],
 			},
@@ -168,6 +178,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.ChallengeResult,
+							},
+						},
+					},
+				},
+
 				summary: "Get challenge info",
 				tags: ["Challenges"],
 			},
@@ -179,6 +200,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.Challenges,
+							},
+						},
+					},
+				},
+
 				summary: "Get your challenge history",
 				tags: ["Me"],
 			},
@@ -191,6 +223,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.ChallengeMatchResult,
+							},
+						},
+					},
+				},
+
 				summary: "Accept a challenge",
 				tags: ["Challenges"],
 			},
@@ -203,6 +246,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.ChallengeResult,
+							},
+						},
+					},
+				},
+
 				summary: "Deny a challenge",
 				tags: ["Challenges"],
 			},
@@ -211,6 +265,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.get("/me/matches", ({ request }) => httpGetMatches.run(request.headers), {
 		headers: authHeadersSchema,
 		detail: {
+			responses: {
+				200: {
+					description: "Success",
+					content: {
+						"application/json": {
+							example: Responses.Matches,
+						},
+					},
+				},
+			},
+
 			summary: "Get your match history",
 			tags: ["Me"],
 		},
@@ -222,6 +287,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.FriendRequest,
+							},
+						},
+					},
+				},
+
 				summary: "Send a friend request",
 				tags: ["Friends"],
 			},
@@ -233,6 +309,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.FriendRequests,
+							},
+						},
+					},
+				},
+
 				summary: "Get your pending friend requests",
 				tags: ["Friends"],
 			},
@@ -245,6 +332,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.Friendship,
+							},
+						},
+					},
+				},
+
 				summary: "Accept a friend request",
 				tags: ["Friends"],
 			},
@@ -257,6 +355,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.FriendRequest,
+							},
+						},
+					},
+				},
+
 				summary: "Deny a friend request",
 				tags: ["Friends"],
 			},
@@ -265,6 +374,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.get("/me/friends", ({ request }) => httpGetFriends.run(request.headers), {
 		headers: authHeadersSchema,
 		detail: {
+			responses: {
+				200: {
+					description: "Success",
+					content: {
+						"application/json": {
+							example: Responses.Friendships,
+						},
+					},
+				},
+			},
+
 			summary: "Get your friends list",
 			tags: ["Friends"],
 		},
@@ -276,6 +396,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.SuccessResult,
+							},
+						},
+					},
+				},
+
 				summary: "Remove a friend",
 				tags: ["Friends"],
 			},
@@ -284,6 +415,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.get("/me/bots", ({ request }) => httpGetBots.run(request.headers), {
 		headers: authHeadersSchema,
 		detail: {
+			responses: {
+				200: {
+					description: "Success",
+					content: {
+						"application/json": {
+							example: Responses.BotUsers,
+						},
+					},
+				},
+			},
+
 			summary: "Get your registered bots",
 			tags: ["Bots"],
 		},
@@ -295,6 +437,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: authHeadersSchema,
 			body: httpCreateBot.bodyType,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.CreateBot,
+							},
+						},
+					},
+				},
+
 				summary: "Register a new bot",
 				tags: ["Bots"],
 			},
@@ -307,6 +460,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.SuccessResult,
+							},
+						},
+					},
+				},
+
 				summary: "Delete a bot",
 				tags: ["Bots"],
 			},
@@ -319,6 +483,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: authHeadersSchema,
 			body: httpUpdateBotInfo.bodyType,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.BotUser,
+							},
+						},
+					},
+				},
+
 				summary: "Update the bot account info",
 				tags: ["Bots"],
 			},
@@ -331,6 +506,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.ResetToken,
+							},
+						},
+					},
+				},
+
 				summary: "Reset a bot's token",
 				tags: ["Bots"],
 			},
@@ -339,6 +525,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.get("/me", ({ request }) => httpGetAccountInfo.run(request.headers), {
 		headers: authHeadersSchema,
 		detail: {
+			responses: {
+				200: {
+					description: "Success",
+					content: {
+						"application/json": {
+							example: Responses.User,
+						},
+					},
+				},
+			},
+
 			summary: "Get account info",
 			tags: ["Me"],
 		},
@@ -346,6 +543,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.delete("/me", ({ request }) => httpDeleteAccount.run(request.headers), {
 		headers: authHeadersSchema,
 		detail: {
+			responses: {
+				200: {
+					description: "Success",
+					content: {
+						"application/json": {
+							example: Responses.SuccessResult,
+						},
+					},
+				},
+			},
+
 			summary: "Delete your account",
 			tags: ["Internal"],
 		},
@@ -357,6 +565,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: authHeadersSchema,
 			body: httpUpdateAccountInfo.bodyType,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.User,
+							},
+						},
+					},
+				},
+
 				summary: "Update your account info",
 				tags: ["Me"],
 			},
@@ -369,6 +588,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.User,
+							},
+						},
+					},
+				},
+
 				summary: "Get user info",
 				tags: ["User"],
 			},
@@ -381,6 +611,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.Matches,
+							},
+						},
+					},
+				},
+
 				summary: "Get user matches",
 				tags: ["User"],
 			},
@@ -393,6 +634,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.Friendships,
+							},
+						},
+					},
+				},
+
 				summary: "Get user friends",
 				tags: ["User"],
 			},
@@ -405,6 +657,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		{
 			headers: authHeadersSchema,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.Match,
+							},
+						},
+					},
+				},
+
 				summary: "Get match info",
 				tags: ["Matches"],
 			},
@@ -418,6 +681,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 			headers: authHeadersSchema,
 			body: httpMove.bodyType,
 			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.MoveResult,
+							},
+						},
+					},
+				},
+
 				summary: "Make a move",
 				tags: ["Matches"],
 			},
@@ -437,6 +711,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.post("/device/init", ({ body }) => httpDeviceInit.run(body), {
 		body: httpDeviceInit.bodyType,
 		detail: {
+			responses: {
+				200: {
+					description: "Success",
+					content: {
+						"application/json": {
+							example: Responses.DeviceInit,
+						},
+					},
+				},
+			},
+
 			summary: "Start device auth",
 			tags: ["Device auth"],
 		},
@@ -464,6 +749,17 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 	.post("/device/token", ({ body }) => httpDeviceToken.run(body), {
 		body: httpDeviceToken.bodyType,
 		detail: {
+			responses: {
+				200: {
+					description: "Success",
+					content: {
+						"application/json": {
+							example: Responses.DeviceToken,
+						},
+					},
+				},
+			},
+
 			summary: "Get token by device auth",
 			tags: ["Device auth"],
 		},
