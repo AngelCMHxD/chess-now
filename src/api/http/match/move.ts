@@ -116,6 +116,19 @@ export async function run(
 		throw new UnprocessableContentError();
 	}
 
+	chess.setHeader("Event", "Casual");
+	chess.setHeader("Site", process.env.NEXT_PUBLIC_BASE_URL ?? "?");
+	chess.setHeader(
+		"Date",
+		new Date(match.createdAt)
+			.toISOString()
+			.split("T")[0]
+			.replace(/-/g, "."),
+	);
+	chess.setHeader("Round", String(Math.round(chess.history().length / 2)));
+	chess.setHeader("White", match.whitePlayer.username);
+	chess.setHeader("Black", match.blackPlayer.username);
+
 	const matchAfterMove = (await updateBoard(match.id, chess)) as Match;
 	matchAfterMove.whitePlayer = match.whitePlayer;
 	matchAfterMove.blackPlayer = match.blackPlayer;

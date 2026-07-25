@@ -6,7 +6,7 @@ import type {
 	Match,
 	User,
 } from "@chess-now/api";
-import type { Chess } from "chess.js";
+import { Chess } from "chess.js";
 import { eq } from "drizzle-orm";
 import z from "zod";
 import type { Session } from "@/lib/auth-client";
@@ -201,6 +201,26 @@ export async function acceptChallenge(challenge: Challenge): Promise<{
 		match.whitePlayer = challenge.to as User;
 		match.blackPlayer = challenge.from as User;
 	}
+
+	const chess = new Chess();
+	chess.setHeader("Event", "Casual");
+	chess.setHeader("Site", process.env.NEXT_PUBLIC_BASE_URL ?? "?");
+	chess.setHeader(
+		"Date",
+		new Date(match.createdAt)
+			.toISOString()
+			.split("T")[0]
+			.replace(/-/g, "."),
+	);
+	chess.setHeader("Round", "0");
+	chess.setHeader("White", match.whitePlayer.username);
+	chess.setHeader("Black", match.blackPlayer.username);
+
+	match.pgn = chess.pgn();
+	await db
+		.update(schemas.matches)
+		.set({ pgn: match.pgn })
+		.where(eq(schemas.matches.id, match.id));
 
 	await secondaryStorage.set(`match_${match.id}`, match);
 
