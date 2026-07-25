@@ -67,12 +67,9 @@ export async function deleteUser(userId: string) {
 		.where(eq(schemas.matches.blackId, userId));
 
 	type ActiveSessions = {
-		value: {
-			token: string;
-			expiresAt: number;
-		}[];
-		expires: number;
-	};
+		token: string;
+		expiresAt: number;
+	}[];
 
 	// invalidate all sessions from the secondary storage
 	// TODO: find a better way to this that is not as prone to breaking
@@ -83,7 +80,8 @@ export async function deleteUser(userId: string) {
 	)) as ActiveSessions;
 
 	if (activeSessions) {
-		for (const sessions of activeSessions.value) {
+		console.log(activeSessions);
+		for (const sessions of activeSessions) {
 			await secondaryStorage.delete(sessions.token);
 		}
 		await secondaryStorage.delete(`active-sessions-${userId}`);
