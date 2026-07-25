@@ -125,7 +125,7 @@ export async function run(
 			.split("T")[0]
 			.replace(/-/g, "."),
 	);
-	chess.setHeader("Round", String(Math.round(chess.history().length / 2)));
+	chess.setHeader("Round", "1");
 	chess.setHeader("White", match.whitePlayer.username);
 	chess.setHeader("Black", match.blackPlayer.username);
 

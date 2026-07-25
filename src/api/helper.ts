@@ -211,7 +211,7 @@ export async function acceptChallenge(challenge: Challenge): Promise<{
 			.split("T")[0]
 			.replace(/-/g, "."),
 	);
-	chess.setHeader("Round", "0");
+	chess.setHeader("Round", "1");
 	chess.setHeader("White", match.whitePlayer.username);
 	chess.setHeader("Black", match.blackPlayer.username);
 
