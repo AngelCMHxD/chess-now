@@ -4,11 +4,22 @@ import type {
 	DeviceInfoResponse,
 	ScopeType,
 } from "@chess-now/api";
-import { CheckCircle2Icon } from "lucide-react";
+import { CheckCircle2Icon, TriangleAlertIcon } from "lucide-react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogMedia,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -34,6 +45,7 @@ export default function InputOTPForm() {
 	const [submittingDeny, setSubmittingDeny] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [scopes, setScopes] = useState<ScopeType[] | null>(null);
+	const [invalidCode, setInvalidCode] = useState(false);
 
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -54,6 +66,12 @@ export default function InputOTPForm() {
 			).then((res) =>
 				res.json(),
 			)) as ApiSuccessResponse<DeviceInfoResponse>;
+
+			if (!response.data) {
+				setInvalidCode(true);
+				setLoading(false);
+				return;
+			}
 
 			setScopes(response.data.scopes);
 			setLoading(false);
@@ -127,7 +145,7 @@ export default function InputOTPForm() {
 		});
 	};
 
-	if (loading || !scopes) {
+	if (loading || (!scopes && !invalidCode)) {
 		return (
 			<div className="flex flex-col gap-4 justify-center items-center w-full h-screen">
 				<Spinner />
@@ -138,64 +156,85 @@ export default function InputOTPForm() {
 
 	return (
 		<div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-			<div className="w-full max-w-md md:max-w-lg">
-				<div className="flex flex-col gap-6">
-					<Card className="mx-auto max-w-md">
-						<CardHeader>
-							<CardTitle>
-								Verify an external device/application
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							Are you sure that you want to authenticate with this
-							application? This will give access to the following
-							scopes:
-							<div className="flex flex-col gap-2 p-2 pt-4">
-								{scopes.map((scope, index) => (
-									<div
-										key={index}
-										className="flex gap-1 items-center"
+			<AlertDialog open={invalidCode}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogMedia>
+							<TriangleAlertIcon />
+						</AlertDialogMedia>
+						<AlertDialogTitle>Invalid Code</AlertDialogTitle>
+						<AlertDialogDescription>
+							The provided code is invalid or has expired.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogAction className="w-full" asChild>
+							<Link href="/device">Go Back</Link>
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{scopes && (
+				<div className="w-full max-w-md md:max-w-lg">
+					<div className="flex flex-col gap-6">
+						<Card className="mx-auto max-w-md">
+							<CardHeader>
+								<CardTitle>
+									Verify an external device/application
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								Are you sure that you want to authenticate with
+								this application? This will give access to the
+								following scopes:
+								<div className="flex flex-col gap-2 p-2 pt-4">
+									{scopes.map((scope, index) => (
+										<div
+											key={index}
+											className="flex gap-1 items-center"
+										>
+											<CheckCircle2Icon
+												height="22"
+												width="22"
+											/>
+											<p>{scopesDescriptions[scope]}</p>
+										</div>
+									))}
+								</div>
+							</CardContent>
+							<CardFooter>
+								<Field>
+									<Button
+										type="submit"
+										className="w-full"
+										onClick={handleApprove}
+										disabled={
+											submittingApprove || submittingDeny
+										}
 									>
-										<CheckCircle2Icon
-											height="22"
-											width="22"
-										/>
-										<p>{scopesDescriptions[scope]}</p>
-									</div>
-								))}
-							</div>
-						</CardContent>
-						<CardFooter>
-							<Field>
-								<Button
-									type="submit"
-									className="w-full"
-									onClick={handleApprove}
-									disabled={
-										submittingApprove || submittingDeny
-									}
-								>
-									{submittingApprove ? (
-										<Spinner />
-									) : (
-										"Approve"
-									)}
-								</Button>
-								<Button
-									variant="secondary"
-									className="w-full"
-									onClick={handleDeny}
-									disabled={
-										submittingApprove || submittingDeny
-									}
-								>
-									{submittingDeny ? <Spinner /> : "Deny"}
-								</Button>
-							</Field>
-						</CardFooter>
-					</Card>
+										{submittingApprove ? (
+											<Spinner />
+										) : (
+											"Approve"
+										)}
+									</Button>
+									<Button
+										variant="secondary"
+										className="w-full"
+										onClick={handleDeny}
+										disabled={
+											submittingApprove || submittingDeny
+										}
+									>
+										{submittingDeny ? <Spinner /> : "Deny"}
+									</Button>
+								</Field>
+							</CardFooter>
+						</Card>
+					</div>
 				</div>
-			</div>
+			)}
 			<div className="flex justify-end max-w-full">
 				<ThemeSwitcher />
 			</div>
