@@ -16,16 +16,25 @@ The union type for all outgoing messages.
 
 ### `subscribe`
 
-Sent when you call `client.subscribe(token, events)`. The server authenticates the token and subscribes the connection to the requested event channels.
+Sent when you call `client.subscribe()`. The server subscribes the connection to the requested event channels.
 
 <AutoTypeTable
   path="packages/api/src/types/ws-messages.ts"
   name="SubscribeMessage"
 />
 
+### `match_subscribe`
+
+Sent when you call `client.matchSubscribe()`. The server subscribes the connection to the requested match. You'll receive all match events as if you are a player in that match.
+
+<AutoTypeTable
+  path="packages/api/src/types/ws-messages.ts"
+  name="MatchSubscribeMessage"
+/>
+
 ### `watch_device_auth`
 
-Sent when you call `client.watchDeviceAuth(userCode, deviceCode)`. The server starts watching the device auth flow and sends back events when the user approves or denies.
+Sent when you call `client.watchDeviceAuth(userCode, deviceCode)`. The server will notify when the user approves or denies the device auth, or if it expires
 
 <AutoTypeTable
   path="packages/api/src/types/ws-messages.ts"
