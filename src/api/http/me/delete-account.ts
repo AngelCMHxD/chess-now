@@ -48,7 +48,7 @@ export async function deleteUser(userId: string) {
 				.values({
 					id: "deleted_user",
 					name: "Deleted User",
-					email: "deleted@chess-now.com",
+					email: "deleted@chessnow.local",
 					username: "deleted_user",
 					emailVerified: true,
 				})
