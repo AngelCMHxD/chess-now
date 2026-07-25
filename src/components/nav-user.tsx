@@ -31,7 +31,7 @@ export function NavUser({ user, loading }: { user?: User; loading: boolean }) {
 	if (user?.image === null) user.image = undefined;
 
 	const handleLogout = async () => {
-		authClient.signOut();
+		await authClient.signOut();
 		toast.success("Logged out successfully");
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 		router.push("/account/login");
