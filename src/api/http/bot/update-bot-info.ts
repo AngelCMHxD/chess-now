@@ -9,8 +9,10 @@ import z from "zod";
 import {
 	APIError,
 	BadRequestError,
+	ConflictError,
 	ForbiddenError,
 	UnauthorizedError,
+	UnprocessableContentError,
 } from "@/api/errors";
 import { hasScope, removePrivateUserFields } from "@/api/helper";
 import { auth } from "@/lib/auth";
@@ -35,6 +37,20 @@ export async function run(
 		throw new ForbiddenError(
 			"A bot account cannot manage other bot accounts. Use PUT /me",
 		);
+
+	if (body.username !== undefined) {
+		if (
+			typeof body.username !== "string" ||
+			!/^[a-z0-9]{3,25}$/.test(body.username)
+		) {
+			throw new UnprocessableContentError(
+				"Username must be 3 to 25 characters using lowercase letters and numbers only.",
+			);
+		}
+
+		if (body.username === "deleted_user")
+			throw new ConflictError("Username is reserved.");
+	}
 
 	if (!body.botId) {
 		throw new BadRequestError("Missing botId");

@@ -219,13 +219,18 @@ export const auth = betterAuth({
 
 				if (
 					typeof username !== "string" ||
-					!/^[a-z0-9]{3,30}$/.test(username)
+					!/^[a-z0-9]{3,25}$/.test(username)
 				) {
 					throw new APIError("BAD_REQUEST", {
 						message:
-							"Username is required and must be 3 to 30 characters using lowercase letters and numbers only.",
+							"Username is required and must be 3 to 25 characters using lowercase letters and numbers only.",
 					});
 				}
+
+				if (username === "deleted_user")
+					throw new APIError("BAD_REQUEST", {
+						message: "Username is reserved.",
+					});
 
 				const existingUser = await db.query.user.findFirst({
 					where: (user, { eq }) => eq(user.username, username),
