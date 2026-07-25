@@ -75,13 +75,18 @@ export async function deleteUser(userId: string) {
 	// TODO: find a better way to this that is not as prone to breaking
 	// this relies heavily on how better auth works internally
 	// if there is an internal change to how sessions are stored, this WILL break :/
-	const activeSessions = (await secondaryStorage.get(
+	const activeSessionsString = await secondaryStorage.get(
 		`active-sessions-${userId}`,
-	)) as ActiveSessions;
+	);
 
-	if (activeSessions) {
+	if (activeSessionsString) {
+		const activeSessions = JSON.parse(
+			activeSessionsString,
+		) as ActiveSessions;
 		console.log(activeSessions);
 		for (const sessions of activeSessions) {
+			console.log(sessions);
+			console.log(sessions.token);
 			await secondaryStorage.delete(sessions.token);
 		}
 		await secondaryStorage.delete(`active-sessions-${userId}`);
