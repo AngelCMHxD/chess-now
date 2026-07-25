@@ -5,7 +5,7 @@ import { ChevronsUpDownIcon, LogOutIcon, SettingsIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -27,8 +27,6 @@ import { Skeleton } from "./ui/skeleton";
 export function NavUser({ user, loading }: { user?: User; loading: boolean }) {
 	const router = useRouter();
 	const { isMobile } = useSidebar();
-
-	if (user?.image === null) user.image = undefined;
 
 	const handleLogout = async () => {
 		await authClient.signOut();
@@ -70,7 +68,6 @@ export function NavUser({ user, loading }: { user?: User; loading: boolean }) {
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
 							<Avatar className="h-8 w-8 rounded-full">
-								<AvatarImage src={user.image} alt={user.name} />
 								<AvatarFallback className="rounded-full">
 									{(user.name ?? "")
 										.split(" ")
@@ -104,10 +101,6 @@ export function NavUser({ user, loading }: { user?: User; loading: boolean }) {
 									href={`/dashboard/users/${user.username}`}
 								>
 									<Avatar className="h-8 w-8 rounded-full">
-										<AvatarImage
-											src={user.image}
-											alt={user.name}
-										/>
 										<AvatarFallback className="rounded-full">
 											{(user.name ?? "")
 												.split(" ")
