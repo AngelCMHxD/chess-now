@@ -1,6 +1,6 @@
 import { apiKey } from "@better-auth/api-key";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-import { betterAuth } from "better-auth";
+import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import {
@@ -87,28 +87,22 @@ const privateEndpoints = [
 	"/delete-anonymous-user",
 ];
 
-export const auth = betterAuth({
-	baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-	basePath: process.env.BETTER_AUTH_PATH,
+// https://better-auth.com/docs/concepts/session-management#caveats-on-customizing-session-response
+const options = {
+	session: {
+		additionalFields: {
+			scopes: {
+				type: "string[]",
+				required: false,
+			},
+		},
+		storeSessionInDatabase: true,
+		cookieCache: {
+			enabled: false,
+		},
+	},
 	plugins: [
 		bearer(),
-		customSession(async ({ user, session }) => {
-			if (!(await secondaryStorage.get(session.token))) {
-				await secondaryStorage.set(
-					session.token,
-					JSON.stringify({
-						user,
-						session,
-					}),
-					604798000,
-				);
-			}
-
-			return {
-				user,
-				session,
-			};
-		}),
 		deviceAuthorization({
 			verificationUri: "/device",
 			schema: {},
@@ -134,18 +128,82 @@ export const auth = betterAuth({
 		]),
 		nextCookies(),
 	],
-	session: {
+	user: {
 		additionalFields: {
-			scopes: {
-				type: "string[]",
+			username: {
+				type: "string",
+				required: true,
+				unique: true,
+				returned: true,
+			},
+			botOwnerId: {
+				type: "string",
 				required: false,
+				references: {
+					model: "user",
+					field: "id",
+					onDelete: "cascade",
+				},
+			},
+			rating: {
+				type: "number",
+				required: true,
+				defaultValue: 1500,
+			},
+			rd: {
+				type: "number",
+				required: true,
+				defaultValue: 350,
+			},
+			vol: {
+				type: "number",
+				required: true,
+				defaultValue: 0.06,
 			},
 		},
-		storeSessionInDatabase: true,
-		cookieCache: {
+		deleteUser: {
 			enabled: false,
 		},
 	},
+} satisfies BetterAuthOptions;
+
+export const auth = betterAuth({
+	baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+	basePath: process.env.BETTER_AUTH_PATH,
+	...options,
+	plugins: [
+		customSession(async ({ user, session }) => {
+			if (
+				!(await secondaryStorage.get(session.token)) &&
+				!process.env.NEXT_RUNTIME
+			) {
+				const savedSession = await db.query.session.findFirst({
+					where: (dbSession, { eq }) => eq(dbSession.id, session.id),
+				});
+
+				if (!savedSession)
+					return {
+						user,
+						session,
+					};
+
+				await secondaryStorage.set(
+					session.token,
+					JSON.stringify({
+						user,
+						session,
+					}),
+					604798000,
+				);
+			}
+
+			return {
+				user,
+				session,
+			};
+		}, options),
+		...(options.plugins ?? []),
+	],
 	hooks: {
 		before: createAuthMiddleware(async (ctx) => {
 			const authHeader = ctx.headers?.get("Authorization");
@@ -212,43 +270,6 @@ export const auth = betterAuth({
 		provider: "pg",
 	}),
 	secondaryStorage,
-	user: {
-		additionalFields: {
-			username: {
-				type: "string",
-				required: true,
-				unique: true,
-				returned: true,
-			},
-			botOwnerId: {
-				type: "string",
-				required: false,
-				references: {
-					model: "user",
-					field: "id",
-					onDelete: "cascade",
-				},
-			},
-			rating: {
-				type: "number",
-				required: true,
-				defaultValue: 1500,
-			},
-			rd: {
-				type: "number",
-				required: true,
-				defaultValue: 350,
-			},
-			vol: {
-				type: "number",
-				required: true,
-				defaultValue: 0.06,
-			},
-		},
-		deleteUser: {
-			enabled: false,
-		},
-	},
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
