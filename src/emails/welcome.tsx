@@ -105,7 +105,7 @@ export const WelcomeEmail = ({ url }: WelcomeEmailProps) => (
 											/>
 											<WelcomeBulletCell
 												title="Compete"
-												text="Improve your ELO and climb the leaderboards."
+												text="Improve your ELO and suprass your friends."
 												icon="trophy"
 											/>
 										</Row>

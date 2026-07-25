@@ -1,18 +1,33 @@
 "use client";
 
-import type { User } from "@chess-now/api";
+import type { ApiSuccessResponse, User } from "@chess-now/api";
 import { ChessNowClient } from "@chess-now/api";
 import {
 	AtSignIcon,
+	FrownIcon,
+	HeartCrackIcon,
 	HelpCircleIcon,
 	KeyRoundIcon,
+	LogOutIcon,
+	Trash2Icon,
 	UserIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import {
+	AlertDialog,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogMedia,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -268,9 +283,224 @@ function ProfileTab({
 							</Button>
 						</FieldGroup>
 					</form>
+
+					<DeleteAccountButton />
 				</CardContent>
 			</Card>
 		</TabsContent>
+	);
+}
+
+function DeleteAccountButton() {
+	const router = useRouter();
+	const [firstDialogOpen, setFirstDialogOpen] = useState(false);
+	const [secondDialogOpen, setSecondDialogOpen] = useState(false);
+	const [thirdDialogOpen, setThirdDialogOpen] = useState(false);
+
+	const [isDeleting, setIsDeleting] = useState(false);
+	const [canContinue, setCanContinue] = useState(false);
+	const [currentTimeout, setCurrentTimeout] = useState<ReturnType<
+		typeof setTimeout
+	> | null>(null);
+
+	function triggerCooldown() {
+		if (currentTimeout) clearTimeout(currentTimeout);
+		setCanContinue(false);
+		setCurrentTimeout(setTimeout(() => setCanContinue(true), 2000));
+	}
+
+	function closeAllDialogs() {
+		setFirstDialogOpen(false);
+		setSecondDialogOpen(false);
+		setThirdDialogOpen(false);
+	}
+
+	async function deleteAccount() {
+		setCanContinue(false);
+		setIsDeleting(true);
+
+		let response: ApiSuccessResponse<{ success: true }>;
+
+		try {
+			response = (await fetch(
+				`${process.env.NEXT_PUBLIC_API_ENDPOINT}/me`,
+				{
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					credentials: "include",
+				},
+			).then((res) => res.json())) as ApiSuccessResponse<{
+				success: true;
+			}>;
+		} catch (e) {
+			if (e instanceof Error) toast.error(e.message);
+			else toast.error(String(e));
+
+			return;
+		}
+
+		if (response.success && response.data.success) {
+			toast.success("Account deleted successfully", {
+				position: "bottom-center",
+			});
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+			router.push("/account/login");
+		} else {
+			console.log(response);
+			toast.error(
+				"There was an error deleting your account. Try again later.",
+			);
+			setCanContinue(true);
+			setIsDeleting(false);
+		}
+	}
+
+	return (
+		<AlertDialog open={firstDialogOpen} onOpenChange={triggerCooldown}>
+			<AlertDialogTrigger
+				onClick={() => setFirstDialogOpen(true)}
+				className="mt-5"
+				asChild
+			>
+				<Button variant="destructive">
+					<Trash2Icon />
+					Delete account
+				</Button>
+			</AlertDialogTrigger>
+
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+						<Trash2Icon />
+					</AlertDialogMedia>
+					<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+					<AlertDialogDescription className="font-medium">
+						We are not going to stop you, but we wanna make sure
+						this is really what you want to do.
+						<br />
+						<br />
+						This is permanent, there is no undo button :/
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<Button
+						variant="secondary"
+						onClick={() => closeAllDialogs()}
+					>
+						Cancel
+					</Button>
+
+					<AlertDialog
+						open={secondDialogOpen}
+						onOpenChange={triggerCooldown}
+					>
+						<AlertDialogTrigger
+							onClick={() => setSecondDialogOpen(true)}
+							asChild
+						>
+							<Button
+								variant="destructive"
+								disabled={!canContinue}
+							>
+								<Trash2Icon />
+								Yes, continue.
+							</Button>
+						</AlertDialogTrigger>
+
+						<AlertDialogContent>
+							<AlertDialogHeader>
+								<AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+									<HeartCrackIcon />
+								</AlertDialogMedia>
+								<AlertDialogTitle>
+									Are you <u>REALLY</u> sure?
+								</AlertDialogTitle>
+								<AlertDialogDescription className="font-medium">
+									We are{" "}
+									<u>
+										<b>NOT</b>
+									</u>{" "}
+									going to send you any confirmation emails
+									and there isn't any grace period.
+									<br />
+									<br />
+									There is no coming back from this...
+								</AlertDialogDescription>
+							</AlertDialogHeader>
+							<AlertDialogFooter>
+								<Button
+									variant="secondary"
+									onClick={() => closeAllDialogs()}
+								>
+									Cancel
+								</Button>{" "}
+								<AlertDialog
+									open={thirdDialogOpen}
+									onOpenChange={triggerCooldown}
+								>
+									<AlertDialogTrigger
+										onClick={() => setThirdDialogOpen(true)}
+										asChild
+									>
+										<Button
+											variant="destructive"
+											disabled={!canContinue}
+										>
+											<Trash2Icon />
+											Get out of my way!
+										</Button>
+									</AlertDialogTrigger>
+
+									<AlertDialogContent>
+										<AlertDialogHeader>
+											<AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+												<FrownIcon />
+											</AlertDialogMedia>
+											<AlertDialogTitle>
+												This is the last one...
+											</AlertDialogTitle>
+											<AlertDialogDescription className="font-medium">
+												We are sorry to see you go and
+												we hope you enjoyed playing...
+											</AlertDialogDescription>
+										</AlertDialogHeader>
+										<AlertDialogFooter>
+											<Button
+												variant="secondary"
+												onClick={() =>
+													closeAllDialogs()
+												}
+											>
+												Cancel
+											</Button>
+											<Button
+												variant="destructive"
+												disabled={!canContinue}
+												onClick={() => deleteAccount()}
+											>
+												{isDeleting ? (
+													<>
+														<Spinner />
+														Deleting...
+													</>
+												) : (
+													<>
+														<LogOutIcon />
+														Good bye...
+													</>
+												)}
+											</Button>
+										</AlertDialogFooter>
+									</AlertDialogContent>
+								</AlertDialog>
+							</AlertDialogFooter>
+						</AlertDialogContent>
+					</AlertDialog>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
 	);
 }
 
