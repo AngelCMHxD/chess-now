@@ -29,7 +29,7 @@ async function setupBot() {
 		throw new Error("DISCORD_BOT_TOKEN is not set");
 	}
 
-	container.chess = new ChessNowClient("http://localhost:8080");
+	container.chess = new ChessNowClient("http://localhost:3000");
 	container.subscriptions = [];
 	await container.chess.connect();
 	registerNotificationHandlers();
