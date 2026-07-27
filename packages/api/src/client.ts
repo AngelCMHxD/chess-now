@@ -312,6 +312,30 @@ export class ChessNowClient {
 		});
 	}
 
+	async requestDraw(matchId: number, token?: string): Promise<Match> {
+		assert(positiveInt, matchId, "matchId");
+		return this._fetch<Match>(`/match/${matchId}/draw/request`, {
+			method: "POST",
+			token,
+		});
+	}
+
+	async acceptDraw(matchId: number, token?: string): Promise<Match> {
+		assert(positiveInt, matchId, "matchId");
+		return this._fetch<Match>(`/match/${matchId}/draw/accept`, {
+			method: "POST",
+			token,
+		});
+	}
+
+	async denyDraw(matchId: number, token?: string): Promise<Match> {
+		assert(positiveInt, matchId, "matchId");
+		return this._fetch<Match>(`/match/${matchId}/draw/deny`, {
+			method: "POST",
+			token,
+		});
+	}
+
 	async makeMove(
 		matchId: number,
 		moveSan: string,
