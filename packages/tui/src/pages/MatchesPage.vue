@@ -5,11 +5,9 @@ import {
 	bold,
 	computed,
 	fg,
-	green,
 	italic,
 	onKeyDown,
 	onMounted,
-	red,
 	ref,
 	Text,
 	t,
@@ -23,8 +21,10 @@ import { state } from "../store";
 
 const yellow = fg("yellow");
 const hoverYellow = fg("#FFFF99");
+const green = fg("green");
+const red = fg("red");
 
-function formatRatingDiff(diff: number | null | undefined): string {
+function formatRatingDiff(diff: number | null | undefined) {
 	if (diff == null) return "";
 	if (diff > 0) return green(`(+${diff})`);
 	if (diff < 0) return red(`(${diff})`);
