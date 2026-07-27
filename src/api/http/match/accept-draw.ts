@@ -92,6 +92,8 @@ export async function run(
 		whiteRatingDiff,
 		blackRatingDiff,
 	});
+	finalMatch.whitePlayer = match.whitePlayer;
+	finalMatch.blackPlayer = match.blackPlayer;
 
 	players.forEach((playerId) => {
 		publishToSubscriber(`match:${playerId}`, "match:game_over", playerId, {

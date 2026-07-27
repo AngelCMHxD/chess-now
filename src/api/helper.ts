@@ -8,10 +8,10 @@ import type {
 } from "@chess-now/api";
 import { Chess } from "chess.js";
 import { eq } from "drizzle-orm";
+import { glicko2 } from "glicko2-lite";
 import z from "zod";
 import type { Session } from "@/lib/auth-client";
 import { db, schemas, secondaryStorage } from "@/lib/database";
-import { glicko2 } from "glicko2-lite";
 
 export const publicUserColumns = {
 	name: true,

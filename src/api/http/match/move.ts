@@ -13,6 +13,7 @@ import {
 	UnprocessableContentError,
 } from "@/api/errors";
 import {
+	endMatch,
 	getDecayedStats,
 	getMatchInfo,
 	hasScope,
@@ -20,7 +21,7 @@ import {
 } from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
-import { db, schemas, secondaryStorage } from "@/lib/database";
+import { db, schemas } from "@/lib/database";
 
 export const bodyType = z.object({
 	move: z.string({
@@ -157,8 +158,6 @@ export async function run(
 			endReason = "insufficient-material";
 		else if (chess.isDrawByFiftyMoves()) endReason = "50-moves";
 
-		await secondaryStorage.delete(`match_${mId}`);
-
 		let outcomeWhite = 0.5;
 		let outcomeBlack = 0.5;
 		if (status === "white_won") {
@@ -207,21 +206,14 @@ export async function run(
 		const whiteDiff = Math.round(newWhite.rating - whiteStats.rating);
 		const blackDiff = Math.round(newBlack.rating - blackStats.rating);
 
-		const finalMatch = (
-			await db
-				.update(schemas.matches)
-				.set({
-					status,
-					endReason,
-					finishedAt: new Date(),
-					fen: moveInfo.fen.after,
-					pgn: moveInfo.pgn.after,
-					whiteRatingDiff: whiteDiff,
-					blackRatingDiff: blackDiff,
-				})
-				.where(eq(schemas.matches.id, mId))
-				.returning()
-		)[0] as Match;
+		const finalMatch = await endMatch(mId, {
+			status,
+			endReason,
+			fen: moveInfo.fen.after,
+			pgn: moveInfo.pgn.after,
+			whiteRatingDiff: whiteDiff,
+			blackRatingDiff: blackDiff,
+		});
 		finalMatch.whitePlayer = match.whitePlayer;
 		finalMatch.blackPlayer = match.blackPlayer;
 
