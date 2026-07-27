@@ -40,7 +40,10 @@ const inputKey = ref(0);
 const errorMsg = ref("");
 const matchDetails = ref<Match | null>(null);
 const draftMove = ref("");
+
 const goToMatchListHovered = ref(false);
+const offerDrawHovered = ref(false);
+const forfeitHovered = ref(false);
 
 const isBlack = computed(() => {
 	return matchDetails.value?.blackId === state.user?.id;
@@ -66,8 +69,29 @@ const handleMatchGameOver = (event: ServerMessage<"match:game_over">) => {
 	}
 };
 
+const handleDrawRequest = (event: ServerMessage<"match:draw_request">) => {
+	if (event.payload.match.id === matchId) {
+		router.push(`/matches/${matchId}/draw`);
+	}
+};
+
 const goToMatchList = () => {
 	router.push("/matches");
+};
+
+const goToForfeit = () => {
+	router.push(`/matches/${matchId}/forfeit`);
+};
+
+const offerDraw = async () => {
+	errorMsg.value = "";
+	try {
+		await chessClient.requestDraw(matchId);
+		router.push(`/matches/${matchId}/draw`);
+	} catch (e: unknown) {
+		errorMsg.value =
+			(e as { message?: string })?.message || "Failed to offer draw";
+	}
 };
 
 onMounted(async () => {
@@ -77,8 +101,14 @@ onMounted(async () => {
 		chess.load(match.fen);
 		updateBoard();
 
+		if (match.status === "active" && match.activeDrawRequest !== null) {
+			router.push(`/matches/${matchId}/draw`);
+			return;
+		}
+
 		chessClient.on("match:board_move", handleMatchMove);
 		chessClient.on("match:game_over", handleMatchGameOver);
+		chessClient.on("match:draw_request", handleDrawRequest);
 	} catch (e: unknown) {
 		errorMsg.value =
 			(e as { message?: string })?.message || "Failed to load match";
@@ -88,6 +118,7 @@ onMounted(async () => {
 onUnmounted(() => {
 	chessClient.off("match:board_move", handleMatchMove);
 	chessClient.off("match:game_over", handleMatchGameOver);
+	chessClient.off("match:draw_request", handleDrawRequest);
 });
 
 const submitMove = async () => {
@@ -197,13 +228,38 @@ onKeyDown((key) => {
 				</Box>
 			</Box>
 
-			<Box :marginTop="1">
-				<Text
-					:content="t`${goToMatchListHovered ? underline(hoverYellow('[Go to Match List]')) : yellow('[Go to Match List]')}`"
+			<Box flexDirection="row" :marginTop="1" :gap="2">
+				<Box
+					v-if="matchDetails?.status === 'active'"
+					@mouseOver="() => offerDrawHovered = true"
+					@mouseOut="() => offerDrawHovered = false"
+					@mouseDown="offerDraw"
+				>
+					<Text
+						:content="t`${offerDrawHovered ? underline(hoverYellow('[Offer Draw]')) : yellow('[Offer Draw]')}`"
+					/>
+				</Box>
+
+				<Box
+					v-if="matchDetails?.status === 'active'"
+					@mouseOver="() => forfeitHovered = true"
+					@mouseOut="() => forfeitHovered = false"
+					@mouseDown="goToForfeit"
+				>
+					<Text
+						:content="t`${forfeitHovered ? underline(red('[Forfeit]')) : red('[Forfeit]')}`"
+					/>
+				</Box>
+
+				<Box
 					@mouseOver="() => goToMatchListHovered = true"
 					@mouseOut="() => goToMatchListHovered = false"
-					@mouseDown="() => goToMatchList()"
-				/>
+					@mouseDown="goToMatchList"
+				>
+					<Text
+						:content="t`${goToMatchListHovered ? underline(hoverYellow('[Go to Match List]')) : yellow('[Go to Match List]')}`"
+					/>
+				</Box>
 			</Box>
 		</Box>
 	</Box>
