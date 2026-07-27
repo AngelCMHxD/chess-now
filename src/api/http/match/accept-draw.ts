@@ -1,6 +1,5 @@
 import type { ApiSuccessResponse, Match } from "@chess-now/api";
 import { Scope } from "@chess-now/api";
-import { Chess } from "chess.js";
 import { eq } from "drizzle-orm";
 import { glicko2 } from "glicko2-lite";
 import {
@@ -10,48 +9,15 @@ import {
 	NotFoundError,
 	UnauthorizedError,
 } from "@/api/errors";
-import { getMatchInfo, hasScope } from "@/api/helper";
+import {
+	endMatch,
+	getDecayedStats,
+	getMatchInfo,
+	hasScope,
+} from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas, secondaryStorage } from "@/lib/database";
-
-const getDecayedStats = async (player: {
-	id: string;
-	rating: number;
-	rd: number;
-	vol: number;
-}) => {
-	const lastMatch = await db.query.matches.findFirst({
-		where: (matches, { or, eq, ne, and }) =>
-			and(
-				or(
-					eq(matches.whiteId, player.id),
-					eq(matches.blackId, player.id),
-				),
-				ne(matches.status, "active"),
-			),
-		orderBy: (matches, { desc }) => desc(matches.finishedAt),
-	});
-
-	let { rating, rd, vol } = player;
-
-	if (lastMatch?.finishedAt) {
-		const weekInMs = 1000 * 60 * 60 * 24 * 7;
-		const weeksElapsed = Math.floor(
-			(Date.now() - lastMatch.finishedAt.getTime()) / weekInMs,
-		);
-
-		// this is to simulate an rd increase over time
-		for (let i = 0; i < weeksElapsed; i++) {
-			const decayed = glicko2(rating, rd, vol, []);
-			rating = decayed.rating;
-			rd = decayed.rd;
-			vol = decayed.vol;
-		}
-	}
-
-	return { rating, rd, vol };
-};
 
 export async function run(
 	headers: Headers,
@@ -78,41 +44,24 @@ export async function run(
 	if (!players.includes(session.user.id) || match.status !== "active")
 		throw new ForbiddenError();
 
-	if (match.activeDrawRequest)
-		throw new ConflictError(
-			"There is an active draw request. Accept/Deny it before forfeiting.",
-		);
+	if (!match.activeDrawRequest)
+		throw new ConflictError("There isn't any active draw requests");
 
-	const chess = new Chess();
-	if (!match.pgn) {
-		chess.load(match.fen);
-	} else {
-		chess.loadPgn(match.pgn);
-	}
-
-	const status =
-		session.user.id === match.whiteId ? "black_won" : "white_won";
+	const playerColor: "white" | "black" =
+		session.user.id === match.whiteId ? "white" : "black";
+	if (match.activeDrawRequest === playerColor)
+		throw new ConflictError("You can't deny your own request.");
 
 	await secondaryStorage.delete(`match_${mId}`);
-
-	let outcomeWhite = 0.5;
-	let outcomeBlack = 0.5;
-	if (status === "white_won") {
-		outcomeWhite = 1;
-		outcomeBlack = 0;
-	} else if (status === "black_won") {
-		outcomeWhite = 0;
-		outcomeBlack = 1;
-	}
 
 	const whiteStats = await getDecayedStats(match.whitePlayer);
 	const blackStats = await getDecayedStats(match.blackPlayer);
 
 	const newWhite = glicko2(whiteStats.rating, whiteStats.rd, whiteStats.vol, [
-		[blackStats.rating, blackStats.rd, outcomeWhite],
+		[blackStats.rating, blackStats.rd, 0.5],
 	]);
 	const newBlack = glicko2(blackStats.rating, blackStats.rd, blackStats.vol, [
-		[whiteStats.rating, whiteStats.rd, outcomeBlack],
+		[whiteStats.rating, whiteStats.rd, 0.5],
 	]);
 
 	await Promise.all([
@@ -134,26 +83,15 @@ export async function run(
 	match.blackPlayer.rd = newBlack.rd;
 	match.blackPlayer.vol = newBlack.vol;
 
-	const whiteDiff = Math.round(newWhite.rating - whiteStats.rating);
-	const blackDiff = Math.round(newBlack.rating - blackStats.rating);
+	const whiteRatingDiff = Math.round(newWhite.rating - whiteStats.rating);
+	const blackRatingDiff = Math.round(newBlack.rating - blackStats.rating);
 
-	const finalMatch = (
-		await db
-			.update(schemas.matches)
-			.set({
-				status,
-				endReason: "forfeit",
-				finishedAt: new Date(),
-				fen: chess.fen(),
-				pgn: chess.pgn(),
-				whiteRatingDiff: whiteDiff,
-				blackRatingDiff: blackDiff,
-			})
-			.where(eq(schemas.matches.id, mId))
-			.returning()
-	)[0] as Match;
-	finalMatch.whitePlayer = match.whitePlayer;
-	finalMatch.blackPlayer = match.blackPlayer;
+	const finalMatch = await endMatch(match.id, {
+		status: "draw",
+		endReason: "draw",
+		whiteRatingDiff,
+		blackRatingDiff,
+	});
 
 	players.forEach((playerId) => {
 		publishToSubscriber(`match:${playerId}`, "match:game_over", playerId, {

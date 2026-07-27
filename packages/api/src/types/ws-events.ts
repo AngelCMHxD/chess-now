@@ -48,10 +48,23 @@ export interface FriendRemovedPayload {
 	friendship: Friendship;
 }
 
+export interface DrawRequestPayload {
+	match: Match;
+	requestedBy: User;
+}
+
+export interface DrawDenyPayload {
+	match: Match;
+	requestedBy: User;
+	deniedBy: User;
+}
+
 export type WsPushEvent =
 	| { event: "device_auth"; payload: DeviceAuthPayload }
 	| { event: "match:game_over"; payload: MatchGameOverPayload }
 	| { event: "match:board_move"; payload: MatchMovePayload }
+	| { event: "match:draw_request"; payload: DrawRequestPayload }
+	| { event: "match:draw_deny"; payload: DrawDenyPayload }
 	| { event: "challenge:request"; payload: ChallengeRequestPayload }
 	| { event: "challenge:accepted"; payload: ChallengeAcceptedPayload }
 	| { event: "challenge:denied"; payload: ChallengeDeniedPayload }

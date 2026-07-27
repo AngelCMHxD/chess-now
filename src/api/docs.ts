@@ -136,6 +136,9 @@ export const Docs = {
 			}),
 			whiteRatingDiff: null,
 			blackRatingDiff: null,
+			activeDrawRequest: null,
+			whiteRequestedDraw: false,
+			blackRequestedDraw: false,
 		};
 	},
 
@@ -161,6 +164,45 @@ export const Docs = {
 			}),
 			whiteRatingDiff: -100,
 			blackRatingDiff: 100,
+			activeDrawRequest: null,
+			whiteRequestedDraw: false,
+			blackRequestedDraw: false,
+		};
+	},
+
+	get DrawRequestMatch(): ReplaceDatesWithStrings<Match> {
+		return {
+			...this.Match,
+			activeDrawRequest: "white",
+			whiteRequestedDraw: true,
+		};
+	},
+
+	get DrawMatch(): ReplaceDatesWithStrings<Match> {
+		return {
+			id: 1,
+			createdAt: "2024-01-01T12:00:00Z",
+			status: "draw",
+			whiteId: "123e4567-e89b-12d3-a456-426614174000",
+			blackId: "987e6543-e21b-34d5-a678-426614174000",
+			endReason: "draw",
+			fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+			pgn: `[Event "Casual"]\n[Site "${process.env.NEXT_PUBLIC_BASE_URL ?? "?"}"]\n[Date "2024.01.01"]\n[Round "0"]\n[White "johndoe"]\n[Black "janedoe"]\n[Result "1/2-1/2"]\n\n*`,
+			finishedAt: "2024-01-01T12:02:00Z",
+			whitePlayer: Object.assign({}, this.User, {
+				rating: 1200,
+			}),
+			blackPlayer: Object.assign({}, this.User, {
+				id: "987e6543-e21b-34d5-a678-426614174000",
+				name: "Jane Doe",
+				username: "janedoe",
+				rating: 1200,
+			}),
+			whiteRatingDiff: 0,
+			blackRatingDiff: 0,
+			activeDrawRequest: null,
+			whiteRequestedDraw: true,
+			blackRequestedDraw: true,
 		};
 	},
 
@@ -247,6 +289,20 @@ export const Responses = {
 		return {
 			success: true,
 			data: Docs.ForfeitMatch,
+		};
+	},
+
+	get DrawResult() {
+		return {
+			success: true,
+			data: Docs.DrawMatch,
+		};
+	},
+
+	get DrawRequestResult() {
+		return {
+			success: true,
+			data: Docs.DrawRequestMatch,
 		};
 	},
 

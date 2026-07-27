@@ -43,4 +43,7 @@ export interface Match {
 	blackPlayer: User;
 	whiteRatingDiff: number | null;
 	blackRatingDiff: number | null;
+	activeDrawRequest: "white" | "black" | null;
+	whiteRequestedDraw: boolean;
+	blackRequestedDraw: boolean;
 }

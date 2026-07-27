@@ -11,6 +11,7 @@ import { eq } from "drizzle-orm";
 import z from "zod";
 import type { Session } from "@/lib/auth-client";
 import { db, schemas, secondaryStorage } from "@/lib/database";
+import { glicko2 } from "glicko2-lite";
 
 export const publicUserColumns = {
 	name: true,
@@ -298,17 +299,17 @@ export async function getUserByUsername(username: string) {
 	});
 }
 
-export async function updateBoard(
+export async function updateMatch(
 	matchId: number,
-	chess: Chess,
+	matchData: Omit<Partial<Match>, "whitePlayer" | "blackPlayer">,
 ): Promise<Match> {
-	const activeMatch = (await secondaryStorage.get(
-		`match_${matchId}`,
-	)) as Match;
+	let activeMatch = (await secondaryStorage.get(`match_${matchId}`)) as Match;
 
 	if (activeMatch) {
-		activeMatch.fen = chess.fen();
-		activeMatch.pgn = chess.pgn();
+		activeMatch = {
+			...activeMatch,
+			...matchData,
+		};
 
 		if (!activeMatch.whitePlayer) {
 			activeMatch.whitePlayer = (await getUserInfo(
@@ -330,8 +331,7 @@ export async function updateBoard(
 		await db
 			.update(schemas.matches)
 			.set({
-				fen: chess.fen(),
-				pgn: chess.pgn(),
+				...matchData,
 			})
 			.where(eq(schemas.matches.id, matchId))
 			.returning()
@@ -350,6 +350,81 @@ export async function updateBoard(
 	}
 
 	return match;
+}
+
+export async function endMatch(
+	matchId: number,
+	matchData?: Omit<Partial<Match>, "whitePlayer" | "blackPlayer"> &
+		Required<Pick<Match, "endReason" | "status">>,
+): Promise<Match> {
+	let activeMatch = await getMatchInfo(matchId);
+	if (!activeMatch) throw new Error("Match not found");
+
+	if (matchData) {
+		activeMatch = {
+			...activeMatch,
+			...matchData,
+		};
+	}
+
+	const { whitePlayer, blackPlayer, ...matchWithoutPlayers } = activeMatch;
+
+	const savedMatch = (
+		await db
+			.update(schemas.matches)
+			.set({
+				...matchWithoutPlayers,
+				finishedAt: new Date(),
+			})
+			.where(eq(schemas.matches.id, matchId))
+			.returning()
+	)[0];
+
+	await secondaryStorage.delete(`match_${matchId}`);
+
+	return {
+		...savedMatch,
+		whitePlayer,
+		blackPlayer,
+	};
+}
+
+export async function getDecayedStats(player: {
+	id: string;
+	rating: number;
+	rd: number;
+	vol: number;
+}) {
+	const lastMatch = await db.query.matches.findFirst({
+		where: (matches, { or, eq, ne, and }) =>
+			and(
+				or(
+					eq(matches.whiteId, player.id),
+					eq(matches.blackId, player.id),
+				),
+				ne(matches.status, "active"),
+			),
+		orderBy: (matches, { desc }) => desc(matches.finishedAt),
+	});
+
+	let { rating, rd, vol } = player;
+
+	if (lastMatch?.finishedAt) {
+		const weekInMs = 1000 * 60 * 60 * 24 * 7;
+		const weeksElapsed = Math.floor(
+			(Date.now() - lastMatch.finishedAt.getTime()) / weekInMs,
+		);
+
+		// this is to simulate an rd increase over time
+		for (let i = 0; i < weeksElapsed; i++) {
+			const decayed = glicko2(rating, rd, vol, []);
+			rating = decayed.rating;
+			rd = decayed.rd;
+			vol = decayed.vol;
+		}
+	}
+
+	return { rating, rd, vol };
 }
 
 export async function getUserMatches(userId: string): Promise<Match[]> {

@@ -12,7 +12,12 @@ import {
 	UnauthorizedError,
 	UnprocessableContentError,
 } from "@/api/errors";
-import { getMatchInfo, hasScope, updateBoard } from "@/api/helper";
+import {
+	getDecayedStats,
+	getMatchInfo,
+	hasScope,
+	updateMatch,
+} from "@/api/helper";
 import { publishToSubscriber } from "@/api/ws-events";
 import { auth } from "@/lib/auth";
 import { db, schemas, secondaryStorage } from "@/lib/database";
@@ -22,44 +27,6 @@ export const bodyType = z.object({
 		error: "'body' is required and is a string containing the move in SAN notation",
 	}),
 });
-
-const getDecayedStats = async (player: {
-	id: string;
-	rating: number;
-	rd: number;
-	vol: number;
-}) => {
-	const lastMatch = await db.query.matches.findFirst({
-		where: (matches, { or, eq, ne, and }) =>
-			and(
-				or(
-					eq(matches.whiteId, player.id),
-					eq(matches.blackId, player.id),
-				),
-				ne(matches.status, "active"),
-			),
-		orderBy: (matches, { desc }) => desc(matches.finishedAt),
-	});
-
-	let { rating, rd, vol } = player;
-
-	if (lastMatch?.finishedAt) {
-		const weekInMs = 1000 * 60 * 60 * 24 * 7;
-		const weeksElapsed = Math.floor(
-			(Date.now() - lastMatch.finishedAt.getTime()) / weekInMs,
-		);
-
-		// this is to simulate an rd increase over time
-		for (let i = 0; i < weeksElapsed; i++) {
-			const decayed = glicko2(rating, rd, vol, []);
-			rating = decayed.rating;
-			rd = decayed.rd;
-			vol = decayed.vol;
-		}
-	}
-
-	return { rating, rd, vol };
-};
 
 export async function run(
 	headers: Headers,
@@ -91,6 +58,11 @@ export async function run(
 
 	if (!players.includes(session.user.id) || match.status !== "active")
 		throw new ForbiddenError();
+
+	if (match.activeDrawRequest)
+		throw new ConflictError(
+			"There is an active draw request. Accept/Deny it before doing a move.",
+		);
 
 	const roles = {
 		[match.whiteId]: "w",
@@ -130,9 +102,10 @@ export async function run(
 	chess.setHeader("White", match.whitePlayer.username);
 	chess.setHeader("Black", match.blackPlayer.username);
 
-	const matchAfterMove = (await updateBoard(match.id, chess)) as Match;
-	matchAfterMove.whitePlayer = match.whitePlayer;
-	matchAfterMove.blackPlayer = match.blackPlayer;
+	const matchAfterMove = await updateMatch(match.id, {
+		pgn: chess.pgn(),
+		fen: chess.fen(),
+	});
 
 	const pgnAfter = chess.pgn();
 	const turnAfter = chess.turn();

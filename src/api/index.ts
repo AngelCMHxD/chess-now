@@ -17,9 +17,12 @@ import httpDeviceDeny from "./http/device/device-deny";
 import httpDeviceInfo from "./http/device/device-info";
 import httpDeviceInit from "./http/device/device-init";
 import httpDeviceToken from "./http/device/device-token";
+import httpAcceptDraw from "./http/match/accept-draw";
+import httpDenyDraw from "./http/match/deny-draw";
 import httpForfeit from "./http/match/forfeit";
 import httpGetMatchInfo from "./http/match/get-match-info";
 import httpMove from "./http/match/move";
+import httpRequestDraw from "./http/match/request-draw";
 import httpAcceptChallenge from "./http/me/accept-challenge";
 import httpDeleteAccount from "./http/me/delete-account";
 import httpDenyChallenge from "./http/me/deny-challenge";
@@ -756,6 +759,84 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 				description: [
 					"Forfeits a match and grants the win to the oponent.",
 					"Triggers the `match:game_over` ws event to the players and match subscribers.",
+				].join("\n\n"),
+				tags: ["Matches"],
+			},
+		},
+	)
+	.post(
+		"/match/:match_id/draw/request",
+		({ params, request }) =>
+			httpRequestDraw.run(request.headers, params.match_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.DrawRequestResult,
+							},
+						},
+					},
+				},
+				summary: "Request a draw",
+				description: [
+					"Requests a draw for an active match.",
+					"Triggers the `match:draw_request` ws event to the opponent.",
+				].join("\n\n"),
+				tags: ["Matches"],
+			},
+		},
+	)
+	.post(
+		"/match/:match_id/draw/accept",
+		({ params, request }) =>
+			httpAcceptDraw.run(request.headers, params.match_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.DrawResult,
+							},
+						},
+					},
+				},
+				summary: "Accept a draw request",
+				description: [
+					"Accepts a pending draw request for an active match.",
+					"Triggers the `match:game_over` ws event to the players and match subscribers.",
+				].join("\n\n"),
+				tags: ["Matches"],
+			},
+		},
+	)
+	.post(
+		"/match/:match_id/draw/deny",
+		({ params, request }) =>
+			httpDenyDraw.run(request.headers, params.match_id),
+		{
+			headers: authHeadersSchema,
+			detail: {
+				responses: {
+					200: {
+						description: "Success",
+						content: {
+							"application/json": {
+								example: Responses.Match,
+							},
+						},
+					},
+				},
+				summary: "Deny a draw request",
+				description: [
+					"Denies a pending draw request for an active match.",
+					"Triggers the `match:draw_deny` ws event to the opponent.",
 				].join("\n\n"),
 				tags: ["Matches"],
 			},

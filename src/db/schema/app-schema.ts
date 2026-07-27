@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+	boolean,
 	integer,
 	pgEnum,
 	pgTable,
@@ -8,6 +9,8 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
+
+export const playerColor = pgEnum("player_color", ["white", "black"]);
 
 export const startingColor = pgEnum("starting_color", [
 	"white",
@@ -100,6 +103,13 @@ export const matches = pgTable("match", {
 	finishedAt: timestamp("finished_at"),
 	whiteRatingDiff: integer("white_rating_diff"),
 	blackRatingDiff: integer("black_rating_diff"),
+	activeDrawRequest: playerColor("active_draw_request"),
+	whiteRequestedDraw: boolean("white_requested_draw")
+		.default(false)
+		.notNull(),
+	blackRequestedDraw: boolean("black_requested_draw")
+		.default(false)
+		.notNull(),
 });
 
 export const matchRelations = relations(matches, ({ one }) => ({
