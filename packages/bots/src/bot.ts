@@ -10,8 +10,10 @@ export class ChessBot {
 	constructor(
 		token: string,
 		private level: number,
+		private acceptDraws: boolean = false,
 		isStockfish: boolean = false,
 	) {
+		acceptDraws;
 		this.client = new ChessNowClient("http://localhost:3000");
 		this.client.setDefaultToken(token);
 		if (isStockfish) {
@@ -33,6 +35,7 @@ export class ChessBot {
 			const matches = await this.client.getMyMatches();
 			for (const match of matches) {
 				if (match.status === "active") {
+					await this.handleDrawRequest(match);
 					this.tryPlayMove(match);
 				}
 			}
@@ -97,6 +100,10 @@ export class ChessBot {
 			this.tryPlayMove(msg.payload.match);
 		});
 
+		this.client.on("match:draw_request", async (msg) => {
+			await this.handleDrawRequest(msg.payload.match);
+		});
+
 		this.client.on("challenge:accepted", (msg) => {
 			this.tryPlayMove(msg.payload.match);
 		});
@@ -138,6 +145,32 @@ export class ChessBot {
 
 		const [from, to] = moveEntry;
 		return `${from.toLowerCase()}${to.toLowerCase()}`;
+	}
+
+	private async handleDrawRequest(match: Match) {
+		if (!this.user || match.status !== "active" || !match.activeDrawRequest)
+			return;
+
+		const requesterId =
+			match.activeDrawRequest === "white"
+				? match.whiteId
+				: match.activeDrawRequest === "black"
+					? match.blackId
+					: null;
+
+		if (!requesterId || requesterId === this.user.id) return;
+
+		try {
+			if (this.acceptDraws) {
+				await this.client.acceptDraw(match.id);
+				this.log(`accepted draw request on match ${match.id}`);
+			} else {
+				await this.client.denyDraw(match.id);
+				this.log(`denied draw request on match ${match.id}`);
+			}
+		} catch (e) {
+			this.log(`Error handling draw request on match ${match.id}:`, e);
+		}
 	}
 
 	private async tryPlayMove(match: Match) {

@@ -1,5 +1,7 @@
 import { ChessBot } from "./bot";
 
+const ACCEPT_DRAWS = true;
+
 async function main() {
 	console.log("Starting Bots...");
 
@@ -14,13 +16,18 @@ async function main() {
 			continue;
 		}
 
-		const bot = new ChessBot(token, level);
+		const bot = new ChessBot(token, level, ACCEPT_DRAWS);
 		bots.push(bot);
 		bot.start();
 	}
 
 	if (process.env.BOT_TOKEN_STOCKFISH) {
-		const bot = new ChessBot(process.env.BOT_TOKEN_STOCKFISH, 15, true);
+		const bot = new ChessBot(
+			process.env.BOT_TOKEN_STOCKFISH,
+			15,
+			ACCEPT_DRAWS,
+			true,
+		);
 		bots.push(bot);
 		bot.start();
 	}
