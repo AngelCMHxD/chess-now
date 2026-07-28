@@ -1,5 +1,5 @@
 import { Command } from "@sapphire/framework";
-import { EmbedBuilder, MessageFlags } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import {
 	buildErrorEmbed,
 	ensureAuthenticatedDiscordUser,
@@ -36,10 +36,6 @@ export class MoveCommand extends Command {
 	public override async chatInputRun(
 		interaction: Command.ChatInputCommandInteraction,
 	) {
-		await interaction.deferReply({
-			flags: [MessageFlags.Ephemeral],
-		});
-
 		const discordUser = await ensureAuthenticatedDiscordUser(interaction);
 		if (!discordUser) return;
 

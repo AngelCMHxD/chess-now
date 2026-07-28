@@ -1,6 +1,6 @@
 import type { Match, User } from "@chess-now/api";
 import { Command } from "@sapphire/framework";
-import { EmbedBuilder, MessageFlags } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { ensureAuthenticatedDiscordUser } from "../lib/utils";
 
 export class ProfileCommand extends Command {
@@ -27,10 +27,6 @@ export class ProfileCommand extends Command {
 	public override async chatInputRun(
 		interaction: Command.ChatInputCommandInteraction,
 	) {
-		await interaction.deferReply({
-			flags: [MessageFlags.Ephemeral],
-		});
-
 		const discordUser = await ensureAuthenticatedDiscordUser(interaction);
 		if (!discordUser) return;
 

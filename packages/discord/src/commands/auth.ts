@@ -9,7 +9,6 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	EmbedBuilder,
-	MessageFlags,
 } from "discord.js";
 import { subscribeDiscordUserToNotifications } from "../lib/notifications";
 import { DiscordUserModel } from "../schemas/user";
@@ -33,10 +32,6 @@ export class AuthCommand extends Command {
 	public override async chatInputRun(
 		interaction: Command.ChatInputCommandInteraction,
 	) {
-		await interaction.deferReply({
-			flags: [MessageFlags.Ephemeral],
-		});
-
 		const existingUser = await DiscordUserModel.findOne({
 			discordId: interaction.user.id,
 		}).lean();

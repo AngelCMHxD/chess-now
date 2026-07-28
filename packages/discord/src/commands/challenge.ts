@@ -1,6 +1,6 @@
 import { ChessNowError } from "@chess-now/api";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { EmbedBuilder, MessageFlags } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import {
 	buildErrorEmbed,
 	ensureAuthenticatedDiscordUser,
@@ -88,20 +88,10 @@ export class ChallengeCommand extends Subcommand {
 		);
 	}
 
-	private async requireDiscordUser(
-		interaction: Subcommand.ChatInputCommandInteraction,
-	) {
-		await interaction.deferReply({
-			flags: [MessageFlags.Ephemeral],
-		});
-
-		return ensureAuthenticatedDiscordUser(interaction);
-	}
-
 	public async chatInputSend(
 		interaction: Subcommand.ChatInputCommandInteraction,
 	) {
-		const discordUser = await this.requireDiscordUser(interaction);
+		const discordUser = await ensureAuthenticatedDiscordUser(interaction);
 		if (!discordUser) return;
 
 		try {
@@ -145,7 +135,7 @@ export class ChallengeCommand extends Subcommand {
 	public async chatInputList(
 		interaction: Subcommand.ChatInputCommandInteraction,
 	) {
-		const discordUser = await this.requireDiscordUser(interaction);
+		const discordUser = await ensureAuthenticatedDiscordUser(interaction);
 		if (!discordUser) return;
 
 		try {
@@ -216,7 +206,7 @@ export class ChallengeCommand extends Subcommand {
 	public async chatInputAccept(
 		interaction: Subcommand.ChatInputCommandInteraction,
 	) {
-		const discordUser = await this.requireDiscordUser(interaction);
+		const discordUser = await ensureAuthenticatedDiscordUser(interaction);
 		if (!discordUser) return;
 
 		const challengeId = interaction.options.getInteger(
@@ -284,7 +274,7 @@ export class ChallengeCommand extends Subcommand {
 	public async chatInputDeny(
 		interaction: Subcommand.ChatInputCommandInteraction,
 	) {
-		const discordUser = await this.requireDiscordUser(interaction);
+		const discordUser = await ensureAuthenticatedDiscordUser(interaction);
 		if (!discordUser) return;
 
 		const challengeId = interaction.options.getInteger(

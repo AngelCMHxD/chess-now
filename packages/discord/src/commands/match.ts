@@ -1,5 +1,6 @@
+import type { Match } from "@chess-now/api";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { AttachmentBuilder, EmbedBuilder, MessageFlags } from "discord.js";
+import { AttachmentBuilder, EmbedBuilder } from "discord.js";
 import {
 	buildErrorEmbed,
 	ensureAuthenticatedDiscordUser,
@@ -20,6 +21,7 @@ export class MatchCommand extends Subcommand {
 			subcommands: [
 				{ name: "list", chatInputRun: "chatInputList" },
 				{ name: "activate", chatInputRun: "chatInputActivate" },
+				{ name: "forfeit", chatInputRun: "chatInputForfeit" },
 			],
 		});
 	}
@@ -49,24 +51,19 @@ export class MatchCommand extends Subcommand {
 								.setRequired(true)
 								.setMinValue(1),
 						),
+				)
+				.addSubcommand((subcommand) =>
+					subcommand
+						.setName("forfeit")
+						.setDescription("Forfeit your activematch"),
 				),
 		);
-	}
-
-	private async requireDiscordUser(
-		interaction: Subcommand.ChatInputCommandInteraction,
-	) {
-		await interaction.deferReply({
-			flags: [MessageFlags.Ephemeral],
-		});
-
-		return ensureAuthenticatedDiscordUser(interaction);
 	}
 
 	public async chatInputList(
 		interaction: Subcommand.ChatInputCommandInteraction,
 	) {
-		const discordUser = await this.requireDiscordUser(interaction);
+		const discordUser = await ensureAuthenticatedDiscordUser(interaction);
 		if (!discordUser) return;
 
 		try {
@@ -115,7 +112,7 @@ export class MatchCommand extends Subcommand {
 	public async chatInputActivate(
 		interaction: Subcommand.ChatInputCommandInteraction,
 	) {
-		const discordUser = await this.requireDiscordUser(interaction);
+		const discordUser = await ensureAuthenticatedDiscordUser(interaction);
 		if (!discordUser) return;
 
 		try {
@@ -179,5 +176,58 @@ export class MatchCommand extends Subcommand {
 				],
 			});
 		}
+	}
+
+	public async chatInputForfeit(
+		interaction: Subcommand.ChatInputCommandInteraction,
+	) {
+		const discordUser = await ensureAuthenticatedDiscordUser(interaction);
+		if (!discordUser) return;
+
+		if (!discordUser.activeMatchId) {
+			await interaction.editReply({
+				embeds: [
+					buildErrorEmbed(
+						"No active match",
+						"Do `/accept` or accept a challenge first.",
+					),
+				],
+			});
+			return;
+		}
+
+		let match: Match;
+		try {
+			match = await this.container.chess.forfeitMatch(
+				discordUser.activeMatchId,
+				discordUser.accessToken,
+			);
+		} catch {
+			await interaction.editReply({
+				embeds: [
+					buildErrorEmbed(
+						"Error",
+						"There was an error forfeiting the match. Maybe the match is no longer active?",
+					),
+				],
+			});
+			return;
+		}
+
+		const otherUser =
+			discordUser.userId === match.whiteId
+				? match.blackPlayer
+				: match.whitePlayer;
+
+		await interaction.editReply({
+			embeds: [
+				new EmbedBuilder()
+					.setTitle("Match forfeited")
+					.setDescription(
+						`Successfully forfeited the active match vs. ${otherUser.name} (@${otherUser.username}).`,
+					)
+					.setColor("DarkGreen"),
+			],
+		});
 	}
 }

@@ -241,6 +241,60 @@ export function registerNotificationHandlers() {
 			],
 		);
 	});
+
+	container.chess.on("match:draw_request", async (event) => {
+		await notifyByTargetUserId(
+			event.target,
+			new EmbedBuilder()
+				.setTitle("Opponent requested a draw!")
+				.setDescription(
+					[
+						`Match #${event.payload.match.id}`,
+						`${event.payload.match.whitePlayer.name} (White) vs ${event.payload.match.blackPlayer.name} (Black)`,
+						`${event.payload.requestedBy.name} requested a draw.`,
+					].join("\n"),
+				)
+				.setImage("attachment://board.png")
+				.setColor("Blurple")
+				.setTimestamp(),
+			[
+				new AttachmentBuilder(
+					await renderBoard(
+						event.payload.match.fen,
+						event.payload.match.blackId === event.target,
+					),
+					{ name: "board.png" },
+				),
+			],
+		);
+	});
+
+	container.chess.on("match:draw_deny", async (event) => {
+		await notifyByTargetUserId(
+			event.target,
+			new EmbedBuilder()
+				.setTitle("The opponent denied your draw request!")
+				.setDescription(
+					[
+						`Match #${event.payload.match.id}`,
+						`${event.payload.match.whitePlayer.name} (White) vs ${event.payload.match.blackPlayer.name} (Black)`,
+						`${event.payload.requestedBy.name} denied the draw request`,
+					].join("\n"),
+				)
+				.setImage("attachment://board.png")
+				.setColor("DarkRed")
+				.setTimestamp(),
+			[
+				new AttachmentBuilder(
+					await renderBoard(
+						event.payload.match.fen,
+						event.payload.match.blackId === event.target,
+					),
+					{ name: "board.png" },
+				),
+			],
+		);
+	});
 }
 
 export async function subscribeDiscordUserToNotifications(accessToken: string) {

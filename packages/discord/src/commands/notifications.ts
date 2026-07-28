@@ -1,5 +1,5 @@
 import { Command } from "@sapphire/framework";
-import { EmbedBuilder, MessageFlags } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { subscribeDiscordUserToNotifications } from "../lib/notifications";
 import { DiscordUserModel } from "../schemas/user";
 
@@ -32,10 +32,6 @@ export class NotificationsCommand extends Command {
 	public override async chatInputRun(
 		interaction: Command.ChatInputCommandInteraction,
 	) {
-		await interaction.deferReply({
-			flags: [MessageFlags.Ephemeral],
-		});
-
 		const discordUser = await DiscordUserModel.findOne({
 			discordId: interaction.user.id,
 		});
