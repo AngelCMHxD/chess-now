@@ -255,6 +255,10 @@ function DrawControls({
 							This will pause the match until your opponent
 							accepts/denies the draw. You can only send one draw
 							request per match.
+							<br />
+							<br />
+							Remember that matches ending with a draw do affect
+							your ELO.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
