@@ -195,7 +195,6 @@ function DrawControls({
 				? match.blackPlayer
 				: null;
 	const isRequester = activeRequester?.id === user.id;
-	const isOpponent = !!activeRequester && !isRequester;
 
 	async function requestDraw() {
 		setIsSubmitting(true);
@@ -292,7 +291,7 @@ function DrawControls({
 		);
 	}
 
-	if (isOpponent && activeRequester) {
+	if (!isRequester && activeRequester) {
 		return (
 			<Dialog open onOpenChange={() => {}}>
 				<DialogContent>
