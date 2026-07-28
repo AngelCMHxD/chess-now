@@ -79,6 +79,18 @@ export default function SpectateMatchPage({
 					}
 				});
 
+				newClient.on("match:draw_request", (event) => {
+					if (event.payload.match.id === currentMatchId) {
+						setMatch(event.payload.match);
+					}
+				});
+
+				newClient.on("match:draw_deny", (event) => {
+					if (event.payload.match.id === currentMatchId) {
+						setMatch(event.payload.match);
+					}
+				});
+
 				newClient.on("match:game_over", (event) => {
 					if (event.payload.match.id === currentMatchId) {
 						setMatch((prev) =>
@@ -224,6 +236,7 @@ export default function SpectateMatchPage({
 								<MatchDetailsCard
 									match={match}
 									gameInfo={gameInfo}
+									onMatchChange={setMatch}
 								/>
 							)}
 						</div>

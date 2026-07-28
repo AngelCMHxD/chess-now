@@ -74,6 +74,18 @@ export default function PlayMatchPage({
 					}
 				});
 
+				newClient.on("match:draw_request", (event) => {
+					if (event.payload.match.id === currentMatchId) {
+						setMatch(event.payload.match);
+					}
+				});
+
+				newClient.on("match:draw_deny", (event) => {
+					if (event.payload.match.id === currentMatchId) {
+						setMatch(event.payload.match);
+					}
+				});
+
 				newClient.on("match:game_over", (event) => {
 					if (event.payload.match.id === currentMatchId) {
 						setMatch((prev) =>
@@ -299,6 +311,7 @@ export default function PlayMatchPage({
 									user={user}
 									gameInfo={gameInfo}
 									client={client}
+									onMatchChange={setMatch}
 								/>
 							)}
 						</div>

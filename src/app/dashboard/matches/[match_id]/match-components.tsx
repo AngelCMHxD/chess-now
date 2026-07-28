@@ -94,11 +94,13 @@ export function MatchDetailsCard({
 	user,
 	gameInfo,
 	client,
+	onMatchChange,
 }: {
 	match: Match;
 	user?: User | null;
 	gameInfo: GameInfo;
 	client?: ChessNowClient | null;
+	onMatchChange?: (match: Match) => void;
 }) {
 	return (
 		<Card className="w-full max-w-2xl flex flex-col max-h-full">
@@ -152,12 +154,199 @@ export function MatchDetailsCard({
 
 				<Separator />
 				<MoveHistory moves={gameInfo.moves} />
+				{match.status === "active" && client && user && (
+					<DrawControls
+						client={client}
+						match={match}
+						user={user}
+						onMatchChange={onMatchChange}
+					/>
+				)}
+				{match.status === "active" && !user && (
+					<DrawSpectatorNotice match={match} />
+				)}
 				{client && match.status === "active" && (
 					<ForfeitButton client={client} match={match} />
 				)}
 				{match.status !== "active" && <MatchResult match={match} />}
 			</CardContent>
 		</Card>
+	);
+}
+
+function DrawControls({
+	client,
+	match,
+	user,
+	onMatchChange,
+}: {
+	client: ChessNowClient;
+	match: Match;
+	user: User;
+	onMatchChange?: (match: Match) => void;
+}) {
+	const [confirmOpen, setConfirmOpen] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const activeRequester =
+		match.activeDrawRequest === "white"
+			? match.whitePlayer
+			: match.activeDrawRequest === "black"
+				? match.blackPlayer
+				: null;
+	const isRequester = activeRequester?.id === user.id;
+	const isOpponent = !!activeRequester && !isRequester;
+
+	async function requestDraw() {
+		setIsSubmitting(true);
+		try {
+			const updatedMatch = await client.requestDraw(match.id);
+			onMatchChange?.(updatedMatch);
+			setConfirmOpen(false);
+			toast.success("Draw request sent.", { position: "bottom-center" });
+		} catch {
+			toast.error("There was an error requesting the draw", {
+				position: "bottom-center",
+			});
+			setIsSubmitting(false);
+		}
+	}
+
+	async function acceptDraw() {
+		setIsSubmitting(true);
+		try {
+			const updatedMatch = await client.acceptDraw(match.id);
+			onMatchChange?.(updatedMatch);
+			toast.success("Draw accepted.", { position: "bottom-center" });
+		} catch {
+			toast.error("There was an error accepting the draw", {
+				position: "bottom-center",
+			});
+			setIsSubmitting(false);
+		}
+	}
+
+	async function denyDraw() {
+		setIsSubmitting(true);
+		try {
+			const updatedMatch = await client.denyDraw(match.id);
+			onMatchChange?.(updatedMatch);
+			toast.success("Draw denied.", { position: "bottom-center" });
+		} catch {
+			toast.error("There was an error denying the draw", {
+				position: "bottom-center",
+			});
+			setIsSubmitting(false);
+		}
+	}
+
+	if (!match.activeDrawRequest) {
+		return (
+			<Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+				<DialogTrigger asChild>
+					<Button variant="secondary" size="icon" className="w-full">
+						Request Draw
+					</Button>
+				</DialogTrigger>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Are you sure you wanna draw?</DialogTitle>
+						<DialogDescription>
+							This will pause the match until your opponent
+							accepts/denies the draw. You can only send one draw
+							request per match.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<DialogClose asChild>
+							<Button variant="outline">Cancel</Button>
+						</DialogClose>
+						<Button disabled={isSubmitting} onClick={requestDraw}>
+							{isSubmitting ? (
+								<Spinner className="h-4 w-4" />
+							) : null}
+							Send request
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+		);
+	}
+
+	if (isRequester && activeRequester) {
+		return (
+			<AlertDialog defaultOpen={true}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Draw request sent</AlertDialogTitle>
+						<AlertDialogDescription>
+							Waiting for your opponent to accept/deny the draw
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+				</AlertDialogContent>
+			</AlertDialog>
+		);
+	}
+
+	if (isOpponent && activeRequester) {
+		return (
+			<Dialog open onOpenChange={() => {}}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Draw request</DialogTitle>
+						<DialogDescription>
+							{activeRequester.name} requested a draw. Do you want
+							to accept it?
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							disabled={isSubmitting}
+							onClick={denyDraw}
+						>
+							{isSubmitting ? (
+								<Spinner className="h-4 w-4" />
+							) : null}
+							Deny
+						</Button>
+						<Button disabled={isSubmitting} onClick={acceptDraw}>
+							{isSubmitting ? (
+								<Spinner className="h-4 w-4" />
+							) : null}
+							Accept
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+		);
+	}
+
+	return null;
+}
+
+function DrawSpectatorNotice({ match }: { match: Match }) {
+	if (!match.activeDrawRequest) return null;
+
+	const requestedBy =
+		match.activeDrawRequest === "white"
+			? match.whitePlayer
+			: match.blackPlayer;
+
+	return (
+		<AlertDialog defaultOpen={true}>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>
+						Draw request in progress
+					</AlertDialogTitle>
+					<AlertDialogDescription>
+						{requestedBy.name} requested a draw. Waiting for the
+						other player to respond.
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+			</AlertDialogContent>
+		</AlertDialog>
 	);
 }
 
