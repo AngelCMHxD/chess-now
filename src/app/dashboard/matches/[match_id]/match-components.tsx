@@ -50,11 +50,11 @@ export interface GameInfo {
 export function MatchNotFound() {
 	return (
 		<AlertDialog defaultOpen={true}>
-			<AlertDialogContent className="sm:max-w-[425px]">
+			<AlertDialogContent>
 				<AlertDialogHeader>
-					<AlertDialogTitle>Access Denied</AlertDialogTitle>
+					<AlertDialogTitle>Match not found</AlertDialogTitle>
 					<AlertDialogDescription>
-						You are not a player in this match.
+						We couldn't find the match you were looking for :/
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
@@ -72,7 +72,7 @@ export function MatchNotFound() {
 export function NotPlayer({ matchId }: { matchId: number }) {
 	return (
 		<AlertDialog defaultOpen={true}>
-			<AlertDialogContent className="sm:max-w-[425px]">
+			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>Access Denied</AlertDialogTitle>
 					<AlertDialogDescription>
