@@ -63,6 +63,12 @@ export async function run(
 		},
 	);
 
+	publishToSubscriber(`match:${match.id}`, "match:draw_deny", undefined, {
+		requestedBy: otherPlayer,
+		deniedBy: removePrivateUserFields(session.user),
+		match,
+	});
+
 	return {
 		success: true,
 		data: match,

@@ -70,6 +70,11 @@ export async function run(
 		},
 	);
 
+	publishToSubscriber(`match:${match.id}`, "match:draw_request", undefined, {
+		requestedBy: removePrivateUserFields(session.user),
+		match,
+	});
+
 	return {
 		success: true,
 		data: match,
