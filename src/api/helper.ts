@@ -1,10 +1,11 @@
-import type {
-	Challenge,
-	ChallengeConfig,
-	FriendRequest,
-	Friendship,
-	Match,
-	User,
+import {
+	type Challenge,
+	type ChallengeConfig,
+	type FriendRequest,
+	type Friendship,
+	type Match,
+	parseDateReviver,
+	type User,
 } from "@chess-now/api";
 import { Chess } from "chess.js";
 import { eq } from "drizzle-orm";
@@ -12,6 +13,26 @@ import { glicko2 } from "glicko2-lite";
 import z from "zod";
 import type { Session } from "@/lib/auth-client";
 import { db, schemas, secondaryStorage } from "@/lib/database";
+
+function convertDates(obj: object): object {
+	if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
+		return obj;
+	}
+
+	const copy: Record<string, unknown> = {};
+
+	Object.entries(obj).forEach(([key, value]) => {
+		if (typeof value === "string") {
+			copy[key] = parseDateReviver(key, value);
+		} else if (typeof value === "object" && value !== null) {
+			copy[key] = convertDates(value);
+		} else {
+			copy[key] = value;
+		}
+	});
+
+	return copy;
+}
 
 export const publicUserColumns = {
 	name: true,
@@ -248,9 +269,9 @@ export async function acceptChallenge(challenge: Challenge): Promise<{
 export async function getMatchInfo(
 	matchId: number,
 ): Promise<Match | undefined> {
-	const activeMatch = (await secondaryStorage.get(
-		`match_${matchId}`,
-	)) as Match;
+	const activeMatch = convertDates(
+		await secondaryStorage.get(`match_${matchId}`),
+	) as Match;
 
 	if (activeMatch) {
 		if (activeMatch.whitePlayer && activeMatch.blackPlayer) {
@@ -303,7 +324,9 @@ export async function updateMatch(
 	matchId: number,
 	matchData: Omit<Partial<Match>, "whitePlayer" | "blackPlayer">,
 ): Promise<Match> {
-	let activeMatch = (await secondaryStorage.get(`match_${matchId}`)) as Match;
+	let activeMatch = convertDates(
+		await secondaryStorage.get(`match_${matchId}`),
+	) as Match;
 
 	if (activeMatch) {
 		activeMatch = {
@@ -367,7 +390,8 @@ export async function endMatch(
 		};
 	}
 
-	const { whitePlayer, blackPlayer, ...matchWithoutPlayers } = activeMatch;
+	const { whitePlayer, blackPlayer, id, ...matchWithoutPlayers } =
+		activeMatch;
 
 	const savedMatch = (
 		await db
@@ -444,9 +468,9 @@ export async function getUserMatches(userId: string): Promise<Match[]> {
 	for (const [i, match] of matches.entries()) {
 		if (match.status !== "active") continue;
 
-		const activeMatch = (await secondaryStorage.get(
-			`match_${match.id}`,
-		)) as (typeof matches)[number];
+		const activeMatch = convertDates(
+			await secondaryStorage.get(`match_${match.id}`),
+		) as (typeof matches)[number];
 		if (!activeMatch) continue;
 
 		matches[i].fen = activeMatch.fen;

@@ -28,7 +28,7 @@ function wsUrl(baseUrl: string): string {
 	return `${protocol}://${host}/api/websocket`;
 }
 
-function parseDateReviver(_key: string, value: unknown): unknown {
+export function parseDateReviver(_key: string, value: unknown): unknown {
 	if (typeof value === "string") {
 		const isoDateRegex =
 			/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;

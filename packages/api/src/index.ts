@@ -1,4 +1,8 @@
-export { ChessNowClient, updateAccountInfoSchema } from "./client";
+export {
+	ChessNowClient,
+	parseDateReviver,
+	updateAccountInfoSchema,
+} from "./client";
 export type { ErrorPayload } from "./errors";
 export {
 	BadRequestError,
