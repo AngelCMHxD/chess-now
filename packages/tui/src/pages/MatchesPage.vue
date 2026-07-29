@@ -128,7 +128,7 @@ function activate(index?: number) {
 		showSendChallengePopup.value = true;
 	} else {
 		const match = sortedMatches.value[targetIndex - 1];
-		if (match && match.status === "active") {
+		if (match) {
 			router.push(`/matches/${match.id}`);
 		}
 	}
