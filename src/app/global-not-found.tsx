@@ -1,8 +1,8 @@
 // Import global styles and fonts
-"use client";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { BackButton } from "@/components/back-button";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
@@ -59,14 +59,7 @@ export default function GlobalNotFound() {
 								The page you are looking for does not exist.
 							</CardContent>
 							<CardFooter className="flex flex-col gap-2">
-								<Button
-									variant="default"
-									size="lg"
-									onClick={() => window.history.back()}
-									className="w-full"
-								>
-									Go Back
-								</Button>
+								<BackButton />
 								<Button
 									variant="secondary"
 									size="lg"
@@ -85,3 +78,4 @@ export default function GlobalNotFound() {
 		</html>
 	);
 }
+
