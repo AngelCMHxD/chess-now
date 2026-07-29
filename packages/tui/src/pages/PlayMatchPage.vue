@@ -195,6 +195,7 @@ onKeyDown((key) => {
 					:marginTop="1"
 					flexDirection="column"
 					alignItems="center"
+					:gap="1"
 				>
 					<Text
 						:content="t`${bold(matchDetails.whitePlayer.name)} (@${matchDetails.whitePlayer.username}) ${formatRatingDiff(matchDetails.whiteRatingDiff)} vs. ${bold(matchDetails.blackPlayer.name)} (@${matchDetails.blackPlayer.username}) ${formatRatingDiff(matchDetails.blackRatingDiff)}`"
