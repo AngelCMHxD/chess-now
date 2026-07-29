@@ -8,6 +8,19 @@ const internalApiBaseUrl = process.env.INTERNAL_API_PORT
 const isDevelopment = process.env.NODE_ENV === "development";
 
 const nextConfig: NextConfig = {
+	reactStrictMode: true,
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "avatars.githubusercontent.com",
+			},
+			{
+				protocol: "https",
+				hostname: "github.com",
+			},
+		],
+	},
 	experimental: {
 		globalNotFound: true,
 	},

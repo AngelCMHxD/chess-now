@@ -11,16 +11,19 @@ const poppins = Poppins({
 	weight: ["300", "400", "500", "600", "700", "800"],
 	style: ["normal", "italic"],
 	variable: "--font-sans",
+	display: "swap",
 });
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
 	subsets: ["latin"],
+	display: "swap",
 });
 
 const geistMono = Geist_Mono({
 	variable: "--font-geist-mono",
 	subsets: ["latin"],
+	display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -48,6 +51,8 @@ export default function RootLayout({
 		>
 			<head>
 				<link rel="icon" type="image/svg+xml" href="/icon.svg" />
+				<link rel="preconnect" href="https://avatars.githubusercontent.com" />
+				<link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
 			</head>
 			<body className="min-h-full flex flex-col">
 				{" "}

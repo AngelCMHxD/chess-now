@@ -84,7 +84,8 @@ const HeroSection = () => {
 							<div className="p-4">
 								<Avatar className="size-12">
 									<AvatarImage
-										src="https://github.com/AngelCMHxD.png"
+										src="https://avatars.githubusercontent.com/u/57822483?v=4"
+										alt="Angel (AngelCMHxD) Profile Picture"
 										loading="eager"
 									/>
 									<AvatarFallback>
