@@ -7,10 +7,13 @@ import {
 	CopyIcon,
 	KeyRoundIcon,
 	PlusIcon,
+	SendIcon,
 	Trash2Icon,
+	UserIcon,
 	UserPenIcon,
 	UserXIcon,
 } from "lucide-react";
+import Link from "next/link";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/dashboard-sidebar";
@@ -84,6 +87,39 @@ type ChangeInfoDialogType = {
 	botId: string;
 };
 
+const officialBots = [
+	{
+		name: "Markbot",
+		username: "markbot",
+		difficulty: "Level 1",
+	},
+	{
+		name: "Lukebot",
+		username: "lukebot",
+		difficulty: "Level 2",
+	},
+	{
+		name: "Timbot",
+		username: "timbot",
+		difficulty: "Level 3",
+	},
+	{
+		name: "Petebot",
+		username: "petebot",
+		difficulty: "Level 4",
+	},
+	{
+		name: "Mattbot",
+		username: "mattbot",
+		difficulty: "Level 5",
+	},
+	{
+		name: "Stockfish",
+		username: "stockfish",
+		difficulty: "Grandmaster (good luck lol)",
+	},
+];
+
 export default function BotsPage() {
 	const [bots, setBots] = useState<User[] | null>(null);
 
@@ -93,8 +129,29 @@ export default function BotsPage() {
 		botName: "",
 	});
 	const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+	const [challengeLoadingUsername, setChallengeLoadingUsername] = useState<
+		string | null
+	>(null);
 
 	const [client, setClient] = useState<ChessNowClient | null>(null);
+
+	const handleChallengeBot = async (username: string) => {
+		if (!client) return;
+		setChallengeLoadingUsername(username);
+		try {
+			await client.requestChallenge(username);
+			toast.success(
+				`Challenge sent to @${username}. Check your matches to continue.`,
+			);
+		} catch (error: unknown) {
+			toast.error(
+				(error as { message?: string }).message ||
+					"Failed to send challenge",
+			);
+		} finally {
+			setChallengeLoadingUsername(null);
+		}
+	};
 
 	useEffect(() => {
 		let activeClient: ChessNowClient | null = null;
@@ -172,8 +229,82 @@ export default function BotsPage() {
 				</header>
 				<div className="p-5 h-full">
 					<div className="h-full flex-1 rounded-xl bg-muted/50 pt-4">
-						<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-							<div className="flex justify-between items-center mb-4">
+						<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
+							<div>
+								<h2 className="text-xl font-bold mb-3">
+									Official Bots
+								</h2>
+								<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
+									{officialBots.map((bot) => (
+										<Card
+											key={bot.username}
+											className="flex flex-row items-center justify-between p-4"
+										>
+											<CardHeader className="p-0">
+												<CardTitle className="text-base flex items-center gap-2">
+													<span>{bot.name}</span>
+													<span className="text-xs text-muted-foreground">
+														@{bot.username}
+													</span>
+												</CardTitle>
+												<CardDescription>
+													{bot.difficulty}
+												</CardDescription>
+											</CardHeader>
+											<div className="flex items-center gap-2">
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<Button
+															variant="outline"
+															size="icon"
+															asChild
+														>
+															<Link
+																href={`/dashboard/users/${bot.username}`}
+															>
+																<UserIcon className="size-4" />
+															</Link>
+														</Button>
+													</TooltipTrigger>
+													<TooltipContent>
+														<p>View Profile</p>
+													</TooltipContent>
+												</Tooltip>
+
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<Button
+															variant="outline"
+															size="icon"
+															disabled={
+																challengeLoadingUsername ===
+																bot.username
+															}
+															onClick={() =>
+																handleChallengeBot(
+																	bot.username,
+																)
+															}
+														>
+															{challengeLoadingUsername ===
+															bot.username ? (
+																<Spinner />
+															) : (
+																<SendIcon className="size-4" />
+															)}
+														</Button>
+													</TooltipTrigger>
+													<TooltipContent>
+														<p>Send Challenge</p>
+													</TooltipContent>
+												</Tooltip>
+											</div>
+										</Card>
+									))}
+								</div>
+							</div>
+
+							<div className="flex justify-between items-center pt-4 border-t">
 								<h2 className="text-xl font-bold tracking-tight">
 									Your Bots
 								</h2>
