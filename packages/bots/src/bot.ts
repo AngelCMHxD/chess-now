@@ -14,7 +14,7 @@ export class ChessBot {
 		isStockfish: boolean = false,
 	) {
 		acceptDraws;
-		this.client = new ChessNowClient("http://localhost:3000");
+		this.client = new ChessNowClient("http://localhost:8080");
 		this.client.setDefaultToken(token);
 		if (isStockfish) {
 			this.stockfish = new Stockfish();

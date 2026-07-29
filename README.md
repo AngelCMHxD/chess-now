@@ -46,4 +46,4 @@ None of the backend API was made with generative AI, which is the main focus of 
 
 ## Documentation
 
-Visit the [docs](https://chess-now.example.com/docs) for the full API and package reference.
+Visit the [docs](https://chessnow.angelcmh.com/docs) for the full API and package reference.

@@ -104,7 +104,7 @@ export class ChessNowClient {
 	/** @internal */
 	private intentionalClose = false;
 
-	constructor(baseUrl: string) {
+	constructor(baseUrl: string = "https://chessnow.angelcmh.com") {
 		this.baseUrl = baseUrl.replace(/\/$/, "");
 		this.wsUrl = wsUrl(this.baseUrl);
 	}

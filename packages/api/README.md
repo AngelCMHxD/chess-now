@@ -17,7 +17,7 @@ bun add @chess-now/api
 ```ts
 import { ChessNowClient } from "@chess-now/api";
 
-const api = new ChessNowClient("https://chess-now.example.com");
+const api = new ChessNowClient();
 api.setDefaultToken("your-token");
 
 // HTTP
@@ -40,7 +40,7 @@ api.on("challenge:request", ({ payload }) => {
 
 ## Documentation
 
-Full docs available at [https://chess-now.example.com/docs](https://chess-now.example.com/docs).
+Full docs available at [https://chessnow.angelcmh.com/docs](https://chessnow.angelcmh.com.com/docs).
 
 ## License
 

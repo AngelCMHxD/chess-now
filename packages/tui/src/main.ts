@@ -4,7 +4,7 @@ import App from "./App.vue";
 import { router } from "./router";
 import { state } from "./store";
 
-export const chessClient = new ChessNowClient("http://localhost:3000");
+export const chessClient = new ChessNowClient();
 
 const app = await createApp(App);
 await chessClient.connect();
