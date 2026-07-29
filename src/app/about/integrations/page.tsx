@@ -36,17 +36,10 @@ const integrationsData: {
 		),
 		description: "A pretty simple and barebones Discord bot",
 		footer: () => {
-			if (
-				!process.env.DISCORD_INVITE_URL &&
-				!process.env.DISCORD_SERVER_URL
-			)
-				return null;
+			if (!process.env.DISCORD_SERVER_URL) return null;
 
 			return (
 				<div className="flex gap-2">
-					{process.env.DISCORD_INVITE_URL && (
-						<Button>Invite to server</Button>
-					)}
 					{process.env.DISCORD_SERVER_URL && (
 						<Button>Join Main Server</Button>
 					)}
