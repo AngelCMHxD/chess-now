@@ -14,7 +14,11 @@ import {
 	UnauthorizedError,
 	UnprocessableContentError,
 } from "@/api/errors";
-import { hasScope, removePrivateUserFields } from "@/api/helper";
+import {
+	hasScope,
+	invalidateSessionsFromSecondaryDb,
+	removePrivateUserFields,
+} from "@/api/helper";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
@@ -59,6 +63,8 @@ export async function run(
 			.returning();
 
 		if (!updatedUser.length) throw new APIError();
+
+		await invalidateSessionsFromSecondaryDb(session.user.id);
 
 		return {
 			success: true,

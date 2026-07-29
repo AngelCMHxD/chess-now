@@ -1,9 +1,12 @@
 import type { ApiSuccessResponse } from "@chess-now/api";
 import { eq } from "drizzle-orm";
 import { ForbiddenError, UnauthorizedError } from "@/api/errors";
-import { isExternalAuth } from "@/api/helper";
+import {
+	invalidateSessionsFromSecondaryDb,
+	isExternalAuth,
+} from "@/api/helper";
 import { auth } from "@/lib/auth";
-import { db, schemas, secondaryStorage } from "@/lib/database";
+import { db, schemas } from "@/lib/database";
 
 export async function run(
 	headers: Headers,
@@ -66,31 +69,7 @@ export async function deleteUser(userId: string) {
 		.set({ blackId: deletedUser.id })
 		.where(eq(schemas.matches.blackId, userId));
 
-	type ActiveSessions = {
-		token: string;
-		expiresAt: number;
-	}[];
-
-	// invalidate all sessions from the secondary storage
-	// TODO: find a better way to this that is not as prone to breaking
-	// this relies heavily on how better auth works internally
-	// if there is an internal change to how sessions are stored, this WILL break :/
-	const activeSessionsString = await secondaryStorage.get(
-		`active-sessions-${userId}`,
-	);
-
-	if (activeSessionsString) {
-		const activeSessions = JSON.parse(
-			activeSessionsString,
-		) as ActiveSessions;
-		console.log(activeSessions);
-		for (const sessions of activeSessions) {
-			console.log(sessions);
-			console.log(sessions.token);
-			await secondaryStorage.delete(sessions.token);
-		}
-		await secondaryStorage.delete(`active-sessions-${userId}`);
-	}
+	await invalidateSessionsFromSecondaryDb(userId);
 
 	await db.delete(schemas.user).where(eq(schemas.user.id, userId));
 }

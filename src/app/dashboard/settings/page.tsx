@@ -193,6 +193,7 @@ function ProfileTab({
 	setUsername: Dispatch<SetStateAction<string>>;
 	client: ChessNowClient | null;
 }) {
+	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 
 	const normalizeUsernameInput = (value: string) =>
@@ -209,6 +210,7 @@ function ProfileTab({
 				username: username.trim(),
 			});
 			setUser(updatedUser);
+			router.refresh();
 			toast.success("Profile updated successfully!");
 		} catch (err: unknown) {
 			toast.error(

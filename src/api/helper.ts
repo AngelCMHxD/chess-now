@@ -531,3 +531,35 @@ export function hasScope(session: Session, scope: string) {
 	if (!isExternalAuth(session)) return true;
 	return session.session?.scopes?.includes(scope) ?? false;
 }
+
+export type ActiveSessions = {
+	token: string;
+	expiresAt: number;
+}[];
+
+// invalidate all sessions from the secondary storage
+// TODO: find a better way to this that is not as prone to breaking
+// this relies heavily on how better auth works internally
+// if there is an internal change to how sessions are stored, this WILL break :/
+export async function invalidateSessionsFromSecondaryDb(userId: string) {
+	const activeSessionsString = await secondaryStorage.get(
+		`active-sessions-${userId}`,
+	);
+
+	if (activeSessionsString) {
+		try {
+			const activeSessions = JSON.parse(
+				activeSessionsString,
+			) as ActiveSessions;
+			for (const session of activeSessions) {
+				await secondaryStorage.delete(session.token);
+			}
+		} catch (e) {
+			console.error(
+				"Failed to parse active sessions for invalidation",
+				e,
+			);
+		}
+		await secondaryStorage.delete(`active-sessions-${userId}`);
+	}
+}
