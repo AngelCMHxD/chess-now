@@ -6,6 +6,7 @@ import { Chess, type Square } from "chess.js";
 import Image from "next/image";
 import { use, useEffect, useMemo, useState } from "react";
 import type { PieceDropHandlerArgs } from "react-chessboard";
+import { toast } from "sonner";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { ThemedChessboard } from "@/components/themed-chessboard";
 import {
@@ -36,7 +37,6 @@ import {
 	MatchNotFound,
 	NotPlayer,
 } from "../match-components";
-import { toast } from "sonner";
 
 type PromotionMoveState = {
 	sourceSquare: string;
