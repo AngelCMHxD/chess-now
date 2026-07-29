@@ -7,7 +7,7 @@ import type {
 import { CheckCircle2Icon, TriangleAlertIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import {
@@ -39,7 +39,7 @@ const scopesDescriptions: Record<ScopeType, string> = {
 	matches: "Create new matches and play running matches",
 };
 
-export default function InputOTPForm() {
+function DeviceApprovalContent() {
 	const code = useSearchParams().get("code") || "";
 	const [submittingApprove, setSubmittingApprove] = useState(false);
 	const [submittingDeny, setSubmittingDeny] = useState(false);
@@ -239,5 +239,13 @@ export default function InputOTPForm() {
 				<ThemeSwitcher />
 			</div>
 		</div>
+	);
+}
+
+export default function DeviceApprovalPage() {
+	return (
+		<Suspense>
+			<DeviceApprovalContent />
+		</Suspense>
 	);
 }
