@@ -17,7 +17,16 @@ export class ChessBot {
 		this.client = new ChessNowClient("http://localhost:8080");
 		this.client.setDefaultToken(token);
 		if (isStockfish) {
-			this.stockfish = new Stockfish();
+			try {
+				const sf = new Stockfish();
+				sf.on("error", (err) => {
+					this.log(`Stockfish engine process error: ${err.message}`);
+				});
+				this.stockfish = sf;
+			} catch (err) {
+				this.log(`Failed to initialize Stockfish engine: ${err}`);
+				this.stockfish = null;
+			}
 		}
 	}
 
