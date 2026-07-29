@@ -12,6 +12,7 @@ import {
 	UserXIcon,
 } from "lucide-react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -221,18 +222,20 @@ export default function BotsPage() {
 }
 
 function ChangeInfoDialog({
+	bot,
 	setBots,
 	client,
 }: {
+	bot: User;
 	setBots: Dispatch<SetStateAction<User[] | null>>;
 	client: ChessNowClient | null;
 }) {
 	const [changeInfoDialog, setChangeInfoDialog] =
 		useState<ChangeInfoDialogType>({
 			open: false,
-			botId: "",
-			botName: "",
-			botUsername: "",
+			botId: bot.id,
+			botName: bot.name,
+			botUsername: bot.username,
 		});
 	const [isUpdating, setIsUpdating] = useState(false);
 
@@ -253,10 +256,11 @@ function ChangeInfoDialog({
 			setBots((prev) => {
 				if (!prev) return null;
 
-				return prev.map((bot) =>
-					bot.id === changeInfoDialog.botId ? result : bot,
+				return prev.map((b) =>
+					b.id === changeInfoDialog.botId ? result : b,
 				);
 			});
+			toast.success("Bot updated!");
 
 			setChangeInfoDialog({
 				botName: "",
@@ -265,7 +269,7 @@ function ChangeInfoDialog({
 				open: false,
 			});
 		} catch (error) {
-			console.error(error);
+			toast.error((error as Error).message || "Failed to update bot");
 		} finally {
 			setIsUpdating(false);
 		}
@@ -275,13 +279,21 @@ function ChangeInfoDialog({
 		<Dialog
 			open={changeInfoDialog.open}
 			onOpenChange={(open) => {
-				if (!open)
+				if (!open) {
 					setChangeInfoDialog({
 						botName: "",
 						botId: "",
 						botUsername: "",
 						open: false,
 					});
+				} else {
+					setChangeInfoDialog({
+						botName: bot.name,
+						botId: bot.id,
+						botUsername: bot.username,
+						open: true,
+					});
+				}
 			}}
 		>
 			<Tooltip>
@@ -292,9 +304,9 @@ function ChangeInfoDialog({
 							size="icon"
 							onClick={() =>
 								setChangeInfoDialog({
-									botName: "",
-									botId: "",
-									botUsername: "",
+									botName: bot.name,
+									botId: bot.id,
+									botUsername: bot.username,
 									open: true,
 								})
 							}
@@ -362,7 +374,7 @@ function ChangeInfoDialog({
 							{isUpdating ? (
 								<Spinner className="mr-2 h-4 w-4" />
 							) : null}
-							Create
+							Save
 						</Button>
 					</DialogFooter>
 				</form>
@@ -396,8 +408,9 @@ function BotCard({
 				token: apiKey,
 				botName,
 			});
+			toast.success("Bot token resetted!");
 		} catch (error) {
-			console.error(error);
+			toast.error((error as Error).message || "Failed to reset token");
 		} finally {
 			setActionLoadingId(null);
 		}
@@ -409,8 +422,9 @@ function BotCard({
 		try {
 			await client.deleteBot(botId);
 			setBots((prev) => (prev ? prev.filter((b) => b.id !== botId) : []));
+			toast.success("Bot deleted!");
 		} catch (error) {
-			console.error(error);
+			toast.error((error as Error).message || "Failed to delete bot");
 		} finally {
 			setActionLoadingId(null);
 		}
@@ -438,7 +452,11 @@ function BotCard({
 						</CardDescription>
 					</CardHeader>
 					<div className="w-1/4 flex flex-col items-center justify-center gap-2 p-2">
-						<ChangeInfoDialog setBots={setBots} client={client} />
+						<ChangeInfoDialog
+							bot={bot}
+							setBots={setBots}
+							client={client}
+						/>
 
 						<AlertDialog>
 							<Tooltip>
@@ -570,7 +588,7 @@ function CreateDialog({
 				botName: result.bot.name,
 			});
 		} catch (error) {
-			console.error(error);
+			toast.error((error as Error).message || "Failed to create bot");
 		} finally {
 			setIsCreating(false);
 		}
