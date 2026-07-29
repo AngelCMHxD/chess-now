@@ -38,7 +38,8 @@ export async function run(
 
 	if (challenge.toId !== session.user.id) throw new ForbiddenError();
 
-	db.update(schemas.challenges)
+	await db
+		.update(schemas.challenges)
 		.set({
 			status: "denied",
 		})
@@ -48,6 +49,8 @@ export async function run(
 				eq(schemas.challenges.toId, session.user.id),
 			),
 		);
+
+	challenge.status = "denied";
 
 	publishToSubscriber(
 		`challenge:${challenge.fromId}`,

@@ -107,7 +107,7 @@ export async function run(
 
 	return {
 		success: true,
-		data: match,
+		data: finalMatch,
 	};
 }
 

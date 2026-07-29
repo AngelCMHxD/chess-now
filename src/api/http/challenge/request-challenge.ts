@@ -1,11 +1,11 @@
-import {
-	type ApiSuccessResponse,
-	type Challenge,
-	ForbiddenError,
-	Scope,
-} from "@chess-now/api";
+import { type ApiSuccessResponse, type Challenge, Scope } from "@chess-now/api";
 import z from "zod";
-import { NotFoundError, UnauthorizedError } from "@/api/errors";
+import {
+	BadRequestError,
+	ForbiddenError,
+	NotFoundError,
+	UnauthorizedError,
+} from "@/api/errors";
 import {
 	challengeConfig,
 	createChallenge,
@@ -33,6 +33,10 @@ export async function run(
 	const oponent = await getUserByUsername(username);
 
 	if (!oponent) throw new NotFoundError("User Not Found");
+
+	if (oponent.id === session.user.id) {
+		throw new BadRequestError("You cannot challenge yourself");
+	}
 
 	const challenge = await createChallenge(
 		session.user.id,

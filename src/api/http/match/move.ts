@@ -145,6 +145,8 @@ export async function run(
 		move: moveInfo,
 	});
 
+	let resultMatch = matchAfterMove;
+
 	if (chess.isGameOver()) {
 		let endReason: (typeof schemas.matchEndReason.enumValues)[number] =
 			"draw";
@@ -216,6 +218,7 @@ export async function run(
 		});
 		finalMatch.whitePlayer = match.whitePlayer;
 		finalMatch.blackPlayer = match.blackPlayer;
+		resultMatch = finalMatch;
 
 		players.forEach((playerId) => {
 			publishToSubscriber(
@@ -239,7 +242,7 @@ export async function run(
 		success: true,
 		data: {
 			move: moveInfo,
-			match: matchAfterMove,
+			match: resultMatch,
 		},
 	};
 }

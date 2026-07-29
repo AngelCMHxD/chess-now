@@ -5,7 +5,7 @@ import {
 	updateAccountInfoSchema,
 } from "@chess-now/api";
 import { and, eq } from "drizzle-orm";
-import z from "zod";
+import type z from "zod";
 import {
 	APIError,
 	BadRequestError,
@@ -18,12 +18,11 @@ import { hasScope, removePrivateUserFields } from "@/api/helper";
 import { auth } from "@/lib/auth";
 import { db, schemas } from "@/lib/database";
 
-const bodyType = updateAccountInfoSchema.extend({
-	botId: z.string(),
-});
+export const bodyType = updateAccountInfoSchema;
 
 export async function run(
 	headers: Headers,
+	botId: string,
 	body: z.infer<typeof bodyType>,
 ): Promise<ApiSuccessResponse<User>> {
 	const session = await auth.api.getSession({
@@ -52,10 +51,6 @@ export async function run(
 			throw new ConflictError("Username is reserved.");
 	}
 
-	if (!body.botId) {
-		throw new BadRequestError("Missing botId");
-	}
-
 	if (!body.name && !body.username) {
 		throw new BadRequestError("Missing name or username");
 	}
@@ -71,7 +66,7 @@ export async function run(
 			.where(
 				and(
 					eq(schemas.user.botOwnerId, session.user.id),
-					eq(schemas.user.id, body.botId),
+					eq(schemas.user.id, botId),
 				),
 			)
 			.returning();

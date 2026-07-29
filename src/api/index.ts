@@ -509,8 +509,9 @@ export const app = new Elysia({ prefix: "/api", normalize: "typebox" })
 		},
 	)
 	.put(
-		"/me",
-		({ request, body }) => httpUpdateBotInfo.run(request.headers, body),
+		"/me/bots/:bot_id",
+		({ request, params, body }) =>
+			httpUpdateBotInfo.run(request.headers, params.bot_id, body),
 		{
 			headers: authHeadersSchema,
 			body: httpUpdateBotInfo.bodyType,

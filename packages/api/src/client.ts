@@ -420,10 +420,7 @@ export class ChessNowClient {
 		return this._fetch<User>(`/me/bots/${botId}`, {
 			method: "PUT",
 			token,
-			body: JSON.stringify({
-				...data,
-				botId,
-			}),
+			body: JSON.stringify(data),
 		});
 	}
 	connect(): Promise<void> {

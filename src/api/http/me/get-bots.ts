@@ -17,7 +17,7 @@ export async function run(
 		where: (user, { eq }) => eq(user.botOwnerId, session.user.id),
 	});
 
-	const publicBots = [];
+	const publicBots: User[] = [];
 
 	bots.forEach((bot) => {
 		publicBots.push(removePrivateUserFields(bot));
@@ -25,7 +25,7 @@ export async function run(
 
 	return {
 		success: true,
-		data: bots,
+		data: publicBots,
 	};
 }
 

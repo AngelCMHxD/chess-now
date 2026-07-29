@@ -50,7 +50,8 @@ export async function run(
 
 	ws.subscribe(`device_auth:${auth.userCode}`);
 
-	setTimeout(() => {
+	const remainingMs = auth.expiresAt.getTime() - Date.now();
+	if (remainingMs <= 0) {
 		publishToSubscriber(
 			`device_auth:${auth.userCode}`,
 			"device_auth",
@@ -60,9 +61,27 @@ export async function run(
 				userCode: auth.userCode,
 			},
 		);
-
 		ws.unsubscribe(`device_auth:${auth.userCode}`);
-	}, auth.expiresAt.getTime() - Date.now());
+	} else {
+		setTimeout(async () => {
+			const currentAuth = await db.query.deviceCode.findFirst({
+				where: (deviceCode, { eq }) => eq(deviceCode.id, auth.id),
+			});
+
+			if (currentAuth?.status === "pending") {
+				publishToSubscriber(
+					`device_auth:${auth.userCode}`,
+					"device_auth",
+					auth.userCode,
+					{
+						action: "expired",
+						userCode: auth.userCode,
+					},
+				);
+				ws.unsubscribe(`device_auth:${auth.userCode}`);
+			}
+		}, remainingMs);
+	}
 
 	return createWSResponse("watch_device_auth", message.id || auth.userCode, {
 		userCode: auth.userCode,
