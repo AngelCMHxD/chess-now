@@ -573,12 +573,12 @@ function BotCard({
 							</span>
 						</CardTitle>
 						<CardDescription>
-							<div className="pb-4">
-								<p>
+							<div className="pb-4 min-w-0 space-y-1">
+								<p className="break-words">
 									Created at:{" "}
 									{new Date(bot.createdAt).toLocaleString()}
 								</p>
-								<p>Bot ID: {bot.id}</p>
+								<p className="break-all">Bot ID: {bot.id}</p>
 							</div>
 						</CardDescription>
 					</CardHeader>
