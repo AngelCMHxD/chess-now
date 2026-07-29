@@ -562,4 +562,17 @@ export async function invalidateSessionsFromSecondaryDb(userId: string) {
 		}
 		await secondaryStorage.delete(`active-sessions-${userId}`);
 	}
+
+	try {
+		const userSessions = await db.query.session.findMany({
+			where: (dbSession, { eq }) => eq(dbSession.userId, userId),
+			columns: { token: true },
+		});
+
+		for (const session of userSessions) {
+			await secondaryStorage.delete(session.token);
+		}
+	} catch (e) {
+		console.error("Failed to query DB sessions for invalidation", e);
+	}
 }
