@@ -53,11 +53,6 @@ export default function TermsPage() {
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="flex flex-col gap-4">
-							<p>
-								Welcome to <strong>Chess Now!</strong> We'd like
-								to keep this simple:
-							</p>
-
 							<div className="flex items-center gap-2">
 								<UserCheckIcon className="h-5 w-5 text-muted-foreground" />
 								<h2 className="text-xl font-bold">
@@ -116,7 +111,7 @@ export default function TermsPage() {
 							<div className="flex items-center gap-2">
 								<Code2Icon className="h-5 w-5 text-muted-foreground" />
 								<h2 className="text-xl font-bold">
-									4. Open Source vs. Our Hosted Site
+									4. Open Source vs. The Hosted Site
 								</h2>
 							</div>
 							<p className="pl-7">

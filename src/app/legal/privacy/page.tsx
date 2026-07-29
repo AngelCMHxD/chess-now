@@ -99,8 +99,8 @@ export default function PrivacyPage() {
 								</h2>
 							</div>
 							<p className="pl-7">
-								We only use <strong>essential cookies</strong>{" "}
-								to keep you logged in, nothing else.
+								We only use what's necessary to keep you logged
+								in, nothing else.
 							</p>
 
 							<div className="flex items-center gap-2">
@@ -109,10 +109,6 @@ export default function PrivacyPage() {
 									3. Third-Party Services
 								</h2>
 							</div>
-							<p className="pl-7">
-								We keep third-party services to an absolute
-								minimum:
-							</p>
 							<ul className="list-disc pl-12">
 								<li>
 									<strong>Cloudflare Turnstile:</strong> Used
@@ -137,8 +133,12 @@ export default function PrivacyPage() {
 								This immediately removes all of your personal
 								details from our primary database.
 								<br />
+								<br />
 								Match data stays but your user is removed from
-								them, and replaced with the @deleted_user
+								them, and replaced with the{" "}
+								<code className="bg-muted px-1.5 py-0.5 rounded font-mono">
+									@deleted_user
+								</code>{" "}
 								account so they can't be traced back to you.
 							</p>
 						</CardContent>
