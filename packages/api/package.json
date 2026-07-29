@@ -5,7 +5,7 @@
 	"version": "1.0.0",
 	"type": "module",
 	"main": "./dist/index.cjs",
-	"module": "src/index.ts",
+	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
@@ -22,12 +22,14 @@
 	"files": [
 		"dist"
 	],
-	"scripts": {
-		"build": "tsup"
+	"publishConfig": {
+		"access": "public"
 	},
-	"maintainers": [
-		"AngelCMHxD"
-	],
+	"scripts": {
+		"build": "tsup",
+		"prepublishOnly": "npm run build"
+	},
+	"author": "AngelCMHxD",
 	"devDependencies": {
 		"@types/bun": "latest",
 		"tsup": "^8.5.1"
