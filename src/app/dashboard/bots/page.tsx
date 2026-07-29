@@ -240,7 +240,7 @@ export default function BotsPage() {
 											key={bot.username}
 											className="flex flex-row items-center justify-between p-4"
 										>
-											<CardHeader className="p-0">
+											<CardHeader className="p-0 min-w-0 flex-1 mr-3">
 												<CardTitle className="text-base flex items-center gap-2">
 													<span>{bot.name}</span>
 													<span className="text-xs text-muted-foreground">
@@ -251,7 +251,7 @@ export default function BotsPage() {
 													{bot.difficulty}
 												</CardDescription>
 											</CardHeader>
-											<div className="flex items-center gap-2">
+											<div className="flex items-center gap-1.5 shrink-0">
 												<Tooltip>
 													<TooltipTrigger asChild>
 														<Button
