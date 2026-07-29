@@ -2,11 +2,19 @@
 
 import type { Match, User } from "@chess-now/api";
 import { ChessNowClient } from "@chess-now/api";
-import { Chess } from "chess.js";
+import { Chess, type Square } from "chess.js";
+import Image from "next/image";
 import { use, useEffect, useMemo, useState } from "react";
 import type { PieceDropHandlerArgs } from "react-chessboard";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { ThemedChessboard } from "@/components/themed-chessboard";
+import {
+	AlertDialog,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -14,6 +22,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
 	SidebarInset,
@@ -27,6 +36,12 @@ import {
 	MatchNotFound,
 	NotPlayer,
 } from "../match-components";
+import { toast } from "sonner";
+
+type PromotionMoveState = {
+	sourceSquare: string;
+	targetSquare: string;
+};
 
 export default function PlayMatchPage({
 	params,
@@ -39,6 +54,8 @@ export default function PlayMatchPage({
 	const [match, setMatch] = useState<Match | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [client, setClient] = useState<ChessNowClient | null>(null);
+	const [promotionMove, setPromotionMove] =
+		useState<PromotionMoveState | null>(null);
 
 	useEffect(() => {
 		if (client) return;
@@ -147,19 +164,21 @@ export default function PlayMatchPage({
 		return { turn, moves, capturedByWhite, capturedByBlack };
 	}, [match]);
 
-	function onPieceDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs) {
-		if (!targetSquare || !match) {
-			return false;
-		}
+	async function executeMove(from: string, to: string, promotion?: string) {
+		if (!client || !match || from === to) return false;
 
 		const chessGame = new Chess();
-		chessGame.loadPgn(match.pgn);
+		if (match.pgn.trim()) {
+			chessGame.loadPgn(match.pgn);
+		} else {
+			chessGame.load(match.fen);
+		}
 
 		try {
 			const move = chessGame.move({
-				from: sourceSquare,
-				to: targetSquare,
-				promotion: "q",
+				from,
+				to,
+				promotion: promotion || undefined,
 			});
 
 			setMatch({
@@ -169,26 +188,63 @@ export default function PlayMatchPage({
 			});
 
 			try {
-				async function sendMove() {
-					if (!client || !match) return false;
-					const { match: updatedMatch } = await client.makeMove(
-						match.id,
-						move.lan,
-					);
+				const { match: updatedMatch } = await client.makeMove(
+					match.id,
+					move.lan,
+				);
 
-					if (chessGame.isGameOver()) return;
+				if (!chessGame.isGameOver()) {
 					setMatch(updatedMatch);
 				}
-
-				sendMove();
-			} catch {
+			} catch (err) {
+				console.error("Failed to make move:", err);
 				return false;
 			}
 
 			return true;
 		} catch {
+			toast.error(`Invalid move!`, {
+				duration: 2000,
+			});
 			return false;
 		}
+	}
+
+	function onPieceDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs) {
+		if (!targetSquare || !match || !user) {
+			return false;
+		}
+
+		const chessGame = new Chess();
+		if (match.pgn.trim()) {
+			chessGame.loadPgn(match.pgn);
+		} else {
+			chessGame.load(match.fen);
+		}
+
+		const possibleMoves = chessGame.moves({
+			square: sourceSquare as Square,
+			verbose: true,
+		});
+
+		const isPromotion = possibleMoves.some(
+			(m) => m.to === targetSquare && m.isPromotion(),
+		);
+
+		if (isPromotion) {
+			setPromotionMove({ sourceSquare, targetSquare });
+			return true;
+		}
+
+		executeMove(sourceSquare, targetSquare);
+		return true;
+	}
+
+	function handlePromotionSelect(piece: "q" | "r" | "n" | "b") {
+		if (!promotionMove) return;
+		const { sourceSquare, targetSquare } = promotionMove;
+		setPromotionMove(null);
+		executeMove(sourceSquare, targetSquare, piece);
 	}
 
 	if (loading) {
@@ -207,6 +263,8 @@ export default function PlayMatchPage({
 	if (user.id !== match.whiteId && user.id !== match.blackId) {
 		return <NotPlayer matchId={match.id} />;
 	}
+
+	const isWhite = match.whitePlayer.id === user.id;
 
 	return (
 		<SidebarProvider>
@@ -266,10 +324,9 @@ export default function PlayMatchPage({
 								<ThemedChessboard
 									options={{
 										position: match?.fen,
-										boardOrientation:
-											match?.whitePlayer.id === user?.id
-												? "white"
-												: "black",
+										boardOrientation: isWhite
+											? "white"
+											: "black",
 										boardStyle: {
 											borderRadius: "10px",
 										},
@@ -280,11 +337,9 @@ export default function PlayMatchPage({
 											if (match.status !== "active")
 												return false;
 
-											const playerColor =
-												user?.id ===
-												match.whitePlayer.id
-													? "w"
-													: "b";
+											const playerColor = isWhite
+												? "w"
+												: "b";
 
 											if (
 												piece.pieceType[0] !==
@@ -317,6 +372,55 @@ export default function PlayMatchPage({
 						</div>
 					</div>
 				</div>
+
+				<AlertDialog
+					open={!!promotionMove}
+					onOpenChange={(open) => {
+						if (!open) setPromotionMove(null);
+					}}
+				>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Pawn Promotion</AlertDialogTitle>
+							<AlertDialogDescription>
+								Select a piece to promote your pawn to
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<div className="grid grid-cols-4 gap-2">
+							{(["q", "r", "n", "b"] as const).map((piece) => {
+								const colorPrefix = isWhite ? "White" : "Black";
+								const pieceNames = {
+									q: "Queen",
+									r: "Rook",
+									n: "Knight",
+									b: "Bishop",
+								};
+								const svgName = `${colorPrefix}${pieceNames[piece]}.svg`;
+
+								return (
+									<Button
+										key={piece}
+										variant="outline"
+										onClick={() =>
+											handlePromotionSelect(piece)
+										}
+										className="h-20 flex-col gap-1"
+									>
+										<Image
+											src={`/pieces/caliente/${svgName}`}
+											alt={pieceNames[piece]}
+											width={40}
+											height={40}
+										/>
+										<span className="text-xs">
+											{pieceNames[piece]}
+										</span>
+									</Button>
+								);
+							})}
+						</div>
+					</AlertDialogContent>
+				</AlertDialog>
 			</SidebarInset>
 		</SidebarProvider>
 	);
