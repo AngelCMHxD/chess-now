@@ -2,7 +2,7 @@
 import type { Match, User } from "@chess-now/api";
 import { ChessNowClient } from "@chess-now/api";
 import { SearchXIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AppSidebar } from "@/components/dashboard-sidebar";
 import { MatchCard } from "@/components/match-card";
@@ -41,24 +41,14 @@ export default function MatchesPage() {
 	const [user, setUser] = useState<User | null>(null);
 	const [client, setClient] = useState<ChessNowClient | null>(null);
 
-	const [sendChallengeOpen, setSendChallengeOpen] = useState(false);
-	const [challengeUsername, setChallengeUsername] = useState("");
-	const [sendingChallenge, setSendingChallenge] = useState(false);
-
-	async function handleSendChallenge() {
-		if (!challengeUsername.trim() || !client) return;
-		setSendingChallenge(true);
-		try {
-			await client.requestChallenge(challengeUsername.trim());
-			toast.success(`Challenge sent to ${challengeUsername}`);
-			setSendChallengeOpen(false);
-			setChallengeUsername("");
-		} catch (error) {
-			toast.error((error as Error).message);
-		} finally {
-			setSendingChallenge(false);
-		}
-	}
+	const sortedMatches = useMemo(() => {
+		if (!matches) return [];
+		return [...matches].sort(
+			(a, b) =>
+				new Date(b.createdAt).getTime() -
+				new Date(a.createdAt).getTime(),
+		);
+	}, [matches]);
 
 	useEffect(() => {
 		let activeClient: ChessNowClient | null = null;
@@ -186,71 +176,17 @@ export default function MatchesPage() {
 							<h2 className="text-lg font-semibold">
 								Your Matches
 							</h2>
-							<Dialog
-								open={sendChallengeOpen}
-								onOpenChange={setSendChallengeOpen}
-							>
-								<DialogTrigger asChild>
-									<Button>Send Challenge</Button>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogHeader>
-										<DialogTitle>
-											Send Challenge
-										</DialogTitle>
-										<DialogDescription>
-											Enter the username of the player you
-											want to send a challenge to
-										</DialogDescription>
-									</DialogHeader>
-									<div className="flex gap-2">
-										<Input
-											value={challengeUsername}
-											onChange={(e) =>
-												setChallengeUsername(
-													e.target.value,
-												)
-											}
-											placeholder="Username"
-											onKeyDown={(e) =>
-												e.key === "Enter" &&
-												handleSendChallenge()
-											}
-										/>
-									</div>
-									<DialogFooter>
-										<Button
-											onClick={handleSendChallenge}
-											disabled={
-												!challengeUsername ||
-												sendingChallenge
-											}
-										>
-											{sendingChallenge ? (
-												<Spinner />
-											) : (
-												"Send"
-											)}
-										</Button>
-									</DialogFooter>
-								</DialogContent>
-							</Dialog>
+							<SendChallengeDialog client={client} />
 						</div>
 						<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
 							<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
-								{matches
-									.sort(
-										(a, b) =>
-											b.createdAt.getTime() -
-											a.createdAt.getTime(),
-									)
-									.map((match) => (
-										<MatchCard
-											key={match.id}
-											match={match}
-											user={user}
-										/>
-									))}
+								{sortedMatches.map((match) => (
+									<MatchCard
+										key={match.id}
+										match={match}
+										user={user}
+									/>
+								))}
 							</div>
 						</div>
 						{matches && matches.length === 0 && (
@@ -263,5 +199,61 @@ export default function MatchesPage() {
 				</div>
 			</SidebarInset>
 		</SidebarProvider>
+	);
+}
+
+function SendChallengeDialog({ client }: { client: ChessNowClient | null }) {
+	const [open, setOpen] = useState(false);
+	const [challengeUsername, setChallengeUsername] = useState("");
+	const [sendingChallenge, setSendingChallenge] = useState(false);
+
+	async function handleSendChallenge() {
+		if (!challengeUsername.trim() || !client) return;
+		setSendingChallenge(true);
+		try {
+			await client.requestChallenge(challengeUsername.trim());
+			toast.success(`Challenge sent to ${challengeUsername}`);
+			setOpen(false);
+			setChallengeUsername("");
+		} catch (error) {
+			toast.error((error as Error).message);
+		} finally {
+			setSendingChallenge(false);
+		}
+	}
+
+	return (
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
+				<Button>Send Challenge</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Send Challenge</DialogTitle>
+					<DialogDescription>
+						Enter the username of the player you want to send a
+						challenge to
+					</DialogDescription>
+				</DialogHeader>
+				<div className="flex gap-2">
+					<Input
+						value={challengeUsername}
+						onChange={(e) => setChallengeUsername(e.target.value)}
+						placeholder="username"
+						onKeyDown={(e) =>
+							e.key === "Enter" && handleSendChallenge()
+						}
+					/>
+				</div>
+				<DialogFooter>
+					<Button
+						onClick={handleSendChallenge}
+						disabled={!challengeUsername || sendingChallenge}
+					>
+						{sendingChallenge ? <Spinner /> : "Send"}
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

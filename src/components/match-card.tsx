@@ -1,5 +1,6 @@
 import type { Match, User } from "@chess-now/api";
 import Link from "next/link";
+import { memo, useMemo } from "react";
 import { ThemedChessboard } from "@/components/themed-chessboard";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { formatMiliseconds } from "@/lib/utils";
 
-export function MatchCard({
+function MatchCardComponent({
 	match,
 	user,
 }: {
@@ -39,6 +40,20 @@ export function MatchCard({
 			ratingDiffText = `${ratingDiff}`;
 		}
 	}
+
+	const boardOrientation =
+		match.whitePlayer.id === user?.id ? "white" : "black";
+
+	const chessboardOptions = useMemo(
+		() =>
+			({
+				allowDragging: false,
+				position: match.fen,
+				showNotation: false,
+				boardOrientation,
+			}) as const,
+		[match.fen, boardOrientation],
+	);
 
 	return (
 		<Card size="default" className="w-full overflow-hidden p-0 gap-0">
@@ -115,17 +130,7 @@ export function MatchCard({
 					</CardHeader>
 				</div>
 				<div className="w-1/2 md:w-[80%] xl:w-1/2 aspect-square self-center xl:self-start xl:m-0 shrink-0">
-					<ThemedChessboard
-						options={{
-							allowDragging: false,
-							position: match.fen,
-							showNotation: false,
-							boardOrientation:
-								match.whitePlayer.id === user?.id
-									? "white"
-									: "black",
-						}}
-					/>
+					<ThemedChessboard options={chessboardOptions} />
 				</div>
 			</div>
 			<CardFooter>
@@ -138,3 +143,5 @@ export function MatchCard({
 		</Card>
 	);
 }
+
+export const MatchCard = memo(MatchCardComponent);
