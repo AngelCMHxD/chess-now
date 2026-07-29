@@ -353,5 +353,8 @@ export const auth = betterAuth({
 		database: {
 			generateId: () => crypto.randomUUID(),
 		},
+		ipAddress: {
+			ipAddressHeaders: ["cf-connecting-ip"],
+		},
 	},
 });
