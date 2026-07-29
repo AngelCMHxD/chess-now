@@ -1,0 +1,26 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index 8225c4780384343be16b0651f20e7922ffed72a9..b652743f6168028bd6aa8a1619925b19a26a4d19 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -39,7 +39,7 @@ var Stockfish = class extends import_node_events.EventEmitter {
+   }
+   async #initialize() {
+     const scriptPath = (0, import_node_path.join)(__dirname, "stockfish-17.1-8e4d048.cjs");
+-    this.#process = (0, import_node_child_process.spawn)(process.execPath, [scriptPath]);
++    this.#process = (0, import_node_child_process.spawn)("node", [scriptPath]);
+     this.#process.stdout.on("data", (data) => {
+       const lines = data.toString().split("\n");
+       for (const line of lines) {
+diff --git a/dist/index.js b/dist/index.js
+index b5b6a76c68c8d092bdc01cc743504058562ea11f..18f5814eee3c4c2651b0d064a713fb24b35715d4 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -21,7 +21,7 @@ var Stockfish = class extends EventEmitter {
+   }
+   async #initialize() {
+     const scriptPath = join(__dirname, "stockfish-17.1-8e4d048.cjs");
+-    this.#process = spawn(process.execPath, [scriptPath]);
++    this.#process = spawn("node", [scriptPath]);
+     this.#process.stdout.on("data", (data) => {
+       const lines = data.toString().split("\n");
+       for (const line of lines) {

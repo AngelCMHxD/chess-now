@@ -16,6 +16,9 @@
       },
     },
   },
+  "patchedDependencies": {
+    "@se-oss/stockfish@1.0.1": "patches/@se-oss%2Fstockfish@1.0.1.patch",
+  },
   "packages": {
     "@se-oss/stockfish": ["@se-oss/stockfish@1.0.1", "", {}, "sha512-EDBuxVUdBWS1xjlvWm8uAPFIZLkLNCwePnv7NuPE7o4rbAXbgBDj4xm7dZvNcmAk2VDAR0m4lURazaSe7KOODw=="],
 

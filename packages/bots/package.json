@@ -15,5 +15,8 @@
 	"dependencies": {
 		"@se-oss/stockfish": "^1.0.1",
 		"js-chess-engine": "^2.4.6"
+	},
+	"patchedDependencies": {
+		"@se-oss/stockfish@1.0.1": "patches/@se-oss%2Fstockfish@1.0.1.patch"
 	}
 }
