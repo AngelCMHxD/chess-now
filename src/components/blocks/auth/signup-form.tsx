@@ -3,9 +3,9 @@ import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { AtSignIcon, CheckIcon, InfoIcon, XIcon } from "lucide-react";
 import { type SubmitEvent, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { DiscordIcon } from "@/components/icons/discord-icon";
 import { GoogleIcon } from "@/components/icons/google-icon";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -377,7 +377,9 @@ export function SignupForm({
 											variant="outline"
 											type="button"
 											className="h-11"
-											onClick={() => handleSocial("google")}
+											onClick={() =>
+												handleSocial("google")
+											}
 										>
 											<GoogleIcon className="size-7" />
 											<span className="sr-only">
@@ -388,7 +390,9 @@ export function SignupForm({
 											variant="outline"
 											type="button"
 											className="h-11"
-											onClick={() => handleSocial("discord")}
+											onClick={() =>
+												handleSocial("discord")
+											}
 										>
 											<DiscordIcon className="size-7" />
 											<span className="sr-only">

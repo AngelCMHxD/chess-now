@@ -44,8 +44,14 @@ export default function RootLayout({
 		>
 			<head>
 				<link rel="icon" type="image/svg+xml" href="/icon.svg" />
-				<link rel="preconnect" href="https://avatars.githubusercontent.com" />
-				<link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
+				<link
+					rel="preconnect"
+					href="https://avatars.githubusercontent.com"
+				/>
+				<link
+					rel="dns-prefetch"
+					href="https://avatars.githubusercontent.com"
+				/>
 			</head>
 			<body className="min-h-full flex flex-col">
 				{" "}
