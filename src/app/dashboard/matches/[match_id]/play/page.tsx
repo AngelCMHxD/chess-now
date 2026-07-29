@@ -167,6 +167,8 @@ export default function PlayMatchPage({
 	async function executeMove(from: string, to: string, promotion?: string) {
 		if (!client || !match || from === to) return false;
 
+		const previousMatchState = { ...match };
+
 		const chessGame = new Chess();
 		if (match.pgn.trim()) {
 			chessGame.loadPgn(match.pgn);
@@ -188,15 +190,9 @@ export default function PlayMatchPage({
 			});
 
 			try {
-				const { match: updatedMatch } = await client.makeMove(
-					match.id,
-					move.lan,
-				);
-
-				if (!chessGame.isGameOver()) {
-					setMatch(updatedMatch);
-				}
+				await client.makeMove(match.id, move.lan);
 			} catch (err) {
+				setMatch(previousMatchState);
 				console.error("Failed to make move:", err);
 				return false;
 			}
