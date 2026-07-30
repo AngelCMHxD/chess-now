@@ -15,10 +15,10 @@ Also for reversing the ascii when the user is playing the Black pieces, which se
 ```bash
 # If you are in the tui package directory
 cd packages/tui
-bun install
+bun install # append if you want cross-compiling: --os="*" --cpu="*"
 bun run dev
 
 # If you are in the root directory
-bun run setup:tui
+bun run setup:tui # append if you want cross-compiling: --os="*" --cpu="*"
 bun run client:tui
 ```

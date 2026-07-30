@@ -13,7 +13,7 @@
 		"dev": "vite",
 		"build": "vite build",
 		"start": "bun dist/main.js",
-		"compile": "bun run build && bun build --compile --outfile=dist/chess-now-tui dist/main.js"
+		"compile": "bun run build && bun build.ts"
 	},
 	"private": true,
 	"type": "module",
