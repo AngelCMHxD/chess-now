@@ -1,4 +1,5 @@
 import { GlobeIcon, TerminalSquareIcon } from "lucide-react";
+import Link from "next/link";
 import type { JSX } from "react/jsx-runtime";
 import Header from "@/components/header";
 import { DiscordIcon } from "@/components/icons/discord-icon";
@@ -26,13 +27,15 @@ const integrationsData: {
 		icon: () => <DiscordIcon className="size-10" />,
 		description: "A pretty simple and barebones Discord bot",
 		footer: () => {
-			if (!process.env.DISCORD_SERVER_URL) return null;
+			if (!process.env.NEXT_PUBLIC_DISCORD_SERVER_URL) return null;
 
 			return (
 				<div className="flex gap-2">
-					{process.env.DISCORD_SERVER_URL && (
-						<Button>Join Main Server</Button>
-					)}
+					<Button>
+						<Link href={process.env.NEXT_PUBLIC_DISCORD_SERVER_URL}>
+							Join Main Server
+						</Link>
+					</Button>
 				</div>
 			);
 		},
@@ -42,6 +45,19 @@ const integrationsData: {
 		icon: () => <TerminalSquareIcon className="size-10" />,
 		description:
 			"A simple Terminal User Interface (TUI) so you look like a hackerman",
+		footer: () => (
+			<div className="flex gap-2">
+				{process.env.NEXT_PUBLIC_REPO_LINK && (
+					<Button>
+						<Link
+							href={`${process.env.NEXT_PUBLIC_REPO_LINK}/releases`}
+						>
+							Go to GitHub Releases
+						</Link>
+					</Button>
+				)}
+			</div>
+		),
 	},
 ];
 
