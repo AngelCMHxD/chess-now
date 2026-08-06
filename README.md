@@ -47,3 +47,21 @@ None of the backend API was made with generative AI, which is the main focus of 
 ## Documentation
 
 Visit the [docs](https://chessnow.angelcmh.com/docs) for the full API and package reference.
+
+## Screenshots
+
+### Docs
+
+![Docs](assets/docs_screenshot.png)
+
+### Web Match
+
+![Web](assets/web_screenshot.png)
+
+### Terminal UI
+
+![TUI](assets/tui_screenshot.png)
+
+### Discord bot
+
+![Discord](assets/discord_screenshot.png)
